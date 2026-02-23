@@ -1,0 +1,23 @@
+{
+  "total_problems": 100,
+  "correct_count": 62,
+  "incorrect_count": 38,
+  "accuracy": 0.62,
+  "correct_avg_entropy": 0.39434167082624394,
+  "incorrect_avg_entropy": 0.4015244426179616,
+  "correct_entropy_std": 0.10856715981337287,
+  "incorrect_entropy_std": 0.08355629630774233,
+  "entropy_difference": 0.007182771791717668,
+  "correct_max_entropy": 2.1766789805504585,
+  "incorrect_max_entropy": 2.279848048561498,
+  "correct_min_entropy": 6.738821983657523e-06,
+  "incorrect_min_entropy": 1.1380346681209486e-05,
+  "pearson_correlation_avg": -0.035244545697016204,
+  "pearson_p_value_avg": 0.7277481638304932,
+  "spearman_correlation_avg": -0.04567774647912542,
+  "spearman_p_value_avg": 0.6517947431494383,
+  "pearson_correlation_max": -0.18054682238932687,
+  "pearson_p_value_max": 0.07224484849386895,
+  "pearson_correlation_std": -0.1114918492683894,
+  "pearson_p_value_std": 0.2694420393043031
+}

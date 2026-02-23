@@ -1,0 +1,10 @@
+{
+  "total_questions": 5,
+  "total_samples": 20,
+  "overall_accuracy": 0.95,
+  "accuracy_std": 0.11180339887498948,
+  "perfect_questions": 4,
+  "zero_questions": 0,
+  "partial_questions": 1,
+  "correlations": {}
+}

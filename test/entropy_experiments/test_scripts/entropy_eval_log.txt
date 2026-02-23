@@ -1,0 +1,114 @@
+INFO:__main__:Loading model Qwen/Qwen2.5-7B-Instruct
+Sliding Window Attention is enabled but not implemented for `sdpa`; unexpected results may be encountered.
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:06,  2.10s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:04<00:03,  1.99s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.96s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.84s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.90s/it]
+INFO:__main__:Model has chat template: True
+INFO:__main__:Loading GSM8K test set...
+INFO:__main__:Loaded 1319 problems from GSM8K
+INFO:__main__:Starting improved evaluation: 50 questions × 16 samples
+Processing questions:   0%|          | 0/50 [00:00<?, ?it/s]INFO:__main__:Q1: 16/16 correct (100.0%). Overall: 100.0%
+INFO:__main__:Example answers: Expected='18', Predicted=['18', '18', '18']
+Processing questions:   2%|▏         | 1/50 [00:36<29:43, 36.40s/it]INFO:__main__:Q2: 16/16 correct (100.0%). Overall: 100.0%
+INFO:__main__:Example answers: Expected='3', Predicted=['3', '3', '3']
+Processing questions:   4%|▍         | 2/50 [01:01<23:56, 29.93s/it]INFO:__main__:Q3: 14/16 correct (87.5%). Overall: 95.8%
+INFO:__main__:Example answers: Expected='70000', Predicted=['70000', '70000', '70000']
+Processing questions:   6%|▌         | 3/50 [01:49<29:38, 37.83s/it]INFO:__main__:Q4: 16/16 correct (100.0%). Overall: 96.9%
+Processing questions:   8%|▊         | 4/50 [02:11<24:21, 31.76s/it]INFO:__main__:Q5: 16/16 correct (100.0%). Overall: 97.5%
+Processing questions:  10%|█         | 5/50 [02:47<24:55, 33.23s/it]INFO:__main__:Q6: 15/16 correct (93.8%). Overall: 96.9%
+Processing questions:  12%|█▏        | 6/50 [03:24<25:17, 34.49s/it]INFO:__main__:Q7: 16/16 correct (100.0%). Overall: 97.3%
+Processing questions:  14%|█▍        | 7/50 [03:56<24:16, 33.87s/it]INFO:__main__:Q8: 6/16 correct (37.5%). Overall: 89.8%
+Processing questions:  16%|█▌        | 8/50 [04:49<27:51, 39.79s/it]INFO:__main__:Q9: 2/16 correct (12.5%). Overall: 81.2%
+Processing questions:  18%|█▊        | 9/50 [05:42<30:05, 44.03s/it]INFO:__main__:Q10: 16/16 correct (100.0%). Overall: 83.1%
+Processing questions:  20%|██        | 10/50 [06:29<29:52, 44.82s/it]INFO:__main__:Q11: 16/16 correct (100.0%). Overall: 84.7%
+Processing questions:  22%|██▏       | 11/50 [07:07<27:53, 42.91s/it]INFO:__main__:Q12: 15/16 correct (93.8%). Overall: 85.4%
+Processing questions:  24%|██▍       | 12/50 [07:48<26:42, 42.18s/it]INFO:__main__:Q13: 0/16 correct (0.0%). Overall: 78.8%
+Processing questions:  26%|██▌       | 13/50 [08:36<27:12, 44.13s/it]INFO:__main__:Q14: 9/16 correct (56.2%). Overall: 77.2%
+Processing questions:  28%|██▊       | 14/50 [09:30<28:11, 46.97s/it]INFO:__main__:Q15: 13/16 correct (81.2%). Overall: 77.5%
+Processing questions:  30%|███       | 15/50 [10:15<27:03, 46.39s/it]INFO:__main__:Q16: 8/16 correct (50.0%). Overall: 75.8%
+Processing questions:  32%|███▏      | 16/50 [11:08<27:25, 48.41s/it]INFO:__main__:Q17: 16/16 correct (100.0%). Overall: 77.2%
+Processing questions:  34%|███▍      | 17/50 [11:36<23:15, 42.30s/it]INFO:__main__:Q18: 15/16 correct (93.8%). Overall: 78.1%
+Processing questions:  36%|███▌      | 18/50 [12:24<23:27, 43.99s/it]INFO:__main__:Q19: 16/16 correct (100.0%). Overall: 79.3%
+Processing questions:  38%|███▊      | 19/50 [12:52<20:13, 39.15s/it]INFO:__main__:Q20: 16/16 correct (100.0%). Overall: 80.3%
+Processing questions:  40%|████      | 20/50 [13:45<21:37, 43.24s/it]INFO:__main__:Q21: 15/16 correct (93.8%). Overall: 81.0%
+Processing questions:  42%|████▏     | 21/50 [14:34<21:49, 45.16s/it]INFO:__main__:Q22: 5/16 correct (31.2%). Overall: 78.7%
+Processing questions:  44%|████▍     | 22/50 [15:14<20:17, 43.49s/it]INFO:__main__:Q23: 16/16 correct (100.0%). Overall: 79.6%
+Processing questions:  46%|████▌     | 23/50 [15:39<17:05, 37.98s/it]INFO:__main__:Q24: 16/16 correct (100.0%). Overall: 80.5%
+Processing questions:  48%|████▊     | 24/50 [16:06<15:03, 34.73s/it]INFO:__main__:Q25: 15/16 correct (93.8%). Overall: 81.0%
+Processing questions:  50%|█████     | 25/50 [16:39<14:15, 34.22s/it]INFO:__main__:Q26: 16/16 correct (100.0%). Overall: 81.7%
+Processing questions:  52%|█████▏    | 26/50 [17:22<14:44, 36.87s/it]INFO:__main__:Q27: 16/16 correct (100.0%). Overall: 82.4%
+Processing questions:  54%|█████▍    | 27/50 [18:10<15:19, 39.99s/it]INFO:__main__:Q28: 15/16 correct (93.8%). Overall: 82.8%
+Processing questions:  56%|█████▌    | 28/50 [18:43<13:56, 38.01s/it]INFO:__main__:Q29: 16/16 correct (100.0%). Overall: 83.4%
+Processing questions:  58%|█████▊    | 29/50 [19:15<12:40, 36.23s/it]INFO:__main__:Q30: 16/16 correct (100.0%). Overall: 84.0%
+Processing questions:  60%|██████    | 30/50 [19:52<12:09, 36.50s/it]INFO:__main__:Q31: 15/16 correct (93.8%). Overall: 84.3%
+Processing questions:  62%|██████▏   | 31/50 [20:45<13:07, 41.43s/it]INFO:__main__:Q32: 16/16 correct (100.0%). Overall: 84.8%
+Processing questions:  64%|██████▍   | 32/50 [21:26<12:24, 41.36s/it]INFO:__main__:Q33: 16/16 correct (100.0%). Overall: 85.2%
+Processing questions:  66%|██████▌   | 33/50 [21:50<10:14, 36.13s/it]INFO:__main__:Q34: 16/16 correct (100.0%). Overall: 85.7%
+Processing questions:  68%|██████▊   | 34/50 [22:28<09:45, 36.59s/it]INFO:__main__:Q35: 16/16 correct (100.0%). Overall: 86.1%
+Processing questions:  70%|███████   | 35/50 [22:52<08:11, 32.76s/it]INFO:__main__:Q36: 16/16 correct (100.0%). Overall: 86.5%
+Processing questions:  72%|███████▏  | 36/50 [23:23<07:33, 32.38s/it]INFO:__main__:Q37: 16/16 correct (100.0%). Overall: 86.8%
+Processing questions:  74%|███████▍  | 37/50 [23:55<06:57, 32.11s/it]INFO:__main__:Q38: 1/16 correct (6.2%). Overall: 84.7%
+Processing questions:  76%|███████▌  | 38/50 [24:48<07:40, 38.34s/it]INFO:__main__:Q39: 15/16 correct (93.8%). Overall: 84.9%
+Processing questions:  78%|███████▊  | 39/50 [25:28<07:08, 38.95s/it]INFO:__main__:Q40: 9/16 correct (56.2%). Overall: 84.2%
+Processing questions:  80%|████████  | 40/50 [26:21<07:12, 43.25s/it]INFO:__main__:Q41: 16/16 correct (100.0%). Overall: 84.6%
+Processing questions:  82%|████████▏ | 41/50 [26:49<05:47, 38.61s/it]INFO:__main__:Q42: 14/16 correct (87.5%). Overall: 84.7%
+Processing questions:  84%|████████▍ | 42/50 [27:29<05:10, 38.85s/it]INFO:__main__:Q43: 16/16 correct (100.0%). Overall: 85.0%
+Processing questions:  86%|████████▌ | 43/50 [27:54<04:04, 34.90s/it]INFO:__main__:Q44: 9/16 correct (56.2%). Overall: 84.4%
+Processing questions:  88%|████████▊ | 44/50 [28:38<03:45, 37.53s/it]INFO:__main__:Q45: 16/16 correct (100.0%). Overall: 84.7%
+Processing questions:  90%|█████████ | 45/50 [29:17<03:09, 37.86s/it]INFO:__main__:Q46: 16/16 correct (100.0%). Overall: 85.1%
+Processing questions:  92%|█████████▏| 46/50 [29:57<02:34, 38.52s/it]INFO:__main__:Q47: 13/16 correct (81.2%). Overall: 85.0%
+Processing questions:  94%|█████████▍| 47/50 [30:41<02:01, 40.38s/it]INFO:__main__:Q48: 16/16 correct (100.0%). Overall: 85.3%
+Processing questions:  96%|█████████▌| 48/50 [31:30<01:25, 42.87s/it]INFO:__main__:Q49: 7/16 correct (43.8%). Overall: 84.4%
+Processing questions:  98%|█████████▊| 49/50 [31:51<00:36, 36.37s/it]INFO:__main__:Q50: 15/16 correct (93.8%). Overall: 84.6%
+Processing questions: 100%|██████████| 50/50 [32:30<00:00, 37.12s/it]Processing questions: 100%|██████████| 50/50 [32:30<00:00, 39.01s/it]
+INFO:__main__:Analyzing results...
+INFO:__main__:Creating visualizations...
+
+================================================================================
+IMPROVED GSM8K ENTROPY vs ACCURACY ANALYSIS
+================================================================================
+Model: Qwen/Qwen2.5-7B-Instruct
+Questions evaluated: 50
+Total samples generated: 800
+Samples per question: 16
+
+OVERALL ACCURACY: 84.6% ± 27.1%
+Perfect questions (100%): 27
+Partial questions (1-99%): 22
+Zero questions (0%): 1
+
+📊 ENTROPY-ACCURACY CORRELATION ANALYSIS:
+Token Range     Avg Entropy     Max Entropy     Entropy Variance
+---------------------------------------------------------------------------
+first_50        -0.386**  -0.275    -0.406** 
+first_100       -0.294*   -0.257    -0.294*  
+first_200       -0.415**  -0.518*** -0.245   
+all             -0.406**  -0.278    -0.084   
+
+Significance: *** p<0.001, ** p<0.01, * p<0.05
+
+🎯 SIGNIFICANT FINDINGS (p < 0.05, |r| > 0.1):
+  ✓ Average entropy (first_50): r=-0.386, p=0.006
+  ✓ Entropy variance (first_50): r=-0.406, p=0.003
+  ✓ Average entropy (first_100): r=-0.294, p=0.038
+  ✓ Entropy variance (first_100): r=-0.294, p=0.038
+  ✓ Average entropy (first_200): r=-0.415, p=0.003
+  ✓ Max entropy (first_200): r=-0.518, p=0.000
+  ✓ Average entropy (all): r=-0.406, p=0.003
+
+📁 Results saved to: ./improved_gsm8k_entropy_results_20250730_112354/
+
+📋 Sample Results (first 3 questions):
+
+Question 1: Janet’s ducks lay 16 eggs per day. She eats three for breakfast every morning an...
+  Expected: 18
+  Accuracy: 16/16 = 100.0%
+  Sample answers: ['18', '18', '18', '18', '18']
+
+Question 2: A robe takes 2 bolts of blue fiber and half that much white fiber.  How many bol...
+  Expected: 3
+  Accuracy: 16/16 = 100.0%
+  Sample answers: ['3', '3', '3', '3', '3']
+
+Question 3: Josh decides to try flipping a house.  He buys a house for $80,000 and then puts...
+  Expected: 70000
+  Accuracy: 14/16 = 87.5%
+  Sample answers: ['70000', '70000', '70000', '70000', '195000']

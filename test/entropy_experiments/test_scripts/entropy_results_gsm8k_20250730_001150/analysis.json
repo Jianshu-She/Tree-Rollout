@@ -1,0 +1,17 @@
+{
+  "total_problems": 200,
+  "correct_count": 0,
+  "incorrect_count": 200,
+  "accuracy": 0.0,
+  "accuracy_by_type": {
+    "count": {
+      "unknown": 200
+    },
+    "sum": {
+      "unknown": 0
+    },
+    "mean": {
+      "unknown": 0.0
+    }
+  }
+}

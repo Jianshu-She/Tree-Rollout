@@ -1,0 +1,15 @@
+{
+  "total_problems": 104,
+  "correct_count": 2,
+  "incorrect_count": 102,
+  "accuracy": 0.019230769230769232,
+  "correct_avg_entropy": 0.16409826077753678,
+  "incorrect_avg_entropy": 0.21888509623612534,
+  "correct_entropy_std": 0.0076117744284804395,
+  "incorrect_entropy_std": 0.08667963203731802,
+  "entropy_difference": 0.05478683545858856,
+  "pearson_correlation": -0.08774091038413831,
+  "pearson_p_value": 0.37578978291997206,
+  "spearman_correlation": -0.07696197734863686,
+  "spearman_p_value": 0.4374373238602617
+}

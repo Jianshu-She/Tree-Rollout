@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+*.png
+*.svg
+mcts_inference/mcts_results/

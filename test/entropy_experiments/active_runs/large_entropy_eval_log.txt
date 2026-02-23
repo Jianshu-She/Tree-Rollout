@@ -1,0 +1,233 @@
+INFO:__main__:Loading model Qwen/Qwen2.5-7B-Instruct
+Loading checkpoint shards:   0%|          | 0/4 [00:00<?, ?it/s]Loading checkpoint shards:  25%|██▌       | 1/4 [00:02<00:06,  2.21s/it]Loading checkpoint shards:  50%|█████     | 2/4 [00:04<00:04,  2.01s/it]Loading checkpoint shards:  75%|███████▌  | 3/4 [00:05<00:01,  1.88s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.83s/it]Loading checkpoint shards: 100%|██████████| 4/4 [00:07<00:00,  1.89s/it]
+INFO:__main__:Model has chat template: True
+INFO:__main__:================================================================================
+INFO:__main__:Evaluating GSM8K dataset
+INFO:__main__:================================================================================
+INFO:__main__:Loading GSM8K test set...
+INFO:__main__:Loaded 200 problems from GSM8K
+Processing gsm8k questions:   0%|          | 0/200 [00:00<?, ?it/s]INFO:__main__:gsm8k Q1: 16/16 correct (100.0%). Overall: 100.0%
+INFO:__main__:Expected: '18', Predicted samples: ['18', '18', '18']
+Processing gsm8k questions:   0%|          | 1/200 [00:36<2:01:21, 36.59s/it]INFO:__main__:gsm8k Q2: 16/16 correct (100.0%). Overall: 100.0%
+INFO:__main__:Expected: '3', Predicted samples: ['3', '3', '3']
+Processing gsm8k questions:   1%|          | 2/200 [00:59<1:34:31, 28.64s/it]INFO:__main__:gsm8k Q3: 13/16 correct (81.2%). Overall: 93.8%
+INFO:__main__:Expected: '70000', Predicted samples: ['70000', '70000', '70000']
+Processing gsm8k questions:   2%|▏         | 3/200 [01:40<1:52:25, 34.24s/it]INFO:__main__:gsm8k Q4: 16/16 correct (100.0%). Overall: 95.3%
+Processing gsm8k questions:   2%|▏         | 4/200 [02:01<1:34:53, 29.05s/it]INFO:__main__:gsm8k Q5: 16/16 correct (100.0%). Overall: 96.2%
+Processing gsm8k questions:   2%|▎         | 5/200 [02:32<1:36:27, 29.68s/it]INFO:__main__:gsm8k Q6: 16/16 correct (100.0%). Overall: 96.9%
+Processing gsm8k questions:   3%|▎         | 6/200 [03:07<1:41:19, 31.34s/it]INFO:__main__:gsm8k Q7: 16/16 correct (100.0%). Overall: 97.3%
+Processing gsm8k questions:   4%|▎         | 7/200 [03:39<1:41:58, 31.70s/it]INFO:__main__:gsm8k Q8: 4/16 correct (25.0%). Overall: 88.3%
+Processing gsm8k questions:   4%|▍         | 8/200 [04:26<1:57:12, 36.63s/it]INFO:__main__:gsm8k Q9: 3/16 correct (18.8%). Overall: 80.6%
+Processing gsm8k questions:   4%|▍         | 9/200 [05:14<2:08:09, 40.26s/it]INFO:__main__:gsm8k Q10: 14/16 correct (87.5%). Overall: 81.2%
+Processing gsm8k questions:   5%|▌         | 10/200 [05:59<2:12:06, 41.72s/it]INFO:__main__:gsm8k Q11: 16/16 correct (100.0%). Overall: 83.0%
+Processing gsm8k questions:   6%|▌         | 11/200 [06:33<2:04:00, 39.37s/it]INFO:__main__:gsm8k Q12: 15/16 correct (93.8%). Overall: 83.9%
+Processing gsm8k questions:   6%|▌         | 12/200 [07:14<2:04:36, 39.77s/it]INFO:__main__:gsm8k Q13: 0/16 correct (0.0%). Overall: 77.4%
+Processing gsm8k questions:   6%|▋         | 13/200 [07:57<2:07:15, 40.83s/it]INFO:__main__:gsm8k Q14: 2/16 correct (12.5%). Overall: 72.8%
+Processing gsm8k questions:   7%|▋         | 14/200 [08:46<2:13:46, 43.15s/it]INFO:__main__:gsm8k Q15: 10/16 correct (62.5%). Overall: 72.1%
+Processing gsm8k questions:   8%|▊         | 15/200 [09:29<2:12:39, 43.03s/it]INFO:__main__:gsm8k Q16: 3/16 correct (18.8%). Overall: 68.8%
+Processing gsm8k questions:   8%|▊         | 16/200 [10:17<2:17:18, 44.77s/it]INFO:__main__:gsm8k Q17: 16/16 correct (100.0%). Overall: 70.6%
+Processing gsm8k questions:   8%|▊         | 17/200 [10:45<2:00:30, 39.51s/it]INFO:__main__:gsm8k Q18: 10/16 correct (62.5%). Overall: 70.1%
+Processing gsm8k questions:   9%|▉         | 18/200 [11:34<2:08:19, 42.30s/it]INFO:__main__:gsm8k Q19: 16/16 correct (100.0%). Overall: 71.7%
+Processing gsm8k questions:  10%|▉         | 19/200 [11:59<1:52:26, 37.27s/it]INFO:__main__:gsm8k Q20: 14/16 correct (87.5%). Overall: 72.5%
+Processing gsm8k questions:  10%|█         | 20/200 [12:48<2:02:02, 40.68s/it]INFO:__main__:gsm8k Q21: 13/16 correct (81.2%). Overall: 72.9%
+Processing gsm8k questions:  10%|█         | 21/200 [13:34<2:06:32, 42.42s/it]INFO:__main__:gsm8k Q22: 3/16 correct (18.8%). Overall: 70.5%
+Processing gsm8k questions:  11%|█         | 22/200 [14:09<1:59:01, 40.12s/it]INFO:__main__:gsm8k Q23: 16/16 correct (100.0%). Overall: 71.7%
+Processing gsm8k questions:  12%|█▏        | 23/200 [14:35<1:45:48, 35.87s/it]INFO:__main__:gsm8k Q24: 16/16 correct (100.0%). Overall: 72.9%
+Processing gsm8k questions:  12%|█▏        | 24/200 [15:00<1:36:01, 32.73s/it]INFO:__main__:gsm8k Q25: 16/16 correct (100.0%). Overall: 74.0%
+Processing gsm8k questions:  12%|█▎        | 25/200 [15:27<1:29:48, 30.79s/it]INFO:__main__:gsm8k Q26: 16/16 correct (100.0%). Overall: 75.0%
+Processing gsm8k questions:  13%|█▎        | 26/200 [16:06<1:36:32, 33.29s/it]INFO:__main__:gsm8k Q27: 16/16 correct (100.0%). Overall: 75.9%
+Processing gsm8k questions:  14%|█▎        | 27/200 [16:49<1:45:04, 36.44s/it]INFO:__main__:gsm8k Q28: 16/16 correct (100.0%). Overall: 76.8%
+Processing gsm8k questions:  14%|█▍        | 28/200 [17:18<1:37:50, 34.13s/it]INFO:__main__:gsm8k Q29: 16/16 correct (100.0%). Overall: 77.6%
+Processing gsm8k questions:  14%|█▍        | 29/200 [17:48<1:33:42, 32.88s/it]INFO:__main__:gsm8k Q30: 16/16 correct (100.0%). Overall: 78.3%
+Processing gsm8k questions:  15%|█▌        | 30/200 [18:18<1:30:57, 32.10s/it]INFO:__main__:gsm8k Q31: 13/16 correct (81.2%). Overall: 78.4%
+Processing gsm8k questions:  16%|█▌        | 31/200 [19:06<1:43:15, 36.66s/it]INFO:__main__:gsm8k Q32: 16/16 correct (100.0%). Overall: 79.1%
+Processing gsm8k questions:  16%|█▌        | 32/200 [19:46<1:45:31, 37.69s/it]INFO:__main__:gsm8k Q33: 16/16 correct (100.0%). Overall: 79.7%
+Processing gsm8k questions:  16%|█▋        | 33/200 [20:09<1:32:48, 33.35s/it]INFO:__main__:gsm8k Q34: 16/16 correct (100.0%). Overall: 80.3%
+Processing gsm8k questions:  17%|█▋        | 34/200 [20:43<1:33:07, 33.66s/it]INFO:__main__:gsm8k Q35: 16/16 correct (100.0%). Overall: 80.9%
+Processing gsm8k questions:  18%|█▊        | 35/200 [21:04<1:22:02, 29.83s/it]INFO:__main__:gsm8k Q36: 16/16 correct (100.0%). Overall: 81.4%
+Processing gsm8k questions:  18%|█▊        | 36/200 [21:33<1:20:16, 29.37s/it]INFO:__main__:gsm8k Q37: 16/16 correct (100.0%). Overall: 81.9%
+Processing gsm8k questions:  18%|█▊        | 37/200 [22:02<1:19:41, 29.34s/it]INFO:__main__:gsm8k Q38: 0/16 correct (0.0%). Overall: 79.8%
+Processing gsm8k questions:  19%|█▉        | 38/200 [22:48<1:33:07, 34.49s/it]INFO:__main__:gsm8k Q39: 15/16 correct (93.8%). Overall: 80.1%
+Processing gsm8k questions:  20%|█▉        | 39/200 [23:21<1:31:13, 34.00s/it]INFO:__main__:gsm8k Q40: 10/16 correct (62.5%). Overall: 79.7%
+Processing gsm8k questions:  20%|██        | 40/200 [24:09<1:41:39, 38.12s/it]INFO:__main__:gsm8k Q41: 16/16 correct (100.0%). Overall: 80.2%
+Processing gsm8k questions:  20%|██        | 41/200 [24:35<1:31:09, 34.40s/it]INFO:__main__:gsm8k Q42: 14/16 correct (87.5%). Overall: 80.4%
+Processing gsm8k questions:  21%|██        | 42/200 [25:14<1:34:36, 35.92s/it]INFO:__main__:gsm8k Q43: 16/16 correct (100.0%). Overall: 80.8%
+Processing gsm8k questions:  22%|██▏       | 43/200 [25:36<1:22:50, 31.66s/it]INFO:__main__:gsm8k Q44: 6/16 correct (37.5%). Overall: 79.8%
+Processing gsm8k questions:  22%|██▏       | 44/200 [26:17<1:29:18, 34.35s/it]INFO:__main__:gsm8k Q45: 16/16 correct (100.0%). Overall: 80.3%
+Processing gsm8k questions:  22%|██▎       | 45/200 [26:53<1:30:23, 34.99s/it]INFO:__main__:gsm8k Q46: 16/16 correct (100.0%). Overall: 80.7%
+Processing gsm8k questions:  23%|██▎       | 46/200 [27:29<1:30:45, 35.36s/it]INFO:__main__:gsm8k Q47: 16/16 correct (100.0%). Overall: 81.1%
+Processing gsm8k questions:  24%|██▎       | 47/200 [28:08<1:32:27, 36.26s/it]INFO:__main__:gsm8k Q48: 14/16 correct (87.5%). Overall: 81.2%
+Processing gsm8k questions:  24%|██▍       | 48/200 [28:55<1:40:15, 39.58s/it]INFO:__main__:gsm8k Q49: 12/16 correct (75.0%). Overall: 81.1%
+Processing gsm8k questions:  24%|██▍       | 49/200 [29:15<1:25:10, 33.85s/it]INFO:__main__:gsm8k Q50: 16/16 correct (100.0%). Overall: 81.5%
+Processing gsm8k questions:  25%|██▌       | 50/200 [29:48<1:23:55, 33.57s/it]INFO:__main__:gsm8k Q51: 16/16 correct (100.0%). Overall: 81.9%
+Processing gsm8k questions:  26%|██▌       | 51/200 [30:23<1:24:20, 33.97s/it]INFO:__main__:gsm8k Q52: 12/16 correct (75.0%). Overall: 81.7%
+Processing gsm8k questions:  26%|██▌       | 52/200 [30:52<1:20:13, 32.52s/it]INFO:__main__:gsm8k Q53: 16/16 correct (100.0%). Overall: 82.1%
+Processing gsm8k questions:  26%|██▋       | 53/200 [31:28<1:22:11, 33.55s/it]INFO:__main__:gsm8k Q54: 16/16 correct (100.0%). Overall: 82.4%
+Processing gsm8k questions:  27%|██▋       | 54/200 [32:09<1:26:50, 35.69s/it]INFO:__main__:gsm8k Q55: 15/16 correct (93.8%). Overall: 82.6%
+Processing gsm8k questions:  28%|██▊       | 55/200 [32:39<1:21:51, 33.87s/it]INFO:__main__:gsm8k Q56: 16/16 correct (100.0%). Overall: 82.9%
+Processing gsm8k questions:  28%|██▊       | 56/200 [32:57<1:09:49, 29.09s/it]INFO:__main__:gsm8k Q57: 16/16 correct (100.0%). Overall: 83.2%
+Processing gsm8k questions:  28%|██▊       | 57/200 [33:17<1:03:06, 26.48s/it]INFO:__main__:gsm8k Q58: 16/16 correct (100.0%). Overall: 83.5%
+Processing gsm8k questions:  29%|██▉       | 58/200 [33:55<1:11:06, 30.05s/it]INFO:__main__:gsm8k Q59: 16/16 correct (100.0%). Overall: 83.8%
+Processing gsm8k questions:  30%|██▉       | 59/200 [34:27<1:11:52, 30.58s/it]INFO:__main__:gsm8k Q60: 16/16 correct (100.0%). Overall: 84.1%
+Processing gsm8k questions:  30%|███       | 60/200 [34:49<1:04:57, 27.84s/it]INFO:__main__:gsm8k Q61: 15/16 correct (93.8%). Overall: 84.2%
+Processing gsm8k questions:  30%|███       | 61/200 [35:27<1:12:07, 31.13s/it]INFO:__main__:gsm8k Q62: 16/16 correct (100.0%). Overall: 84.5%
+Processing gsm8k questions:  31%|███       | 62/200 [35:52<1:07:10, 29.21s/it]INFO:__main__:gsm8k Q63: 0/16 correct (0.0%). Overall: 83.1%
+Processing gsm8k questions:  32%|███▏      | 63/200 [36:38<1:18:04, 34.19s/it]INFO:__main__:gsm8k Q64: 13/16 correct (81.2%). Overall: 83.1%
+Processing gsm8k questions:  32%|███▏      | 64/200 [37:18<1:21:29, 35.95s/it]INFO:__main__:gsm8k Q65: 16/16 correct (100.0%). Overall: 83.4%
+Processing gsm8k questions:  32%|███▎      | 65/200 [37:49<1:17:50, 34.60s/it]INFO:__main__:gsm8k Q66: 16/16 correct (100.0%). Overall: 83.6%
+Processing gsm8k questions:  33%|███▎      | 66/200 [38:20<1:14:22, 33.30s/it]INFO:__main__:gsm8k Q67: 15/16 correct (93.8%). Overall: 83.8%
+Processing gsm8k questions:  34%|███▎      | 67/200 [38:59<1:18:07, 35.24s/it]INFO:__main__:gsm8k Q68: 16/16 correct (100.0%). Overall: 84.0%
+Processing gsm8k questions:  34%|███▍      | 68/200 [39:36<1:18:37, 35.74s/it]INFO:__main__:gsm8k Q69: 16/16 correct (100.0%). Overall: 84.2%
+Processing gsm8k questions:  34%|███▍      | 69/200 [40:04<1:12:29, 33.20s/it]INFO:__main__:gsm8k Q70: 16/16 correct (100.0%). Overall: 84.5%
+Processing gsm8k questions:  35%|███▌      | 70/200 [40:32<1:08:30, 31.62s/it]INFO:__main__:gsm8k Q71: 16/16 correct (100.0%). Overall: 84.7%
+Processing gsm8k questions:  36%|███▌      | 71/200 [41:10<1:12:30, 33.73s/it]INFO:__main__:gsm8k Q72: 16/16 correct (100.0%). Overall: 84.9%
+Processing gsm8k questions:  36%|███▌      | 72/200 [41:31<1:03:22, 29.71s/it]INFO:__main__:gsm8k Q73: 16/16 correct (100.0%). Overall: 85.1%
+Processing gsm8k questions:  36%|███▋      | 73/200 [41:59<1:01:53, 29.24s/it]INFO:__main__:gsm8k Q74: 11/16 correct (68.8%). Overall: 84.9%
+Processing gsm8k questions:  37%|███▋      | 74/200 [42:36<1:06:26, 31.64s/it]INFO:__main__:gsm8k Q75: 15/16 correct (93.8%). Overall: 85.0%
+Processing gsm8k questions:  38%|███▊      | 75/200 [43:22<1:14:51, 35.93s/it]INFO:__main__:gsm8k Q76: 11/16 correct (68.8%). Overall: 84.8%
+Processing gsm8k questions:  38%|███▊      | 76/200 [44:09<1:21:18, 39.34s/it]INFO:__main__:gsm8k Q77: 14/16 correct (87.5%). Overall: 84.8%
+Processing gsm8k questions:  38%|███▊      | 77/200 [44:56<1:25:08, 41.53s/it]INFO:__main__:gsm8k Q78: 16/16 correct (100.0%). Overall: 85.0%
+Processing gsm8k questions:  39%|███▉      | 78/200 [45:31<1:20:50, 39.76s/it]INFO:__main__:gsm8k Q79: 16/16 correct (100.0%). Overall: 85.2%
+Processing gsm8k questions:  40%|███▉      | 79/200 [46:16<1:23:12, 41.26s/it]INFO:__main__:gsm8k Q80: 16/16 correct (100.0%). Overall: 85.4%
+Processing gsm8k questions:  40%|████      | 80/200 [46:40<1:11:57, 35.98s/it]INFO:__main__:gsm8k Q81: 15/16 correct (93.8%). Overall: 85.5%
+Processing gsm8k questions:  40%|████      | 81/200 [47:10<1:07:39, 34.12s/it]INFO:__main__:gsm8k Q82: 16/16 correct (100.0%). Overall: 85.7%
+Processing gsm8k questions:  41%|████      | 82/200 [47:33<1:00:49, 30.93s/it]INFO:__main__:gsm8k Q83: 16/16 correct (100.0%). Overall: 85.8%
+Processing gsm8k questions:  42%|████▏     | 83/200 [47:57<56:14, 28.84s/it]  INFO:__main__:gsm8k Q84: 16/16 correct (100.0%). Overall: 86.0%
+Processing gsm8k questions:  42%|████▏     | 84/200 [48:21<53:07, 27.48s/it]INFO:__main__:gsm8k Q85: 16/16 correct (100.0%). Overall: 86.2%
+Processing gsm8k questions:  42%|████▎     | 85/200 [48:56<56:45, 29.61s/it]INFO:__main__:gsm8k Q86: 15/16 correct (93.8%). Overall: 86.3%
+Processing gsm8k questions:  43%|████▎     | 86/200 [49:18<51:48, 27.27s/it]INFO:__main__:gsm8k Q87: 12/16 correct (75.0%). Overall: 86.1%
+Processing gsm8k questions:  44%|████▎     | 87/200 [49:42<49:50, 26.46s/it]INFO:__main__:gsm8k Q88: 0/16 correct (0.0%). Overall: 85.2%
+Processing gsm8k questions:  44%|████▍     | 88/200 [50:28<1:00:13, 32.27s/it]INFO:__main__:gsm8k Q89: 16/16 correct (100.0%). Overall: 85.3%
+Processing gsm8k questions:  44%|████▍     | 89/200 [50:56<57:26, 31.05s/it]  INFO:__main__:gsm8k Q90: 0/16 correct (0.0%). Overall: 84.4%
+Processing gsm8k questions:  45%|████▌     | 90/200 [51:29<57:46, 31.51s/it]INFO:__main__:gsm8k Q91: 16/16 correct (100.0%). Overall: 84.5%
+Processing gsm8k questions:  46%|████▌     | 91/200 [52:02<58:16, 32.08s/it]INFO:__main__:gsm8k Q92: 16/16 correct (100.0%). Overall: 84.7%
+Processing gsm8k questions:  46%|████▌     | 92/200 [52:33<56:53, 31.61s/it]INFO:__main__:gsm8k Q93: 10/16 correct (62.5%). Overall: 84.5%
+Processing gsm8k questions:  46%|████▋     | 93/200 [53:09<59:02, 33.10s/it]INFO:__main__:gsm8k Q94: 15/16 correct (93.8%). Overall: 84.6%
+Processing gsm8k questions:  47%|████▋     | 94/200 [53:41<57:32, 32.57s/it]INFO:__main__:gsm8k Q95: 16/16 correct (100.0%). Overall: 84.7%
+Processing gsm8k questions:  48%|████▊     | 95/200 [54:19<59:47, 34.17s/it]INFO:__main__:gsm8k Q96: 12/16 correct (75.0%). Overall: 84.6%
+Processing gsm8k questions:  48%|████▊     | 96/200 [54:56<1:01:01, 35.21s/it]INFO:__main__:gsm8k Q97: 16/16 correct (100.0%). Overall: 84.8%
+Processing gsm8k questions:  48%|████▊     | 97/200 [55:20<54:34, 31.79s/it]  INFO:__main__:gsm8k Q98: 15/16 correct (93.8%). Overall: 84.9%
+Processing gsm8k questions:  49%|████▉     | 98/200 [55:56<56:18, 33.12s/it]INFO:__main__:gsm8k Q99: 13/16 correct (81.2%). Overall: 84.8%
+Processing gsm8k questions:  50%|████▉     | 99/200 [56:37<59:46, 35.51s/it]INFO:__main__:gsm8k Q100: 16/16 correct (100.0%). Overall: 85.0%
+Processing gsm8k questions:  50%|█████     | 100/200 [57:12<58:52, 35.32s/it]INFO:__main__:gsm8k Q101: 16/16 correct (100.0%). Overall: 85.1%
+Processing gsm8k questions:  50%|█████     | 101/200 [57:56<1:02:18, 37.76s/it]INFO:__main__:gsm8k Q102: 15/16 correct (93.8%). Overall: 85.2%
+Processing gsm8k questions:  51%|█████     | 102/200 [58:29<59:14, 36.27s/it]  INFO:__main__:gsm8k Q103: 12/16 correct (75.0%). Overall: 85.1%
+Processing gsm8k questions:  52%|█████▏    | 103/200 [59:13<1:02:28, 38.64s/it]INFO:__main__:gsm8k Q104: 16/16 correct (100.0%). Overall: 85.3%
+Processing gsm8k questions:  52%|█████▏    | 104/200 [59:45<58:41, 36.68s/it]  INFO:__main__:gsm8k Q105: 15/16 correct (93.8%). Overall: 85.4%
+Processing gsm8k questions:  52%|█████▎    | 105/200 [1:00:17<55:57, 35.35s/it]INFO:__main__:gsm8k Q106: 16/16 correct (100.0%). Overall: 85.5%
+Processing gsm8k questions:  53%|█████▎    | 106/200 [1:00:41<49:58, 31.89s/it]INFO:__main__:gsm8k Q107: 16/16 correct (100.0%). Overall: 85.6%
+Processing gsm8k questions:  54%|█████▎    | 107/200 [1:01:28<56:18, 36.32s/it]INFO:__main__:gsm8k Q108: 14/16 correct (87.5%). Overall: 85.6%
+Processing gsm8k questions:  54%|█████▍    | 108/200 [1:02:13<1:00:03, 39.17s/it]INFO:__main__:gsm8k Q109: 16/16 correct (100.0%). Overall: 85.8%
+Processing gsm8k questions:  55%|█████▍    | 109/200 [1:02:46<56:27, 37.22s/it]  INFO:__main__:gsm8k Q110: 16/16 correct (100.0%). Overall: 85.9%
+Processing gsm8k questions:  55%|█████▌    | 110/200 [1:03:16<52:45, 35.17s/it]INFO:__main__:gsm8k Q111: 16/16 correct (100.0%). Overall: 86.0%
+Processing gsm8k questions:  56%|█████▌    | 111/200 [1:03:54<53:18, 35.94s/it]INFO:__main__:gsm8k Q112: 16/16 correct (100.0%). Overall: 86.2%
+Processing gsm8k questions:  56%|█████▌    | 112/200 [1:04:34<54:12, 36.96s/it]INFO:__main__:gsm8k Q113: 16/16 correct (100.0%). Overall: 86.3%
+Processing gsm8k questions:  56%|█████▋    | 113/200 [1:05:02<50:02, 34.52s/it]INFO:__main__:gsm8k Q114: 16/16 correct (100.0%). Overall: 86.4%
+Processing gsm8k questions:  57%|█████▋    | 114/200 [1:05:29<45:56, 32.06s/it]INFO:__main__:gsm8k Q115: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  57%|█████▊    | 115/200 [1:06:05<47:16, 33.38s/it]INFO:__main__:gsm8k Q116: 3/16 correct (18.8%). Overall: 85.9%
+Processing gsm8k questions:  58%|█████▊    | 116/200 [1:06:54<53:06, 37.94s/it]INFO:__main__:gsm8k Q117: 11/16 correct (68.8%). Overall: 85.8%
+Processing gsm8k questions:  58%|█████▊    | 117/200 [1:07:42<56:54, 41.13s/it]INFO:__main__:gsm8k Q118: 16/16 correct (100.0%). Overall: 85.9%
+Processing gsm8k questions:  59%|█████▉    | 118/200 [1:08:01<46:50, 34.27s/it]INFO:__main__:gsm8k Q119: 16/16 correct (100.0%). Overall: 86.0%
+Processing gsm8k questions:  60%|█████▉    | 119/200 [1:08:30<44:15, 32.79s/it]INFO:__main__:gsm8k Q120: 0/16 correct (0.0%). Overall: 85.3%
+Processing gsm8k questions:  60%|██████    | 120/200 [1:09:18<49:59, 37.49s/it]INFO:__main__:gsm8k Q121: 16/16 correct (100.0%). Overall: 85.4%
+Processing gsm8k questions:  60%|██████    | 121/200 [1:09:45<44:56, 34.13s/it]INFO:__main__:gsm8k Q122: 16/16 correct (100.0%). Overall: 85.6%
+Processing gsm8k questions:  61%|██████    | 122/200 [1:10:19<44:16, 34.06s/it]INFO:__main__:gsm8k Q123: 13/16 correct (81.2%). Overall: 85.5%
+Processing gsm8k questions:  62%|██████▏   | 123/200 [1:10:56<44:54, 34.99s/it]INFO:__main__:gsm8k Q124: 16/16 correct (100.0%). Overall: 85.6%
+Processing gsm8k questions:  62%|██████▏   | 124/200 [1:11:39<47:20, 37.37s/it]INFO:__main__:gsm8k Q125: 12/16 correct (75.0%). Overall: 85.5%
+Processing gsm8k questions:  62%|██████▎   | 125/200 [1:12:14<45:47, 36.64s/it]INFO:__main__:gsm8k Q126: 15/16 correct (93.8%). Overall: 85.6%
+Processing gsm8k questions:  63%|██████▎   | 126/200 [1:12:48<44:21, 35.97s/it]INFO:__main__:gsm8k Q127: 16/16 correct (100.0%). Overall: 85.7%
+Processing gsm8k questions:  64%|██████▎   | 127/200 [1:13:09<38:27, 31.62s/it]INFO:__main__:gsm8k Q128: 16/16 correct (100.0%). Overall: 85.8%
+Processing gsm8k questions:  64%|██████▍   | 128/200 [1:13:35<35:37, 29.69s/it]INFO:__main__:gsm8k Q129: 16/16 correct (100.0%). Overall: 85.9%
+Processing gsm8k questions:  64%|██████▍   | 129/200 [1:14:18<40:03, 33.85s/it]INFO:__main__:gsm8k Q130: 13/16 correct (81.2%). Overall: 85.9%
+Processing gsm8k questions:  65%|██████▌   | 130/200 [1:15:02<42:49, 36.70s/it]INFO:__main__:gsm8k Q131: 5/16 correct (31.2%). Overall: 85.5%
+Processing gsm8k questions:  66%|██████▌   | 131/200 [1:15:26<38:01, 33.06s/it]INFO:__main__:gsm8k Q132: 16/16 correct (100.0%). Overall: 85.6%
+Processing gsm8k questions:  66%|██████▌   | 132/200 [1:15:48<33:32, 29.60s/it]INFO:__main__:gsm8k Q133: 14/16 correct (87.5%). Overall: 85.6%
+Processing gsm8k questions:  66%|██████▋   | 133/200 [1:16:28<36:35, 32.77s/it]INFO:__main__:gsm8k Q134: 16/16 correct (100.0%). Overall: 85.7%
+Processing gsm8k questions:  67%|██████▋   | 134/200 [1:17:01<36:05, 32.82s/it]INFO:__main__:gsm8k Q135: 16/16 correct (100.0%). Overall: 85.8%
+Processing gsm8k questions:  68%|██████▊   | 135/200 [1:17:23<32:03, 29.59s/it]INFO:__main__:gsm8k Q136: 15/16 correct (93.8%). Overall: 85.9%
+Processing gsm8k questions:  68%|██████▊   | 136/200 [1:17:54<32:10, 30.17s/it]INFO:__main__:gsm8k Q137: 16/16 correct (100.0%). Overall: 86.0%
+Processing gsm8k questions:  68%|██████▊   | 137/200 [1:18:17<29:12, 27.82s/it]INFO:__main__:gsm8k Q138: 16/16 correct (100.0%). Overall: 86.1%
+Processing gsm8k questions:  69%|██████▉   | 138/200 [1:19:02<34:08, 33.03s/it]INFO:__main__:gsm8k Q139: 12/16 correct (75.0%). Overall: 86.0%
+Processing gsm8k questions:  70%|██████▉   | 139/200 [1:19:51<38:23, 37.75s/it]INFO:__main__:gsm8k Q140: 16/16 correct (100.0%). Overall: 86.1%
+Processing gsm8k questions:  70%|███████   | 140/200 [1:20:20<35:22, 35.38s/it]INFO:__main__:gsm8k Q141: 16/16 correct (100.0%). Overall: 86.2%
+Processing gsm8k questions:  70%|███████   | 141/200 [1:20:56<34:48, 35.40s/it]INFO:__main__:gsm8k Q142: 16/16 correct (100.0%). Overall: 86.3%
+Processing gsm8k questions:  71%|███████   | 142/200 [1:21:42<37:13, 38.51s/it]INFO:__main__:gsm8k Q143: 16/16 correct (100.0%). Overall: 86.4%
+Processing gsm8k questions:  72%|███████▏  | 143/200 [1:22:10<33:38, 35.41s/it]INFO:__main__:gsm8k Q144: 7/16 correct (43.8%). Overall: 86.1%
+Processing gsm8k questions:  72%|███████▏  | 144/200 [1:22:44<32:44, 35.08s/it]INFO:__main__:gsm8k Q145: 16/16 correct (100.0%). Overall: 86.2%
+Processing gsm8k questions:  72%|███████▎  | 145/200 [1:23:25<33:40, 36.73s/it]INFO:__main__:gsm8k Q146: 14/16 correct (87.5%). Overall: 86.2%
+Processing gsm8k questions:  73%|███████▎  | 146/200 [1:24:04<33:40, 37.41s/it]INFO:__main__:gsm8k Q147: 16/16 correct (100.0%). Overall: 86.3%
+Processing gsm8k questions:  74%|███████▎  | 147/200 [1:24:37<32:00, 36.24s/it]INFO:__main__:gsm8k Q148: 9/16 correct (56.2%). Overall: 86.1%
+Processing gsm8k questions:  74%|███████▍  | 148/200 [1:25:13<31:22, 36.20s/it]INFO:__main__:gsm8k Q149: 16/16 correct (100.0%). Overall: 86.2%
+Processing gsm8k questions:  74%|███████▍  | 149/200 [1:25:41<28:34, 33.63s/it]INFO:__main__:gsm8k Q150: 16/16 correct (100.0%). Overall: 86.3%
+Processing gsm8k questions:  75%|███████▌  | 150/200 [1:26:11<27:00, 32.42s/it]INFO:__main__:gsm8k Q151: 15/16 correct (93.8%). Overall: 86.3%
+Processing gsm8k questions:  76%|███████▌  | 151/200 [1:26:59<30:21, 37.18s/it]INFO:__main__:gsm8k Q152: 15/16 correct (93.8%). Overall: 86.4%
+Processing gsm8k questions:  76%|███████▌  | 152/200 [1:27:45<31:58, 39.98s/it]INFO:__main__:gsm8k Q153: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  76%|███████▋  | 153/200 [1:28:09<27:32, 35.16s/it]INFO:__main__:gsm8k Q154: 11/16 correct (68.8%). Overall: 86.4%
+Processing gsm8k questions:  77%|███████▋  | 154/200 [1:28:58<30:00, 39.14s/it]INFO:__main__:gsm8k Q155: 15/16 correct (93.8%). Overall: 86.4%
+Processing gsm8k questions:  78%|███████▊  | 155/200 [1:29:43<30:47, 41.06s/it]INFO:__main__:gsm8k Q156: 14/16 correct (87.5%). Overall: 86.4%
+Processing gsm8k questions:  78%|███████▊  | 156/200 [1:30:30<31:26, 42.89s/it]INFO:__main__:gsm8k Q157: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  78%|███████▊  | 157/200 [1:31:02<28:13, 39.38s/it]INFO:__main__:gsm8k Q158: 6/16 correct (37.5%). Overall: 86.2%
+Processing gsm8k questions:  79%|███████▉  | 158/200 [1:31:45<28:30, 40.73s/it]INFO:__main__:gsm8k Q159: 16/16 correct (100.0%). Overall: 86.3%
+Processing gsm8k questions:  80%|███████▉  | 159/200 [1:32:13<25:09, 36.81s/it]INFO:__main__:gsm8k Q160: 16/16 correct (100.0%). Overall: 86.4%
+Processing gsm8k questions:  80%|████████  | 160/200 [1:32:39<22:26, 33.66s/it]INFO:__main__:gsm8k Q161: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  80%|████████  | 161/200 [1:33:11<21:28, 33.05s/it]INFO:__main__:gsm8k Q162: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  81%|████████  | 162/200 [1:33:54<22:49, 36.04s/it]INFO:__main__:gsm8k Q163: 2/16 correct (12.5%). Overall: 86.1%
+Processing gsm8k questions:  82%|████████▏ | 163/200 [1:34:42<24:25, 39.61s/it]INFO:__main__:gsm8k Q164: 16/16 correct (100.0%). Overall: 86.2%
+Processing gsm8k questions:  82%|████████▏ | 164/200 [1:35:25<24:25, 40.71s/it]INFO:__main__:gsm8k Q165: 13/16 correct (81.2%). Overall: 86.1%
+Processing gsm8k questions:  82%|████████▎ | 165/200 [1:36:01<22:50, 39.15s/it]INFO:__main__:gsm8k Q166: 13/16 correct (81.2%). Overall: 86.1%
+Processing gsm8k questions:  83%|████████▎ | 166/200 [1:36:42<22:28, 39.66s/it]INFO:__main__:gsm8k Q167: 16/16 correct (100.0%). Overall: 86.2%
+Processing gsm8k questions:  84%|████████▎ | 167/200 [1:37:11<20:04, 36.50s/it]INFO:__main__:gsm8k Q168: 16/16 correct (100.0%). Overall: 86.3%
+Processing gsm8k questions:  84%|████████▍ | 168/200 [1:37:47<19:21, 36.31s/it]INFO:__main__:gsm8k Q169: 16/16 correct (100.0%). Overall: 86.4%
+Processing gsm8k questions:  84%|████████▍ | 169/200 [1:38:15<17:34, 34.03s/it]INFO:__main__:gsm8k Q170: 16/16 correct (100.0%). Overall: 86.4%
+Processing gsm8k questions:  85%|████████▌ | 170/200 [1:38:50<17:03, 34.11s/it]INFO:__main__:gsm8k Q171: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  86%|████████▌ | 171/200 [1:39:23<16:25, 33.99s/it]INFO:__main__:gsm8k Q172: 16/16 correct (100.0%). Overall: 86.6%
+Processing gsm8k questions:  86%|████████▌ | 172/200 [1:39:56<15:41, 33.61s/it]INFO:__main__:gsm8k Q173: 8/16 correct (50.0%). Overall: 86.4%
+Processing gsm8k questions:  86%|████████▋ | 173/200 [1:40:37<16:04, 35.72s/it]INFO:__main__:gsm8k Q174: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  87%|████████▋ | 174/200 [1:41:17<16:06, 37.18s/it]INFO:__main__:gsm8k Q175: 11/16 correct (68.8%). Overall: 86.4%
+Processing gsm8k questions:  88%|████████▊ | 175/200 [1:41:59<16:06, 38.67s/it]INFO:__main__:gsm8k Q176: 14/16 correct (87.5%). Overall: 86.4%
+Processing gsm8k questions:  88%|████████▊ | 176/200 [1:42:46<16:25, 41.08s/it]INFO:__main__:gsm8k Q177: 16/16 correct (100.0%). Overall: 86.4%
+Processing gsm8k questions:  88%|████████▊ | 177/200 [1:43:14<14:13, 37.12s/it]INFO:__main__:gsm8k Q178: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  89%|████████▉ | 178/200 [1:44:03<14:53, 40.60s/it]INFO:__main__:gsm8k Q179: 16/16 correct (100.0%). Overall: 86.6%
+Processing gsm8k questions:  90%|████████▉ | 179/200 [1:44:41<13:56, 39.81s/it]INFO:__main__:gsm8k Q180: 16/16 correct (100.0%). Overall: 86.7%
+Processing gsm8k questions:  90%|█████████ | 180/200 [1:45:19<13:04, 39.24s/it]INFO:__main__:gsm8k Q181: 16/16 correct (100.0%). Overall: 86.7%
+Processing gsm8k questions:  90%|█████████ | 181/200 [1:45:48<11:28, 36.24s/it]INFO:__main__:gsm8k Q182: 16/16 correct (100.0%). Overall: 86.8%
+Processing gsm8k questions:  91%|█████████ | 182/200 [1:46:16<10:07, 33.75s/it]INFO:__main__:gsm8k Q183: 9/16 correct (56.2%). Overall: 86.6%
+Processing gsm8k questions:  92%|█████████▏| 183/200 [1:47:00<10:24, 36.75s/it]INFO:__main__:gsm8k Q184: 13/16 correct (81.2%). Overall: 86.6%
+Processing gsm8k questions:  92%|█████████▏| 184/200 [1:47:42<10:14, 38.42s/it]INFO:__main__:gsm8k Q185: 14/16 correct (87.5%). Overall: 86.6%
+Processing gsm8k questions:  92%|█████████▎| 185/200 [1:48:31<10:24, 41.62s/it]INFO:__main__:gsm8k Q186: 16/16 correct (100.0%). Overall: 86.7%
+Processing gsm8k questions:  93%|█████████▎| 186/200 [1:48:59<08:45, 37.54s/it]INFO:__main__:gsm8k Q187: 14/16 correct (87.5%). Overall: 86.7%
+Processing gsm8k questions:  94%|█████████▎| 187/200 [1:49:45<08:41, 40.13s/it]INFO:__main__:gsm8k Q188: 0/16 correct (0.0%). Overall: 86.2%
+Processing gsm8k questions:  94%|█████████▍| 188/200 [1:50:31<08:21, 41.76s/it]INFO:__main__:gsm8k Q189: 16/16 correct (100.0%). Overall: 86.3%
+Processing gsm8k questions:  94%|█████████▍| 189/200 [1:51:08<07:23, 40.29s/it]INFO:__main__:gsm8k Q190: 16/16 correct (100.0%). Overall: 86.4%
+Processing gsm8k questions:  95%|█████████▌| 190/200 [1:51:40<06:20, 38.05s/it]INFO:__main__:gsm8k Q191: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  96%|█████████▌| 191/200 [1:52:01<04:54, 32.74s/it]INFO:__main__:gsm8k Q192: 16/16 correct (100.0%). Overall: 86.5%
+Processing gsm8k questions:  96%|█████████▌| 192/200 [1:52:27<04:05, 30.67s/it]INFO:__main__:gsm8k Q193: 16/16 correct (100.0%). Overall: 86.6%
+Processing gsm8k questions:  96%|█████████▋| 193/200 [1:53:05<03:51, 33.04s/it]INFO:__main__:gsm8k Q194: 14/16 correct (87.5%). Overall: 86.6%
+Processing gsm8k questions:  97%|█████████▋| 194/200 [1:53:44<03:28, 34.83s/it]INFO:__main__:gsm8k Q195: 16/16 correct (100.0%). Overall: 86.7%
+Processing gsm8k questions:  98%|█████████▊| 195/200 [1:54:04<02:31, 30.29s/it]INFO:__main__:gsm8k Q196: 16/16 correct (100.0%). Overall: 86.7%
+Processing gsm8k questions:  98%|█████████▊| 196/200 [1:54:35<02:02, 30.63s/it]INFO:__main__:gsm8k Q197: 16/16 correct (100.0%). Overall: 86.8%
+Processing gsm8k questions:  98%|█████████▊| 197/200 [1:55:00<01:26, 28.74s/it]INFO:__main__:gsm8k Q198: 16/16 correct (100.0%). Overall: 86.9%
+Processing gsm8k questions:  99%|█████████▉| 198/200 [1:55:33<01:00, 30.09s/it]INFO:__main__:gsm8k Q199: 16/16 correct (100.0%). Overall: 86.9%
+Processing gsm8k questions: 100%|█████████▉| 199/200 [1:56:09<00:31, 31.92s/it]INFO:__main__:gsm8k Q200: 16/16 correct (100.0%). Overall: 87.0%
+Processing gsm8k questions: 100%|██████████| 200/200 [1:56:51<00:00, 35.00s/it]Processing gsm8k questions: 100%|██████████| 200/200 [1:56:51<00:00, 35.06s/it]
+
+================================================================================
+MULTI-DATASET ENTROPY vs ACCURACY ANALYSIS
+================================================================================
+Model: Qwen/Qwen2.5-7B-Instruct
+
+GSM8K Results:
+  Questions evaluated: 200
+  Total samples: 3200
+  Overall accuracy: 87.0% ± 25.2%
+  Perfect questions: 123
+  Partial questions: 70
+  Zero questions: 7
+
+  Entropy-Accuracy Correlations:
+    first_50: r = -0.303 (p = 0.000) ***
+    first_100: r = -0.347 (p = 0.000) ***
+    first_200: r = -0.382 (p = 0.000) ***
+    all: r = -0.189 (p = 0.007) **
+
+📁 Results saved to: ../../large_scale_entropy_results_20250730_181243/

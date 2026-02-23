@@ -1,0 +1,64 @@
+{
+  "dataset": "gsm8k",
+  "total_questions": 200,
+  "total_samples": 3200,
+  "overall_accuracy": 0.8703125,
+  "accuracy_std": 0.252417449750294,
+  "perfect_questions": 124,
+  "zero_questions": 7,
+  "partial_questions": 69,
+  "correlations": {
+    "first_50": {
+      "avg_entropy_mean": 0.16682540615512992,
+      "max_entropy_mean": 1.1311449792981147,
+      "entropy_variance_mean": 0.0012815718367345874,
+      "pearson_avg_entropy": -0.29933348423460476,
+      "p_value_avg_entropy": 1.6636639993763254e-05,
+      "pearson_max_entropy": -0.2936730761093317,
+      "p_value_max_entropy": 2.4368293277791973e-05,
+      "pearson_entropy_variance": -0.10570754951390718,
+      "p_value_entropy_variance": 0.13629334841565463,
+      "spearman_avg_entropy": -0.43907058493763945,
+      "spearman_p_value": 7.832525075295179e-11
+    },
+    "first_100": {
+      "avg_entropy_mean": 0.1368067310422426,
+      "max_entropy_mean": 1.2209687127545477,
+      "entropy_variance_mean": 0.000797259712914267,
+      "pearson_avg_entropy": -0.358793917800848,
+      "p_value_avg_entropy": 1.8178309749745196e-07,
+      "pearson_max_entropy": -0.33534144845387986,
+      "p_value_max_entropy": 1.2099098687637894e-06,
+      "pearson_entropy_variance": -0.2129623328260552,
+      "p_value_entropy_variance": 0.0024644460066766023,
+      "spearman_avg_entropy": -0.4484478643157206,
+      "spearman_p_value": 2.7514574294212377e-11
+    },
+    "first_200": {
+      "avg_entropy_mean": 0.11221879087535104,
+      "max_entropy_mean": 1.3144167242757976,
+      "entropy_variance_mean": 0.0006419908437548474,
+      "pearson_avg_entropy": -0.36612802198771927,
+      "p_value_avg_entropy": 9.731423387715907e-08,
+      "pearson_max_entropy": -0.378937560641496,
+      "p_value_max_entropy": 3.145478418793126e-08,
+      "pearson_entropy_variance": -0.12391789234608254,
+      "p_value_entropy_variance": 0.08042533147761856,
+      "spearman_avg_entropy": -0.40859657810573224,
+      "spearman_p_value": 1.8962858825402056e-09
+    },
+    "all": {
+      "avg_entropy_mean": 0.13441180442676118,
+      "max_entropy_mean": 1.6613760405778886,
+      "entropy_variance_mean": 0.005354509830086643,
+      "pearson_avg_entropy": -0.27248131989314317,
+      "p_value_avg_entropy": 9.483764667809684e-05,
+      "pearson_max_entropy": -0.21783993834846874,
+      "p_value_max_entropy": 0.0019436424575104698,
+      "pearson_entropy_variance": -0.15213642110832296,
+      "p_value_entropy_variance": 0.03150917812084392,
+      "spearman_avg_entropy": -0.2284216801341834,
+      "spearman_p_value": 0.0011409688784370185
+    }
+  }
+}
