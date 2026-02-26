@@ -1,5 +1,12 @@
 __pycache__/
 *.pyc
-*.png
 *.svg
 mcts_inference/mcts_results/
+
+# Large data files - don't push to git
+overlap_analysis/qwen_results/
+overlap_analysis/results_final/
+overlap_analysis/step_results_full/
+*.json.bak
+
+# Allow PNGs in result directories (override global ignore if any)
