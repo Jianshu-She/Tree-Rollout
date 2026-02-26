@@ -5,8 +5,10 @@ mcts_inference/mcts_results/
 
 # Large data files - don't push to git
 overlap_analysis/qwen_results/
+overlap_analysis/qwen_results_aime2025/
 overlap_analysis/results_final/
 overlap_analysis/step_results_full/
+overlap_analysis/step_results_aime2025/
 *.json.bak
 
 # Allow PNGs in result directories (override global ignore if any)
