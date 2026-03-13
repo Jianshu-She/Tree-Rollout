@@ -170,21 +170,46 @@ def _estimate_tree_height(tree, max_depth=6):
     return max_at_depth
 
 
+def _get_actual_max_depth(tree, correctness, max_depth):
+    """Get the actual max depth of nodes in a flattened tree."""
+    nodes, _ = flatten_tree(tree, correctness, max_depth=max_depth)
+    if not nodes:
+        return 0
+    return max(n["depth"] for n in nodes)
+
+
 def plot_sankey_all_problems(all_stage_data, all_trees, problem_indices, output_dir, max_depth=6):
-    """Generate Sankey evolution for ALL 10 problems (compact grid-overview style)."""
+    """Generate Sankey evolution for ALL 10 problems, each stage as independent figure
+    stitched together horizontally with widths proportional to actual tree depth."""
     os.makedirs(output_dir, exist_ok=True)
     stages = [s for s in TRAINING_STAGES if s["name"] in all_trees]
 
+    cell_height = 6  # fixed height per cell
+
     for pid in range(len(problem_indices)):
         prob_idx = problem_indices[pid]
-        n_stages = len(stages)
+        level = all_stage_data[stages[0]["name"]]["entries"][pid].get("level", "?")
+        gt = all_stage_data[stages[0]["name"]]["entries"][pid].get("ground_truth", "?")
 
-        # Compact fixed size like grid_overview cells
-        fig, axes = plt.subplots(1, n_stages, figsize=(5 * n_stages, 4))
-        if n_stages == 1:
+        # Compute actual depth per stage
+        stage_depths = []
+        for stage in stages:
+            tree = all_trees[stage["name"]]["syntactic"][pid]
+            correctness = all_stage_data[stage["name"]]["correctness"][pid]
+            ad = _get_actual_max_depth(tree, correctness, max_depth)
+            stage_depths.append(max(ad, 1))  # at least 1
+
+        # Width proportional to depth, with a minimum
+        cell_widths = [max(3, d * 0.8 + 1.5) for d in stage_depths]
+        total_width = sum(cell_widths)
+
+        fig, axes = plt.subplots(1, len(stages),
+                                  figsize=(total_width, cell_height),
+                                  gridspec_kw={"width_ratios": cell_widths})
+        if len(stages) == 1:
             axes = [axes]
 
-        for ax, stage in zip(axes, stages):
+        for ax, stage, ad in zip(axes, stages, stage_depths):
             tree = all_trees[stage["name"]]["syntactic"][pid]
             correctness = all_stage_data[stage["name"]]["correctness"][pid]
 
@@ -195,15 +220,13 @@ def plot_sankey_all_problems(all_stage_data, all_trees, problem_indices, output_
 
             problem_info = {
                 "pid": prob_idx,
-                "level": all_stage_data[stage["name"]]["entries"][pid].get("level", "?"),
+                "level": level,
                 "overall_acc": overall_acc,
                 "n_branches": n_branches,
                 "method": f"{stage['short']}\nAcc:{overall_acc:.0%}, {n_branches}br",
             }
             draw_sankey_on_ax(ax, tree, correctness, problem_info, max_depth=max_depth)
 
-        level = all_stage_data[stages[0]["name"]]["entries"][pid].get("level", "?")
-        gt = all_stage_data[stages[0]["name"]]["entries"][pid].get("ground_truth", "?")
         fig.suptitle(
             f"Problem {prob_idx} (Level {level}, answer={gt})\n"
             f"128 rollouts | Syntactic (t=0.3) | Green=correct, Red=incorrect, Gray=mixed",
@@ -213,7 +236,7 @@ def plot_sankey_all_problems(all_stage_data, all_trees, problem_indices, output_
         path = os.path.join(output_dir, f"sankey_problem_{prob_idx}.png")
         fig.savefig(path, dpi=150, bbox_inches="tight", facecolor="white")
         plt.close(fig)
-        print(f"  Saved sankey_problem_{prob_idx}.png")
+        print(f"  Saved sankey_problem_{prob_idx}.png (depths={stage_depths})")
 
 
 def plot_syn_vs_sem_sankey(all_stage_data, all_trees, problem_indices, output_dir,
@@ -225,6 +248,8 @@ def plot_syn_vs_sem_sankey(all_stage_data, all_trees, problem_indices, output_di
     if selected_problems is None:
         selected_problems = list(range(min(5, len(problem_indices))))
 
+    cell_height = 6
+
     for pid in selected_problems:
         prob_idx = problem_indices[pid]
         has_sem = any(all_trees[s["name"]]["semantic"][pid] is not None for s in stages)
@@ -232,9 +257,26 @@ def plot_syn_vs_sem_sankey(all_stage_data, all_trees, problem_indices, output_di
             continue
 
         n_stages = len(stages)
+        level = all_stage_data[stages[0]["name"]]["entries"][pid].get("level", "?")
+        gt = all_stage_data[stages[0]["name"]]["entries"][pid].get("ground_truth", "?")
 
-        # Compact fixed size like grid_overview cells
-        fig, axes = plt.subplots(2, n_stages, figsize=(5 * n_stages, 8))
+        # Compute max actual depth per stage across both methods
+        stage_depths = []
+        for stage in stages:
+            syn_tree = all_trees[stage["name"]]["syntactic"][pid]
+            sem_tree = all_trees[stage["name"]]["semantic"][pid]
+            correctness = all_stage_data[stage["name"]]["correctness"][pid]
+            sd = _get_actual_max_depth(syn_tree, correctness, max_depth)
+            if sem_tree is not None:
+                sd = max(sd, _get_actual_max_depth(sem_tree, correctness, max_depth))
+            stage_depths.append(max(sd, 1))
+
+        cell_widths = [max(3, d * 0.8 + 1.5) for d in stage_depths]
+        total_width = sum(cell_widths)
+
+        fig, axes = plt.subplots(2, n_stages,
+                                  figsize=(total_width, cell_height * 2),
+                                  gridspec_kw={"width_ratios": cell_widths})
 
         for col, stage in enumerate(stages):
             syn_tree = all_trees[stage["name"]]["syntactic"][pid]
@@ -248,7 +290,7 @@ def plot_syn_vs_sem_sankey(all_stage_data, all_trees, problem_indices, output_di
             # Syntactic (top row)
             syn_branches = len(syn_tree.get("children", []))
             syn_info = {
-                "pid": prob_idx, "level": "?", "overall_acc": overall_acc,
+                "pid": prob_idx, "level": level, "overall_acc": overall_acc,
                 "n_branches": syn_branches,
                 "method": f"Syntactic\n{stage['short']}, Acc:{overall_acc:.0%}, {syn_branches}br",
             }
@@ -258,7 +300,7 @@ def plot_syn_vs_sem_sankey(all_stage_data, all_trees, problem_indices, output_di
             if sem_tree is not None:
                 sem_branches = len(sem_tree.get("children", []))
                 sem_info = {
-                    "pid": prob_idx, "level": "?", "overall_acc": overall_acc,
+                    "pid": prob_idx, "level": level, "overall_acc": overall_acc,
                     "n_branches": sem_branches,
                     "method": f"Semantic\n{stage['short']}, Acc:{overall_acc:.0%}, {sem_branches}br",
                 }
@@ -268,8 +310,6 @@ def plot_syn_vs_sem_sankey(all_stage_data, all_trees, problem_indices, output_di
                                    ha="center", va="center", transform=axes[1, col].transAxes)
                 axes[1, col].axis("off")
 
-        level = all_stage_data[stages[0]["name"]]["entries"][pid].get("level", "?")
-        gt = all_stage_data[stages[0]["name"]]["entries"][pid].get("ground_truth", "?")
         fig.suptitle(
             f"Problem {prob_idx} (Level {level}, answer={gt})\n"
             f"Top: Syntactic (t=0.3) | Bottom: Semantic (Emb+GPT-4o) | Green=correct, Red=incorrect",
@@ -279,7 +319,7 @@ def plot_syn_vs_sem_sankey(all_stage_data, all_trees, problem_indices, output_di
         path = os.path.join(output_dir, f"syn_vs_sem_problem_{prob_idx}.png")
         fig.savefig(path, dpi=150, bbox_inches="tight", facecolor="white")
         plt.close(fig)
-        print(f"  Saved syn_vs_sem_problem_{prob_idx}.png")
+        print(f"  Saved syn_vs_sem_problem_{prob_idx}.png (depths={stage_depths})")
 
 
 def plot_grid_overview(all_stage_data, all_trees, problem_indices, output_dir, max_depth=5):
@@ -289,10 +329,11 @@ def plot_grid_overview(all_stage_data, all_trees, problem_indices, output_dir, m
     n_problems = len(problem_indices)
     n_stages = len(stages)
 
-    fig, axes = plt.subplots(n_problems, n_stages, figsize=(5 * n_stages, 4 * n_problems))
+    fig, axes = plt.subplots(n_problems, n_stages, figsize=(5 * n_stages, 6 * n_problems))
 
     for row in range(n_problems):
         prob_idx = problem_indices[row]
+
         for col, stage in enumerate(stages):
             ax = axes[row, col]
             tree = all_trees[stage["name"]]["syntactic"][row]
@@ -307,6 +348,7 @@ def plot_grid_overview(all_stage_data, all_trees, problem_indices, output_dir, m
                 "pid": prob_idx, "level": "?", "overall_acc": overall_acc,
                 "n_branches": n_branches,
                 "method": f"Acc:{overall_acc:.0%}, {n_branches}br",
+
             }
             draw_sankey_on_ax(ax, tree, correctness, info, max_depth=max_depth)
 
