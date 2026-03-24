@@ -108,31 +108,38 @@ async def cluster_steps_llm(
     return {rid: i for i, rid in enumerate(rids)}
 
 
-def cluster_steps_heuristic(step_texts: dict[int, str]) -> dict[int, int]:
-    """Simple heuristic clustering: group by normalized text similarity (no API)."""
+def cluster_steps_heuristic(step_texts: dict[int, str],
+                            threshold: float = 0.6) -> dict[int, int]:
+    """Heuristic clustering: group by subsequence string similarity (no API).
+
+    Uses difflib.SequenceMatcher ratio (≈ LCS-based) on word tokens.
+    Two steps are in the same cluster if their ratio >= threshold.
+    """
     from difflib import SequenceMatcher
 
     rids = sorted(step_texts.keys())
     if len(rids) <= 1:
         return {rids[0]: 0} if rids else {}
 
-    # Cluster greedily: assign to existing cluster if similarity > threshold
-    threshold = 0.6
-    clusters: list[tuple[int, str]] = []  # (cluster_id, representative_text)
+    # Precompute word tokens for each rollout
+    tokens = {rid: step_texts[rid].split() for rid in rids}
+
+    # Cluster greedily: assign to existing cluster if similarity >= threshold
+    clusters: list[tuple[int, int]] = []  # (cluster_id, representative_rid)
     mapping = {}
 
     for rid in rids:
-        text = step_texts[rid]
         assigned = False
-        for cid, rep_text in clusters:
-            ratio = SequenceMatcher(None, text.split()[:80], rep_text.split()[:80]).ratio()
+        for cid, rep_rid in clusters:
+            ratio = SequenceMatcher(None, tokens[rid], tokens[rep_rid],
+                                    autojunk=False).ratio()
             if ratio >= threshold:
                 mapping[rid] = cid
                 assigned = True
                 break
         if not assigned:
             new_cid = len(clusters)
-            clusters.append((new_cid, text))
+            clusters.append((new_cid, rid))
             mapping[rid] = new_cid
 
     return mapping
@@ -148,6 +155,7 @@ async def build_tree_for_problem(
     semaphore: asyncio.Semaphore | None,
     use_llm: bool = True,
     eval_model: str = "gpt-4o-mini",
+    similarity_threshold: float = 0.9,
 ) -> dict:
     """Build a semantic tree for one problem by clustering at each step level.
     Returns tree as nested dict."""
@@ -171,6 +179,21 @@ async def build_tree_for_problem(
                 rid for rid in node["rollout_ids"]
                 if rid in problem_steps and level < len(problem_steps[rid])
             }
+            # Rollouts that ended before this level — add as leaf children
+            terminated_rids = {
+                rid for rid in node["rollout_ids"]
+                if rid not in active_rids
+            }
+            if terminated_rids:
+                leaf = {
+                    "rollout_ids": sorted(terminated_rids),
+                    "step_level": level,
+                    "cluster_id": -1,
+                    "num_rollouts": len(terminated_rids),
+                    "children": [],  # leaf — no further splitting
+                }
+                node["children"].append(leaf)
+
             if not active_rids:
                 continue
 
@@ -182,7 +205,8 @@ async def build_tree_for_problem(
                     client, step_texts, semaphore, model=eval_model
                 )
             else:
-                clustering = cluster_steps_heuristic(step_texts)
+                clustering = cluster_steps_heuristic(step_texts,
+                                                     threshold=similarity_threshold)
 
             # Group by cluster
             cluster_groups = defaultdict(set)
@@ -257,6 +281,111 @@ def compute_overlap_from_tree(tree: dict, num_rollouts: int) -> dict:
         "branching_factors": branching_factors,
         "num_tree_nodes": num_tree_nodes,
         "max_depth": max_level + 1 if max_level >= 0 else 0,
+    }
+
+
+def compute_levelwise_overlap(
+    problem_steps: dict[int, list[str]],
+    use_llm: bool,
+    client=None, semaphore=None, eval_model="gpt-4o-mini",
+    similarity_threshold: float = 0.9,
+) -> dict:
+    """Compute level-wise clustering INDEPENDENTLY at each depth.
+
+    Unlike the tree metric, this ignores ancestry — at each level, ALL active
+    rollouts are clustered together. This measures total reasoning redundancy:
+    how many truly distinct reasoning paths exist at each step?
+
+    Returns per-level cluster counts and a level-wise savings estimate.
+    """
+    if not problem_steps:
+        return {"levelwise_clusters": [], "levelwise_savings_pct": 0.0}
+
+    max_steps = max(len(s) for s in problem_steps.values())
+    num_rollouts = len(problem_steps)
+    levelwise_clusters = []
+    total_flat = 0
+    total_unique = 0
+
+    for level in range(max_steps):
+        # Gather all rollouts active at this level
+        step_texts = {}
+        for rid, steps in problem_steps.items():
+            if level < len(steps):
+                step_texts[rid] = steps[level]
+
+        active = len(step_texts)
+        if active == 0:
+            continue
+
+        total_flat += active
+
+        # Cluster independently (no tree ancestry)
+        if use_llm and client is not None and semaphore is not None:
+            # LLM path would need async — handled in async wrapper
+            clustering = cluster_steps_heuristic(step_texts,
+                                                 threshold=similarity_threshold)
+        else:
+            clustering = cluster_steps_heuristic(step_texts,
+                                                 threshold=similarity_threshold)
+
+        num_clusters = len(set(clustering.values()))
+        levelwise_clusters.append(num_clusters)
+        total_unique += num_clusters
+
+    savings = (1 - total_unique / total_flat) * 100 if total_flat > 0 else 0.0
+    return {
+        "levelwise_clusters": levelwise_clusters,
+        "levelwise_savings_pct": savings,
+        "levelwise_total_flat": total_flat,
+        "levelwise_total_unique": total_unique,
+    }
+
+
+async def compute_levelwise_overlap_async(
+    problem_steps: dict[int, list[str]],
+    use_llm: bool,
+    client=None, semaphore=None, eval_model="gpt-4o-mini",
+    similarity_threshold: float = 0.9,
+) -> dict:
+    """Async version of level-wise overlap that supports LLM clustering."""
+    if not problem_steps:
+        return {"levelwise_clusters": [], "levelwise_savings_pct": 0.0}
+
+    max_steps = max(len(s) for s in problem_steps.values())
+    levelwise_clusters = []
+    total_flat = 0
+    total_unique = 0
+
+    for level in range(max_steps):
+        step_texts = {}
+        for rid, steps in problem_steps.items():
+            if level < len(steps):
+                step_texts[rid] = steps[level]
+
+        active = len(step_texts)
+        if active == 0:
+            continue
+
+        total_flat += active
+
+        if use_llm and client is not None and semaphore is not None:
+            clustering = await cluster_steps_llm(
+                client, step_texts, semaphore, model=eval_model)
+        else:
+            clustering = cluster_steps_heuristic(step_texts,
+                                                 threshold=similarity_threshold)
+
+        num_clusters = len(set(clustering.values()))
+        levelwise_clusters.append(num_clusters)
+        total_unique += num_clusters
+
+    savings = (1 - total_unique / total_flat) * 100 if total_flat > 0 else 0.0
+    return {
+        "levelwise_clusters": levelwise_clusters,
+        "levelwise_savings_pct": savings,
+        "levelwise_total_flat": total_flat,
+        "levelwise_total_unique": total_unique,
     }
 
 
@@ -553,6 +682,108 @@ def plot_all_summaries(all_stats: list[dict], output_dir: str, num_rollouts: int
     fig.savefig(os.path.join(output_dir, "step_token_savings.png"), dpi=150)
     plt.close(fig)
 
+    # ---- PLOT 6: Level-wise independent clustering ----
+    # This is the "fair" redundancy metric: at each depth, cluster ALL rollouts
+    # independently (ignoring tree ancestry).
+    all_lw_clusters = [s.get("levelwise_clusters", []) for s in all_stats]
+    all_lw_savings = [s.get("levelwise_savings_pct", 0.0) for s in all_stats]
+    lw_total_flat = sum(s.get("levelwise_total_flat", 0) for s in all_stats)
+    lw_total_unique = sum(s.get("levelwise_total_unique", 0) for s in all_stats)
+    lw_global_savings = (1 - lw_total_unique / lw_total_flat) * 100 if lw_total_flat > 0 else 0
+
+    if any(all_lw_clusters):
+        # Compute per-depth stats
+        lw_max_depth = max(len(lc) for lc in all_lw_clusters) if all_lw_clusters else 0
+        lw_means = []
+        lw_stds = []
+        for d in range(lw_max_depth):
+            vals = [lc[d] for lc in all_lw_clusters if d < len(lc)]
+            lw_means.append(float(np.mean(vals)) if vals else num_rollouts)
+            lw_stds.append(float(np.std(vals)) if vals else 0.0)
+        lw_depths = list(range(lw_max_depth))
+
+        # Plot: Level-wise clusters vs tree clusters side by side
+        fig, ax = plt.subplots(figsize=(10, 6))
+        ax.plot(lw_depths, lw_means, "o-", color="#C44E52", linewidth=2.5,
+                markersize=7, label="Level-wise (independent)", zorder=3)
+        ax.fill_between(lw_depths,
+                        [max(1, m - s) for m, s in zip(lw_means, lw_stds)],
+                        [min(num_rollouts, m + s) for m, s in zip(lw_means, lw_stds)],
+                        alpha=0.15, color="#C44E52")
+        # Overlay the tree-based branching for comparison
+        tree_depths_plot = list(range(min(len(branch_means), lw_max_depth)))
+        tree_means_plot = branch_means[:lw_max_depth]
+        ax.plot(tree_depths_plot, tree_means_plot, "s--", color="#4C72B0",
+                linewidth=2, markersize=6, alpha=0.8,
+                label="Tree (prefix-constrained)")
+        ax.axhline(1, color="green", linestyle=":", alpha=0.5)
+        ax.axhline(num_rollouts, color="red", linestyle=":", alpha=0.5)
+        ax.fill_between(lw_depths, 1, lw_means, alpha=0.08, color="#C44E52",
+                        label=f"Level-wise savings: {lw_global_savings:.1f}%")
+        ax.fill_between(tree_depths_plot, 1, tree_means_plot, alpha=0.06,
+                        color="#4C72B0",
+                        label=f"Tree savings: {savings_pct:.1f}%")
+        ax.set_xlabel("Step Depth (each step = 256 tokens)", fontsize=11)
+        ax.set_ylabel("Number of Distinct Clusters", fontsize=11)
+        ax.set_title(
+            "Level-wise vs Tree-based Clustering\n"
+            "(Level-wise: cluster ALL rollouts at each depth independently)",
+            fontsize=12)
+        ax.set_ylim(0, num_rollouts + 1)
+        ax.set_yticks(range(0, num_rollouts + 2, 2))
+        ax.grid(True, alpha=0.3)
+        ax.legend(loc="upper left" if lw_means[0] < num_rollouts / 2 else "lower left",
+                  fontsize=9)
+        fig.tight_layout()
+        fig.savefig(os.path.join(output_dir, "levelwise_vs_tree.png"), dpi=150)
+        plt.close(fig)
+
+        # Plot: Token savings comparison (3-bar chart)
+        fig, ax = plt.subplots(figsize=(8, 5))
+        bars = ax.bar(
+            ["Flat Rollouts\n(total steps)",
+             "Tree\n(prefix sharing)",
+             "Level-wise\n(ideal dedup)"],
+            [total_flat_steps, total_tree_nodes, lw_total_unique],
+            color=["#DD8452", "#4C72B0", "#C44E52"], edgecolor="black",
+        )
+        for bar in bars:
+            h = bar.get_height()
+            ax.text(bar.get_x() + bar.get_width() / 2, h, f"{h:,.0f}",
+                    ha="center", va="bottom", fontsize=10)
+        ax.set_ylabel("Count (each ≈ 256 tokens)")
+        ax.set_title(
+            f"Token Savings: Flat vs Tree vs Level-wise Dedup\n"
+            f"Tree saves {savings_pct:.1f}% | Level-wise saves {lw_global_savings:.1f}%")
+        fig.tight_layout()
+        fig.savefig(os.path.join(output_dir, "savings_comparison.png"), dpi=150)
+        plt.close(fig)
+
+        # Plot: Level-wise sharing ratio by depth
+        lw_sharing = [1.0 - m / num_rollouts for m in lw_means]
+        tree_sharing = [1.0 - b / num_rollouts for b in branch_means[:lw_max_depth]]
+
+        fig, ax = plt.subplots(figsize=(10, 6))
+        bar_width = 0.35
+        x = np.arange(min(lw_max_depth, 20))  # limit to first 20 steps
+        lw_vals = lw_sharing[:len(x)]
+        tree_vals = tree_sharing[:len(x)]
+        ax.bar(x - bar_width / 2, lw_vals, bar_width, color="#C44E52",
+               alpha=0.8, label="Level-wise (true redundancy)", edgecolor="black")
+        ax.bar(x + bar_width / 2, tree_vals, bar_width, color="#4C72B0",
+               alpha=0.8, label="Tree (prefix sharing)", edgecolor="black")
+        ax.set_xlabel("Step Depth (each step = 256 tokens)", fontsize=11)
+        ax.set_ylabel("Sharing Ratio  (1 - clusters / N)", fontsize=11)
+        ax.set_title("Sharing Ratio: Level-wise vs Tree\n"
+                     "How much computation is redundant at each step?", fontsize=12)
+        ax.set_ylim(0, 1.0)
+        ax.set_xticks(x)
+        ax.legend(fontsize=9)
+        ax.grid(True, alpha=0.3, axis="y")
+        fig.tight_layout()
+        fig.savefig(os.path.join(output_dir, "sharing_levelwise_vs_tree.png"), dpi=150)
+        plt.close(fig)
+
     # Compute honest summary stats
     global_mean = float(np.mean(all_mean_overlaps))
     depth_overlap_means = []
@@ -568,6 +799,9 @@ def plot_all_summaries(all_stats: list[dict], output_dir: str, num_rollouts: int
         "total_flat_steps": total_flat_steps,
         "total_tree_nodes": total_tree_nodes,
         "savings_pct": savings_pct,
+        "levelwise_total_unique": lw_total_unique,
+        "levelwise_savings_pct": lw_global_savings,
+        "levelwise_clusters_by_depth": lw_means if any(all_lw_clusters) else [],
         "mean_tree_depth": float(np.mean(all_tree_depths)) if all_tree_depths else 0,
     }
 
@@ -587,12 +821,20 @@ async def process_problem(
     output_dir: str,
     problem_text: str,
     plot_trees: bool = True,
+    similarity_threshold: float = 0.9,
 ) -> dict:
     """Process one problem: build tree, compute metrics, optionally plot."""
     tree = await build_tree_for_problem(
         problem_steps, client, semaphore, use_llm=use_llm, eval_model=eval_model,
+        similarity_threshold=similarity_threshold,
     )
     stats = compute_overlap_from_tree(tree, num_rollouts)
+
+    # Level-wise overlap (independent clustering at each depth)
+    lw = await compute_levelwise_overlap_async(
+        problem_steps, use_llm=use_llm, client=client, semaphore=semaphore,
+        eval_model=eval_model, similarity_threshold=similarity_threshold,
+    )
 
     if plot_trees:
         trees_dir = os.path.join(output_dir, "trees")
@@ -607,6 +849,7 @@ async def process_problem(
         "problem_id": problem_idx,
         "tree": tree,
         **stats,
+        **lw,
     }
 
 
@@ -690,6 +933,7 @@ async def run_analysis(args):
                 output_dir=args.output_dir,
                 problem_text=results[i]["problem"],
                 plot_trees=args.plot_trees,
+                similarity_threshold=args.similarity_threshold,
             ))
 
         batch_results = await asyncio.gather(*tasks)
@@ -710,7 +954,8 @@ async def run_analysis(args):
             "num_rollouts": num_rollouts,
             "step_size": args.step_size,
             "use_llm": args.use_llm,
-            "eval_model": args.eval_model if args.use_llm else "heuristic",
+            "eval_model": args.eval_model if args.use_llm else "substring_match",
+            "similarity_threshold": args.similarity_threshold if not args.use_llm else None,
         },
         "num_problems": len(results),
         "global_stats": global_stats,
@@ -737,14 +982,19 @@ async def run_analysis(args):
     print(f"Problems analyzed:           {len(results)}")
     print(f"Rollouts per problem:        {num_rollouts}")
     print(f"Step size:                   {args.step_size} tokens")
-    print(f"Clustering method:           {'LLM (' + args.eval_model + ')' if args.use_llm else 'Heuristic'}")
+    method_str = f"LLM ({args.eval_model})" if args.use_llm else f"Substring match (threshold={args.similarity_threshold})"
+    print(f"Clustering method:           {method_str}")
     print(f"Global mean step overlap:    {global_stats['global_mean_step_overlap']:.4f}")
     print(f"Mean tree depth:             {global_stats['mean_tree_depth']:.1f} steps")
     print(f"Total flat steps:            {global_stats['total_flat_steps']:,}")
     print(f"Total tree nodes:            {global_stats['total_tree_nodes']:,}")
-    print(f"Estimated step savings:      {global_stats['savings_pct']:.1f}%")
-    print(f"\nOverlap by depth:  {['%.3f' % v for v in global_stats['overlap_by_depth'][:10]]}")
-    print(f"Branching by depth: {['%.1f' % v for v in global_stats['branching_by_depth'][:10]]}")
+    print(f"Tree savings (prefix):       {global_stats['savings_pct']:.1f}%")
+    print(f"Level-wise unique steps:     {global_stats.get('levelwise_total_unique', 'N/A'):,}")
+    print(f"Level-wise savings (dedup):  {global_stats.get('levelwise_savings_pct', 0):.1f}%")
+    print(f"\nBranching by depth (tree):     {['%.1f' % v for v in global_stats['branching_by_depth'][:10]]}")
+    lw_cl = global_stats.get('levelwise_clusters_by_depth', [])
+    if lw_cl:
+        print(f"Clusters by depth (level-wise): {['%.1f' % v for v in lw_cl[:10]]}")
     print("=" * 65)
     print(f"\nOutputs saved to {args.output_dir}/")
     if args.plot_trees:
@@ -765,7 +1015,9 @@ def main():
     parser.add_argument("--use_llm", action="store_true", default=True,
                         help="Use LLM for semantic clustering (default: True)")
     parser.add_argument("--no_llm", dest="use_llm", action="store_false",
-                        help="Use heuristic clustering instead of LLM")
+                        help="Use subsequence string matching instead of LLM")
+    parser.add_argument("--similarity_threshold", type=float, default=0.9,
+                        help="LCS ratio threshold for substring clustering (default: 0.9)")
     parser.add_argument("--eval_model", default="gpt-4o-mini",
                         help="OpenAI model for clustering (default: gpt-4o-mini)")
     parser.add_argument("--openai_api_key", default=None,
