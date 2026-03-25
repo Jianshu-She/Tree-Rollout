@@ -1,0 +1,202 @@
+{
+  "k=2": {
+    "step_0": {
+      "accuracy": 0.9,
+      "avg_nodes": 19.2,
+      "n_problems": 10,
+      "d0_bf_mean": 2.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 2.0,
+      "d1_bf_count": 15,
+      "d2_bf_mean": 2.0,
+      "d2_bf_count": 16,
+      "d3_bf_mean": 2.0,
+      "d3_bf_count": 9,
+      "d4_bf_mean": 2.0,
+      "d4_bf_count": 10,
+      "d5_bf_mean": 2.0,
+      "d5_bf_count": 16,
+      "d6_bf_mean": 2.0,
+      "d6_bf_count": 15
+    },
+    "step_40": {
+      "accuracy": 0.8,
+      "avg_nodes": 14.4,
+      "n_problems": 10,
+      "d0_bf_mean": 2.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 2.0,
+      "d1_bf_count": 18,
+      "d2_bf_mean": 2.0,
+      "d2_bf_count": 10,
+      "d3_bf_mean": 2.0,
+      "d3_bf_count": 11,
+      "d4_bf_mean": 2.0,
+      "d4_bf_count": 4,
+      "d5_bf_mean": 2.0,
+      "d5_bf_count": 8,
+      "d6_bf_mean": 2.0,
+      "d6_bf_count": 6
+    },
+    "step_80": {
+      "accuracy": 0.9,
+      "avg_nodes": 21.4,
+      "n_problems": 10,
+      "d0_bf_mean": 2.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 2.0,
+      "d1_bf_count": 20,
+      "d2_bf_mean": 2.0,
+      "d2_bf_count": 14,
+      "d3_bf_mean": 2.0,
+      "d3_bf_count": 10,
+      "d4_bf_mean": 2.0,
+      "d4_bf_count": 16,
+      "d5_bf_mean": 2.0,
+      "d5_bf_count": 21,
+      "d6_bf_mean": 2.0,
+      "d6_bf_count": 11
+    },
+    "step_120": {
+      "accuracy": 0.9,
+      "avg_nodes": 11.8,
+      "n_problems": 10,
+      "d0_bf_mean": 2.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 2.0,
+      "d1_bf_count": 20,
+      "d2_bf_mean": 2.0,
+      "d2_bf_count": 16,
+      "d3_bf_mean": 2.0,
+      "d3_bf_count": 7,
+      "d4_bf_mean": 2.0,
+      "d4_bf_count": 1
+    }
+  },
+  "k=4": {
+    "step_0": {
+      "accuracy": 0.6,
+      "avg_nodes": 86.6,
+      "n_problems": 10,
+      "d0_bf_mean": 4.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 4.0,
+      "d1_bf_count": 26,
+      "d2_bf_mean": 4.0,
+      "d2_bf_count": 62,
+      "d3_bf_mean": 4.0,
+      "d3_bf_count": 113,
+      "d4_bf_mean": 4.0,
+      "d4_bf_count": 3
+    },
+    "step_40": {
+      "accuracy": 0.8,
+      "avg_nodes": 61.4,
+      "n_problems": 10,
+      "d0_bf_mean": 4.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 4.0,
+      "d1_bf_count": 37,
+      "d2_bf_mean": 4.0,
+      "d2_bf_count": 57,
+      "d3_bf_mean": 4.0,
+      "d3_bf_count": 47
+    },
+    "step_80": {
+      "accuracy": 1.0,
+      "avg_nodes": 73.0,
+      "n_problems": 10,
+      "d0_bf_mean": 4.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 4.0,
+      "d1_bf_count": 34,
+      "d2_bf_mean": 4.0,
+      "d2_bf_count": 55,
+      "d3_bf_mean": 4.0,
+      "d3_bf_count": 76,
+      "d4_bf_mean": 4.0,
+      "d4_bf_count": 5
+    },
+    "step_120": {
+      "accuracy": 0.9,
+      "avg_nodes": 57.4,
+      "n_problems": 10,
+      "d0_bf_mean": 4.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 4.0,
+      "d1_bf_count": 33,
+      "d2_bf_mean": 4.0,
+      "d2_bf_count": 56,
+      "d3_bf_mean": 4.0,
+      "d3_bf_count": 42
+    }
+  },
+  "k=8": {
+    "step_0": {
+      "accuracy": 0.4,
+      "avg_nodes": 266.6,
+      "n_problems": 10,
+      "d0_bf_mean": 8.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 8.0,
+      "d1_bf_count": 55,
+      "d2_bf_mean": 8.0,
+      "d2_bf_count": 217,
+      "d3_bf_mean": 8.0,
+      "d3_bf_count": 50
+    },
+    "step_40": {
+      "accuracy": 1.0,
+      "avg_nodes": 221.8,
+      "n_problems": 10,
+      "d0_bf_mean": 8.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 8.0,
+      "d1_bf_count": 67,
+      "d2_bf_mean": 8.0,
+      "d2_bf_count": 171,
+      "d3_bf_mean": 8.0,
+      "d3_bf_count": 28
+    },
+    "step_80": {
+      "accuracy": 0.8,
+      "avg_nodes": 280.2,
+      "n_problems": 10,
+      "d0_bf_mean": 8.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 8.0,
+      "d1_bf_count": 73,
+      "d2_bf_mean": 8.0,
+      "d2_bf_count": 213,
+      "d3_bf_mean": 8.0,
+      "d3_bf_count": 53
+    },
+    "step_120": {
+      "accuracy": 0.9,
+      "avg_nodes": 272.2,
+      "n_problems": 10,
+      "d0_bf_mean": 8.0,
+      "d0_bf_count": 10,
+      "d1_bf_mean": 8.0,
+      "d1_bf_count": 72,
+      "d2_bf_mean": 8.0,
+      "d2_bf_count": 207,
+      "d3_bf_mean": 8.0,
+      "d3_bf_count": 50
+    }
+  },
+  "flat_rollout": {
+    "step_0": {
+      "d0_lambda": 26.015
+    },
+    "step_40": {
+      "d0_lambda": 5.68
+    },
+    "step_80": {
+      "d0_lambda": 4.69
+    },
+    "step_120": {
+      "d0_lambda": 4.0075
+    }
+  }
+}
