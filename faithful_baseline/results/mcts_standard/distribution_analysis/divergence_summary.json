@@ -1,0 +1,18 @@
+{
+  "step_0": {
+    "avg_bf_relative_diff": 0.7212600553588858,
+    "avg_acc_absolute_diff": 0.19559194708566183
+  },
+  "step_40": {
+    "avg_bf_relative_diff": 0.6605612648678258,
+    "avg_acc_absolute_diff": 0.13927629917459072
+  },
+  "step_80": {
+    "avg_bf_relative_diff": 0.6529059625757897,
+    "avg_acc_absolute_diff": 0.13997365015964275
+  },
+  "step_120": {
+    "avg_bf_relative_diff": 0.5200733966127613,
+    "avg_acc_absolute_diff": 0.16907822527099925
+  }
+}

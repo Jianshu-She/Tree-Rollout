@@ -81,6 +81,36 @@ NB parameterization: mean = r(1−p)/p, var = r(1−p)/p²
 
 ---
 
+## Standard MCTS Comparison (10 problems, 128 iterations, k=2)
+
+Standard UCT-MCTS with logprob reward, fixed 2 children per expansion.
+
+### MCTS Accuracy
+
+| Stage | MCTS Accuracy | Flat Rollout Accuracy | Avg Nodes/Tree |
+|-------|--------------|----------------------|----------------|
+| step_0 | 90% | 43.8% | 19.2 |
+| step_40 | 80% | 73.3% | 14.4 |
+| step_80 | 90% | 77.2% | 12.4 |
+| step_120 | 90% | 79.6% | 11.8 |
+
+### MCTS Branching Factor: λ = 2.0 at ALL depths (fixed)
+
+Standard MCTS has **constant branching = 2** at every depth — fundamentally different from flat rollout trees where branching is high at D0 (4–26) and decays to ~1 at D3+.
+
+### Divergence (MCTS vs Flat Rollout)
+
+| Stage | Avg \|Δλ\|/λ_flat | Avg \|Δacc\| |
+|-------|------------------|-------------|
+| step_0 | 0.721 | 0.196 |
+| step_40 | 0.661 | 0.139 |
+| step_80 | 0.653 | 0.140 |
+| step_120 | 0.520 | 0.169 |
+
+**Key finding**: Standard MCTS tree structure is significantly different from flat rollout post-hoc trees — ~52–72% relative branching factor difference. This motivates Poisson-MCTS: using flat rollout distributions to guide MCTS branching.
+
+---
+
 ## Experimental Setup
 
 - **Model**: Qwen2.5-Math-7B-Instruct, DAPO RL training
