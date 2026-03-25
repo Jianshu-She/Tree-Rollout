@@ -400,6 +400,21 @@ async def build_tree_llm_semantic(problem_steps, client, semaphore, model="gpt-4
                 rid for rid in node["rollout_ids"]
                 if rid in problem_steps and level < len(problem_steps[rid])
             }
+            # Preserve terminated rollouts as leaf children
+            terminated_rids = {
+                rid for rid in node["rollout_ids"]
+                if rid not in active_rids
+            }
+            if terminated_rids:
+                leaf = {
+                    "rollout_ids": sorted(terminated_rids),
+                    "step_level": level,
+                    "cluster_id": -1,
+                    "num_rollouts": len(terminated_rids),
+                    "children": [],
+                }
+                node["children"].append(leaf)
+
             if not active_rids:
                 continue
 
@@ -451,6 +466,21 @@ async def build_tree_semantic(problem_steps, client, semaphore,
                 rid for rid in node["rollout_ids"]
                 if rid in problem_steps and level < len(problem_steps[rid])
             }
+            # Preserve terminated rollouts as leaf children
+            terminated_rids = {
+                rid for rid in node["rollout_ids"]
+                if rid not in active_rids
+            }
+            if terminated_rids:
+                leaf = {
+                    "rollout_ids": sorted(terminated_rids),
+                    "step_level": level,
+                    "cluster_id": -1,
+                    "num_rollouts": len(terminated_rids),
+                    "children": [],
+                }
+                node["children"].append(leaf)
+
             if not active_rids:
                 continue
 
