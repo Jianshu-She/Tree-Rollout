@@ -104,4 +104,35 @@
 
 5. **No fixed k matches flat rollout**: Flat rollout D0 branching is 4-26 (stage-dependent, overdispersed), while MCTS is always exactly k. This motivates Poisson-MCTS with depth-adaptive, stochastic branching.
 
-**Conclusion**: Standard MCTS with any fixed k does NOT match flat rollout tree structure. The branching factor is constant across depths, while flat rollouts show a monotonically decreasing curve. This motivates distribution-guided branching (Poisson-MCTS).
+### DeepSearch Results (global frontier + entropy, base width=8)
+
+| Stage | Accuracy | Avg Nodes | MaxDepth (avg) |
+|-------|----------|-----------|----------------|
+| step_0 | 20% | 365.4 | varies (1-16) |
+| step_40 | 80% | 269.0 | 2-16 |
+| step_80 | 80% | 230.5 | 2-16 |
+| step_120 | 100% | 225.7 | 2-15 |
+
+### Complete Comparison Table
+
+| Method | step_0 | step_40 | step_80 | step_120 | Avg Nodes |
+|--------|--------|---------|---------|----------|-----------|
+| Flat Rollout (128) | 43.8% | 73.3% | 77.2% | 79.6% | — |
+| Standard k=2 | 90% | 80% | 90% | 90% | 12-21 |
+| Standard k=4 | 60% | 80% | 100% | 90% | 57-87 |
+| Standard k=8 | 40% | 100% | 80% | 90% | 222-280 |
+| DeepSearch | 20% | 80% | 80% | 100% | 226-365 |
+
+### Key Findings
+
+1. **k=2 is most compute-efficient**: High accuracy with fewest nodes (12-21). UCB1 focuses on promising paths.
+
+2. **Larger k hurts weak models, helps strong ones**: step_0 drops from 90% (k=2) → 40% (k=8) → 20% (DeepSearch), but step_120 goes 90% → 90% → 100%.
+
+3. **DeepSearch produces adaptive branching**: Unlike fixed-k methods, DeepSearch's trees have variable branching (width decays with depth). But with logprob reward (no trained PRM), entropy guidance can be noisy.
+
+4. **No fixed k matches flat rollout**: Flat rollout D0 branching is 4-26, MCTS is always exactly k. This motivates Poisson-MCTS.
+
+5. **Compute vs accuracy trade-off**: k=2 gives the best accuracy/node ratio. DeepSearch and k=8 use 10-20× more compute for marginal gains.
+
+**Conclusion**: Standard MCTS with any fixed k does NOT match flat rollout tree structure. DeepSearch's adaptive branching is closer but still far from flat rollout distributions. This motivates distribution-guided branching (Poisson-MCTS).
