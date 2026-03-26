@@ -1,0 +1,1974 @@
+{
+  "config": {
+    "method": "poisson_mcts",
+    "stage": "step_120",
+    "model": "/mnt/weka/home/jianshu.she/copus/verl/models/global_step_120_hf",
+    "alpha": 1.0,
+    "bf_temperature": 1.0,
+    "exploration_constant": 1.414,
+    "num_rollouts": 128,
+    "max_depth": 16
+  },
+  "summary": {
+    "accuracy": 1.0,
+    "correct": 2,
+    "total": 2,
+    "avg_nodes": 60.5,
+    "avg_structural_kl": 0.5394515,
+    "total_time": 33.46351099014282
+  },
+  "results": [
+    {
+      "question": "Convert the point $(0,3)$ in rectangular coordinates to polar coordinates.  Enter your answer in the form $(r,\\theta),$ where $r > 0$ and $0 \\le \\theta < 2 \\pi.$",
+      "tree_stats": {
+        "total_nodes": 50,
+        "terminal_nodes": 41,
+        "max_depth_reached": 2,
+        "root_visits": 169,
+        "structural_kl": 0.883345,
+        "branching_profile": {
+          "0": 9.0,
+          "1": 5.0
+        },
+        "target_profile": {
+          "0": 4.0075,
+          "1": 4.5995009357454775,
+          "2": 1.7803781773093614,
+          "3": 1.2562132851333032,
+          "4": 1.0996153335986205,
+          "5": 1.0431768667062784,
+          "6": 1.0235219326128417,
+          "7": 1.0232896652110626,
+          "8": 1.0137268359643101,
+          "9": 1.0151228733459357,
+          "10": 1.0165289256198347
+        }
+      },
+      "tree": {
+        "id": 0,
+        "depth": 0,
+        "text_preview": "(root)",
+        "visit_count": 169,
+        "q_value": 0.4712,
+        "prm_score": 0.0,
+        "is_terminal": false,
+        "token_count": 0,
+        "children": [
+          {
+            "id": 1,
+            "depth": 1,
+            "text_preview": "To convert the point $(0,3)$ from rectangular coor",
+            "visit_count": 27,
+            "q_value": 0.4954,
+            "prm_score": 0.4448,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 2,
+                "depth": 2,
+                "text_preview": "\\[ \\boxed{\\left(3, \\frac{\\pi}{2}\\right)} \\]",
+                "visit_count": 6,
+                "q_value": 0.4974,
+                "prm_score": 0.4974,
+                "is_terminal": true,
+                "token_count": 21,
+                "children": []
+              },
+              {
+                "id": 3,
+                "depth": 2,
+                "text_preview": "\\[ \\boxed{\\left(3, \\frac{\\pi}{2}\\right)} \\]",
+                "visit_count": 4,
+                "q_value": 0.4974,
+                "prm_score": 0.4974,
+                "is_terminal": true,
+                "token_count": 21,
+                "children": []
+              },
+              {
+                "id": 4,
+                "depth": 2,
+                "text_preview": "\\[ \\boxed{\\left(3, \\frac{\\pi}{2}\\right)} \\]",
+                "visit_count": 6,
+                "q_value": 0.4974,
+                "prm_score": 0.4974,
+                "is_terminal": true,
+                "token_count": 21,
+                "children": []
+              },
+              {
+                "id": 5,
+                "depth": 2,
+                "text_preview": "\\[ \\boxed{\\left(3, \\frac{\\pi}{2}\\right)} \\]",
+                "visit_count": 3,
+                "q_value": 0.4974,
+                "prm_score": 0.4974,
+                "is_terminal": true,
+                "token_count": 21,
+                "children": []
+              },
+              {
+                "id": 6,
+                "depth": 2,
+                "text_preview": "\\[ \\boxed{\\left(3, \\frac{\\pi}{2}\\right)} \\]",
+                "visit_count": 3,
+                "q_value": 0.4974,
+                "prm_score": 0.4974,
+                "is_terminal": true,
+                "token_count": 21,
+                "children": []
+              },
+              {
+                "id": 7,
+                "depth": 2,
+                "text_preview": "\\[ \\boxed{\\left(3, \\frac{\\pi}{2}\\right)} \\]",
+                "visit_count": 4,
+                "q_value": 0.4974,
+                "prm_score": 0.4974,
+                "is_terminal": true,
+                "token_count": 21,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 8,
+            "depth": 1,
+            "text_preview": "To convert the point \\((0, 3)\\) from rectangular (",
+            "visit_count": 19,
+            "q_value": 0.4692,
+            "prm_score": 0.484,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 9,
+                "depth": 2,
+                "text_preview": " \\frac{3\\pi}{2} & \\text{if } x = 0 \\text{ and } y ",
+                "visit_count": 8,
+                "q_value": 0.4723,
+                "prm_score": 0.4723,
+                "is_terminal": true,
+                "token_count": 186,
+                "children": []
+              },
+              {
+                "id": 10,
+                "depth": 2,
+                "text_preview": " \\frac{3\\pi}{2} & \\text{if } x = 0 \\text{ and } y ",
+                "visit_count": 5,
+                "q_value": 0.4638,
+                "prm_score": 0.4638,
+                "is_terminal": true,
+                "token_count": 206,
+                "children": []
+              },
+              {
+                "id": 11,
+                "depth": 2,
+                "text_preview": " \\frac{3\\pi}{2} & \\text{if } x = 0 \\text{ and } y ",
+                "visit_count": 4,
+                "q_value": 0.4648,
+                "prm_score": 0.4648,
+                "is_terminal": true,
+                "token_count": 170,
+                "children": []
+              },
+              {
+                "id": 12,
+                "depth": 2,
+                "text_preview": " \\frac{3\\pi}{2} & \\text{if } x = 0 \\text{ and } y ",
+                "visit_count": 1,
+                "q_value": 0.4749,
+                "prm_score": 0.4749,
+                "is_terminal": true,
+                "token_count": 198,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 13,
+            "depth": 1,
+            "text_preview": "To convert the point \\((0, 3)\\) from rectangular (",
+            "visit_count": 19,
+            "q_value": 0.4765,
+            "prm_score": 0.464,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 14,
+                "depth": 2,
+                "text_preview": " polar coordinates of the point \\((0, 3)\\) are \\((",
+                "visit_count": 4,
+                "q_value": 0.4867,
+                "prm_score": 0.4867,
+                "is_terminal": true,
+                "token_count": 53,
+                "children": []
+              },
+              {
+                "id": 15,
+                "depth": 2,
+                "text_preview": " polar coordinates for the point \\((0, 3)\\) are \\(",
+                "visit_count": 3,
+                "q_value": 0.4814,
+                "prm_score": 0.4814,
+                "is_terminal": true,
+                "token_count": 53,
+                "children": []
+              },
+              {
+                "id": 16,
+                "depth": 2,
+                "text_preview": " polar coordinates for the point \\((0, 3)\\) are \\(",
+                "visit_count": 3,
+                "q_value": 0.4814,
+                "prm_score": 0.4814,
+                "is_terminal": true,
+                "token_count": 53,
+                "children": []
+              },
+              {
+                "id": 17,
+                "depth": 2,
+                "text_preview": " polar coordinates for the point \\((0, 3)\\) are \\(",
+                "visit_count": 3,
+                "q_value": 0.4814,
+                "prm_score": 0.4814,
+                "is_terminal": true,
+                "token_count": 53,
+                "children": []
+              },
+              {
+                "id": 18,
+                "depth": 2,
+                "text_preview": " polar coordinates are \\((3, \\frac{\\pi}{2})\\).  Th",
+                "visit_count": 3,
+                "q_value": 0.4476,
+                "prm_score": 0.4476,
+                "is_terminal": true,
+                "token_count": 38,
+                "children": []
+              },
+              {
+                "id": 19,
+                "depth": 2,
+                "text_preview": " polar coordinates for the point \\((0, 3)\\) are \\(",
+                "visit_count": 1,
+                "q_value": 0.4814,
+                "prm_score": 0.4814,
+                "is_terminal": true,
+                "token_count": 53,
+                "children": []
+              },
+              {
+                "id": 20,
+                "depth": 2,
+                "text_preview": " polar coordinates of the point \\((0, 3)\\) are \\((",
+                "visit_count": 1,
+                "q_value": 0.4867,
+                "prm_score": 0.4867,
+                "is_terminal": true,
+                "token_count": 53,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 21,
+            "depth": 1,
+            "text_preview": "To convert the rectangular coordinates $(0, 3)$ to",
+            "visit_count": 14,
+            "q_value": 0.4314,
+            "prm_score": 0.4314,
+            "is_terminal": true,
+            "token_count": 252,
+            "children": []
+          },
+          {
+            "id": 22,
+            "depth": 1,
+            "text_preview": "To convert the point \\((0, 3)\\) from rectangular (",
+            "visit_count": 20,
+            "q_value": 0.471,
+            "prm_score": 0.4862,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 23,
+                "depth": 2,
+                "text_preview": "} \\)  Given the point \\((0, 3)\\): 1. Calculate \\( ",
+                "visit_count": 3,
+                "q_value": 0.4707,
+                "prm_score": 0.4707,
+                "is_terminal": true,
+                "token_count": 160,
+                "children": []
+              },
+              {
+                "id": 24,
+                "depth": 2,
+                "text_preview": "} \\)  For the point \\((0, 3)\\): 1. \\( r = \\sqrt{0^",
+                "visit_count": 6,
+                "q_value": 0.4715,
+                "prm_score": 0.4715,
+                "is_terminal": true,
+                "token_count": 126,
+                "children": []
+              },
+              {
+                "id": 25,
+                "depth": 2,
+                "text_preview": "} \\)  For the point \\((0, 3)\\): 1. \\( r = \\sqrt{0^",
+                "visit_count": 6,
+                "q_value": 0.4665,
+                "prm_score": 0.4665,
+                "is_terminal": true,
+                "token_count": 120,
+                "children": []
+              },
+              {
+                "id": 26,
+                "depth": 2,
+                "text_preview": "} \\)  For the point \\((0, 3)\\): - \\(x = 0\\) - \\(y ",
+                "visit_count": 4,
+                "q_value": 0.4735,
+                "prm_score": 0.4735,
+                "is_terminal": true,
+                "token_count": 149,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 27,
+            "depth": 1,
+            "text_preview": "To convert the rectangular coordinates $(0,3)$ to ",
+            "visit_count": 17,
+            "q_value": 0.467,
+            "prm_score": 0.4401,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 28,
+                "depth": 2,
+                "text_preview": " $\\left(3, \\frac{\\pi}{2}\\right)$.  The final answe",
+                "visit_count": 4,
+                "q_value": 0.4819,
+                "prm_score": 0.4819,
+                "is_terminal": true,
+                "token_count": 41,
+                "children": []
+              },
+              {
+                "id": 29,
+                "depth": 2,
+                "text_preview": " $\\left(3, \\frac{\\pi}{2}\\right)$.  The final answe",
+                "visit_count": 6,
+                "q_value": 0.4819,
+                "prm_score": 0.4819,
+                "is_terminal": true,
+                "token_count": 41,
+                "children": []
+              },
+              {
+                "id": 30,
+                "depth": 2,
+                "text_preview": " $(3, \\frac{\\pi}{2})$.  The final answer is: \\[ \\b",
+                "visit_count": 4,
+                "q_value": 0.4314,
+                "prm_score": 0.4314,
+                "is_terminal": true,
+                "token_count": 34,
+                "children": []
+              },
+              {
+                "id": 31,
+                "depth": 2,
+                "text_preview": " $(3, \\frac{\\pi}{2})$.  The final answer is: \\[ \\b",
+                "visit_count": 2,
+                "q_value": 0.4772,
+                "prm_score": 0.4772,
+                "is_terminal": true,
+                "token_count": 38,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 32,
+            "depth": 1,
+            "text_preview": "To convert the point \\((0, 3)\\) from rectangular (",
+            "visit_count": 18,
+            "q_value": 0.4895,
+            "prm_score": 0.4643,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 33,
+                "depth": 2,
+                "text_preview": "((0, 3)\\) are \\((3, \\frac{\\pi}{2})\\).  The final a",
+                "visit_count": 3,
+                "q_value": 0.493,
+                "prm_score": 0.493,
+                "is_terminal": true,
+                "token_count": 47,
+                "children": []
+              },
+              {
+                "id": 34,
+                "depth": 2,
+                "text_preview": "((0, 3)\\) are \\(\\left(3, \\frac{\\pi}{2}\\right)\\).  ",
+                "visit_count": 2,
+                "q_value": 0.4758,
+                "prm_score": 0.4758,
+                "is_terminal": true,
+                "token_count": 50,
+                "children": []
+              },
+              {
+                "id": 35,
+                "depth": 2,
+                "text_preview": "((0, 3)\\) are \\((3, \\frac{\\pi}{2})\\).  The final a",
+                "visit_count": 3,
+                "q_value": 0.493,
+                "prm_score": 0.493,
+                "is_terminal": true,
+                "token_count": 47,
+                "children": []
+              },
+              {
+                "id": 36,
+                "depth": 2,
+                "text_preview": "((0, 3)\\) are \\((3, \\frac{\\pi}{2})\\).  The final a",
+                "visit_count": 2,
+                "q_value": 0.493,
+                "prm_score": 0.493,
+                "is_terminal": true,
+                "token_count": 47,
+                "children": []
+              },
+              {
+                "id": 37,
+                "depth": 2,
+                "text_preview": "((0, 3)\\) are \\((3, \\frac{\\pi}{2})\\).  The final a",
+                "visit_count": 2,
+                "q_value": 0.493,
+                "prm_score": 0.493,
+                "is_terminal": true,
+                "token_count": 47,
+                "children": []
+              },
+              {
+                "id": 38,
+                "depth": 2,
+                "text_preview": "((0, 3)\\) are \\((3, \\frac{\\pi}{2})\\).  The final a",
+                "visit_count": 3,
+                "q_value": 0.493,
+                "prm_score": 0.493,
+                "is_terminal": true,
+                "token_count": 47,
+                "children": []
+              },
+              {
+                "id": 39,
+                "depth": 2,
+                "text_preview": "((0, 3)\\) are \\((3, \\frac{\\pi}{2})\\).  The final a",
+                "visit_count": 2,
+                "q_value": 0.493,
+                "prm_score": 0.493,
+                "is_terminal": true,
+                "token_count": 47,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 40,
+            "depth": 1,
+            "text_preview": "To convert the point \\((0, 3)\\) from rectangular c",
+            "visit_count": 18,
+            "q_value": 0.4769,
+            "prm_score": 0.4745,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 41,
+                "depth": 2,
+                "text_preview": "{3\\pi}{2} & \\text{if } x = 0 \\text{ and } y < 0   ",
+                "visit_count": 2,
+                "q_value": 0.4782,
+                "prm_score": 0.4782,
+                "is_terminal": true,
+                "token_count": 195,
+                "children": []
+              },
+              {
+                "id": 42,
+                "depth": 2,
+                "text_preview": "{3\\pi}{2} & \\text{if } x = 0 \\text{ and } y < 0   ",
+                "visit_count": 5,
+                "q_value": 0.4824,
+                "prm_score": 0.4824,
+                "is_terminal": true,
+                "token_count": 201,
+                "children": []
+              },
+              {
+                "id": 43,
+                "depth": 2,
+                "text_preview": "{3\\pi}{2} & \\text{if } x = 0 \\text{ and } y < 0   ",
+                "visit_count": 3,
+                "q_value": 0.4765,
+                "prm_score": 0.4765,
+                "is_terminal": true,
+                "token_count": 205,
+                "children": []
+              },
+              {
+                "id": 44,
+                "depth": 2,
+                "text_preview": "{3\\pi}{2} & \\text{if } x = 0 \\text{ and } y < 0   ",
+                "visit_count": 4,
+                "q_value": 0.4694,
+                "prm_score": 0.4694,
+                "is_terminal": true,
+                "token_count": 185,
+                "children": []
+              },
+              {
+                "id": 45,
+                "depth": 2,
+                "text_preview": "{3\\pi}{2} & \\text{if } x = 0 \\text{ and } y < 0 \\\\",
+                "visit_count": 3,
+                "q_value": 0.4781,
+                "prm_score": 0.4781,
+                "is_terminal": true,
+                "token_count": 220,
+                "children": []
+              }
+            ]
+          },
+          {
+            "id": 46,
+            "depth": 1,
+            "text_preview": "To convert the rectangular coordinates \\((0, 3)\\) ",
+            "visit_count": 16,
+            "q_value": 0.4681,
+            "prm_score": 0.427,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 47,
+                "depth": 2,
+                "text_preview": "3)\\) are: \\[ (r, \\theta) = \\left(3, \\frac{\\pi}{2}\\",
+                "visit_count": 6,
+                "q_value": 0.4595,
+                "prm_score": 0.4595,
+                "is_terminal": true,
+                "token_count": 58,
+                "children": []
+              },
+              {
+                "id": 48,
+                "depth": 2,
+                "text_preview": "3)\\) are \\((3, \\frac{\\pi}{2})\\).  The final answer",
+                "visit_count": 4,
+                "q_value": 0.4809,
+                "prm_score": 0.4809,
+                "is_terminal": true,
+                "token_count": 43,
+                "children": []
+              },
+              {
+                "id": 49,
+                "depth": 2,
+                "text_preview": "3)\\) are: \\[ (r, \\theta) = \\left(3, \\frac{\\pi}{2}\\",
+                "visit_count": 5,
+                "q_value": 0.4765,
+                "prm_score": 0.4765,
+                "is_terminal": true,
+                "token_count": 55,
+                "children": []
+              }
+            ]
+          }
+        ]
+      },
+      "method": "poisson_mcts",
+      "best_solution": "To convert the rectangular coordinates $(0, 3)$ to polar coordinates $(r, \\theta)$, we need to use the following formulas:\n\\[ r = \\sqrt{x^2 + y^2} \\]\n\\[ \\theta = \\arctan\\left(\\frac{y}{x}\\right) \\]\n\nFor the point $(0, 3)$, we have $x = 0$ and $y = 3$.\n\nFirst, we calculate $r$:\n\\[ r = \\sqrt{0^2 + 3^2} = \\sqrt{9} = 3 \\]\n\nNext, we calculate $\\theta$. Since $x = 0$, we need to consider the special case for the arctangent function. The arctangent function is undefined when $x = 0$, but we know that the point $(0, 3)$ lies on the positive y-axis. Therefore, $\\theta = \\frac{\\pi}{2}$.\n\nThus, the polar coordinates for the point $(0, 3)$ are $(3, \\frac{\\pi}{2})$.\n\nThe final answer is:\n\\[\n\\boxed{\\left(3, \\frac{\\pi}{2}\\right)}\n\\]",
+      "best_answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+      "best_node_visits": 14,
+      "best_node_q": 0.43144969809435535,
+      "best_node_depth": 1,
+      "all_solutions": [
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 14,
+          "q_value": 0.43144969809435535,
+          "depth": 1
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 8,
+          "q_value": 0.4722810844595283,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 6,
+          "q_value": 0.49738525336535205,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 6,
+          "q_value": 0.49738525336535205,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 6,
+          "q_value": 0.471465635819949,
+          "depth": 2
+        },
+        {
+          "answer": "(3, \\frac{\\pi}{2})",
+          "visits": 6,
+          "q_value": 0.4664726565606023,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 6,
+          "q_value": 0.4818995611376085,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 6,
+          "q_value": 0.45950974801461303,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 5,
+          "q_value": 0.4638452064648687,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 5,
+          "q_value": 0.4823770253866771,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 5,
+          "q_value": 0.47650852026300006,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 4,
+          "q_value": 0.497385253365352,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 4,
+          "q_value": 0.497385253365352,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 4,
+          "q_value": 0.46478169379263845,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 4,
+          "q_value": 0.48666607910321885,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 4,
+          "q_value": 0.47353254792080324,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 4,
+          "q_value": 0.48189956113760846,
+          "depth": 2
+        },
+        {
+          "answer": "(3, \\frac{\\pi}{2})",
+          "visits": 4,
+          "q_value": 0.4313727533227176,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 4,
+          "q_value": 0.46935805715356155,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 4,
+          "q_value": 0.48086243696070885,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.497385253365352,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.497385253365352,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.48137208625794997,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.48137208625794997,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.48137208625794997,
+          "depth": 2
+        },
+        {
+          "answer": "(3, \\frac{\\pi}{2})",
+          "visits": 3,
+          "q_value": 0.4475567866777712,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.470701145894562,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.49298891631581565,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.49298891631581565,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.49298891631581565,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.47653598022227567,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 3,
+          "q_value": 0.4781373090870802,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 2,
+          "q_value": 0.47716038044918685,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 2,
+          "q_value": 0.47580875586545734,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 2,
+          "q_value": 0.49298891631581565,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 2,
+          "q_value": 0.49298891631581565,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 2,
+          "q_value": 0.49298891631581565,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 2,
+          "q_value": 0.47815388629536765,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 1,
+          "q_value": 0.47487222123375183,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 1,
+          "q_value": 0.48137208625794997,
+          "depth": 2
+        },
+        {
+          "answer": "\\left(3, \\frac{\\pi}{2}\\right)",
+          "visits": 1,
+          "q_value": 0.48666607910321885,
+          "depth": 2
+        }
+      ],
+      "problem_index": 0,
+      "ground_truth": "\\left( 3, \\frac{\\pi}{2} \\right)",
+      "elapsed_seconds": 6.21,
+      "correct": true
+    },
+    {
+      "question": "Define\n\\[p = \\sum_{k = 1}^\\infty \\frac{1}{k^2} \\quad \\text{and} \\quad q = \\sum_{k = 1}^\\infty \\frac{1}{k^3}.\\]Find a way to write\n\\[\\sum_{j = 1}^\\infty \\sum_{k = 1}^\\infty \\frac{1}{(j + k)^3}\\]in terms of $p$ and $q.$",
+      "tree_stats": {
+        "total_nodes": 71,
+        "terminal_nodes": 43,
+        "max_depth_reached": 4,
+        "root_visits": 171,
+        "structural_kl": 0.195558,
+        "branching_profile": {
+          "0": 5.0,
+          "1": 4.2,
+          "2": 1.9523809523809523,
+          "3": 3.0
+        },
+        "target_profile": {
+          "0": 4.0075,
+          "1": 4.5995009357454775,
+          "2": 1.7803781773093614,
+          "3": 1.2562132851333032,
+          "4": 1.0996153335986205,
+          "5": 1.0431768667062784,
+          "6": 1.0235219326128417,
+          "7": 1.0232896652110626,
+          "8": 1.0137268359643101,
+          "9": 1.0151228733459357,
+          "10": 1.0165289256198347
+        }
+      },
+      "tree": {
+        "id": 0,
+        "depth": 0,
+        "text_preview": "(root)",
+        "visit_count": 171,
+        "q_value": 0.4432,
+        "prm_score": 0.0,
+        "is_terminal": false,
+        "token_count": 0,
+        "children": [
+          {
+            "id": 1,
+            "depth": 1,
+            "text_preview": "To find the sum of the double series \\[ \\sum_{j=1}",
+            "visit_count": 42,
+            "q_value": 0.4593,
+            "prm_score": 0.4147,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 2,
+                "depth": 2,
+                "text_preview": "n^3}\\) simplifies to \\(\\frac{n-1}{n^3}\\), so we ha",
+                "visit_count": 2,
+                "q_value": 0.4632,
+                "prm_score": 0.4657,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 3,
+                    "depth": 3,
+                    "text_preview": " - 1, \\] and \\[ \\sum_{n=2}^\\infty \\frac{1}{n^3} = ",
+                    "visit_count": 1,
+                    "q_value": 0.4607,
+                    "prm_score": 0.4607,
+                    "is_terminal": true,
+                    "token_count": 146,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 4,
+                "depth": 2,
+                "text_preview": "n^3}\\) is simply \\(\\frac{n-1}{n^3}\\), so the expre",
+                "visit_count": 7,
+                "q_value": 0.4758,
+                "prm_score": 0.4677,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 5,
+                    "depth": 3,
+                    "text_preview": "^\\infty \\frac{1}{k^3} = 1 + \\sum_{n=2}^\\infty \\fra",
+                    "visit_count": 4,
+                    "q_value": 0.4778,
+                    "prm_score": 0.4778,
+                    "is_terminal": true,
+                    "token_count": 148,
+                    "children": []
+                  },
+                  {
+                    "id": 6,
+                    "depth": 3,
+                    "text_preview": "^\\infty \\frac{1}{k^3} = 1 + \\sum_{n=2}^\\infty \\fra",
+                    "visit_count": 2,
+                    "q_value": 0.476,
+                    "prm_score": 0.476,
+                    "is_terminal": true,
+                    "token_count": 201,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 7,
+                "depth": 2,
+                "text_preview": "n^3}\\) simplifies to \\(\\frac{n-1}{n^3}\\), because ",
+                "visit_count": 8,
+                "q_value": 0.4618,
+                "prm_score": 0.461,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 8,
+                    "depth": 3,
+                    "text_preview": " \\frac{1}{n^3} - \\frac{1}{1^3} = q - 1. \\] Therefo",
+                    "visit_count": 2,
+                    "q_value": 0.4712,
+                    "prm_score": 0.4712,
+                    "is_terminal": true,
+                    "token_count": 107,
+                    "children": []
+                  },
+                  {
+                    "id": 9,
+                    "depth": 3,
+                    "text_preview": " \\frac{1}{n^3} - \\frac{1}{1^3} = q - 1. \\] Therefo",
+                    "visit_count": 5,
+                    "q_value": 0.4581,
+                    "prm_score": 0.4581,
+                    "is_terminal": true,
+                    "token_count": 74,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 10,
+                "depth": 2,
+                "text_preview": "n^3}\\) is simply \\(\\frac{n-1}{n^3}\\), so we get: \\",
+                "visit_count": 5,
+                "q_value": 0.4647,
+                "prm_score": 0.4716,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 11,
+                    "depth": 3,
+                    "text_preview": "] Putting it all together, we get: \\[ \\sum_{n=2}^\\",
+                    "visit_count": 4,
+                    "q_value": 0.463,
+                    "prm_score": 0.463,
+                    "is_terminal": true,
+                    "token_count": 88,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 12,
+                "depth": 2,
+                "text_preview": "n^3}\\) is simply \\(\\frac{n-1}{n^3}\\). Thus, the do",
+                "visit_count": 6,
+                "q_value": 0.4443,
+                "prm_score": 0.4762,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 13,
+                    "depth": 3,
+                    "text_preview": ". \\] Therefore, the double sum can be written as: ",
+                    "visit_count": 2,
+                    "q_value": 0.4507,
+                    "prm_score": 0.4507,
+                    "is_terminal": true,
+                    "token_count": 89,
+                    "children": []
+                  },
+                  {
+                    "id": 14,
+                    "depth": 3,
+                    "text_preview": ". \\] So, the sum becomes: \\[ (p - 1) - (q - 1) = p",
+                    "visit_count": 2,
+                    "q_value": 0.4206,
+                    "prm_score": 0.4206,
+                    "is_terminal": true,
+                    "token_count": 49,
+                    "children": []
+                  },
+                  {
+                    "id": 15,
+                    "depth": 3,
+                    "text_preview": ". \\] Therefore, the expression becomes: \\[ \\sum_{n",
+                    "visit_count": 1,
+                    "q_value": 0.4471,
+                    "prm_score": 0.4471,
+                    "is_terminal": true,
+                    "token_count": 85,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 16,
+                "depth": 2,
+                "text_preview": "n^3}\\) is simply \\(\\frac{n-1}{n^3}\\). So the expre",
+                "visit_count": 7,
+                "q_value": 0.4726,
+                "prm_score": 0.4678,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 17,
+                    "depth": 3,
+                    "text_preview": "(\\sum_{n=1}^\\infty \\frac{1}{n^3}\\right) - 1 = q - ",
+                    "visit_count": 6,
+                    "q_value": 0.4734,
+                    "prm_score": 0.4734,
+                    "is_terminal": true,
+                    "token_count": 102,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 18,
+                "depth": 2,
+                "text_preview": "n^3}\\) is simply \\(\\frac{n-1}{n^3}\\). So, the expr",
+                "visit_count": 6,
+                "q_value": 0.4376,
+                "prm_score": 0.4455,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 19,
+                    "depth": 3,
+                    "text_preview": " term when \\(n=1\\) is 1). Therefore, we have: \\[ (",
+                    "visit_count": 5,
+                    "q_value": 0.436,
+                    "prm_score": 0.436,
+                    "is_terminal": true,
+                    "token_count": 95,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 20,
+            "depth": 1,
+            "text_preview": "We need to find a way to express the double sum \\(",
+            "visit_count": 18,
+            "q_value": 0.4346,
+            "prm_score": 0.4155,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 21,
+                "depth": 2,
+                "text_preview": "fty \\sum_{j=1}^{n-1} \\frac{1}{n^3}.\\]  The inner s",
+                "visit_count": 17,
+                "q_value": 0.4357,
+                "prm_score": 0.4719,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 22,
+                    "depth": 3,
+                    "text_preview": " 1 = q - 1.\\]  Thus, we have: \\[S = (p - 1) - (q -",
+                    "visit_count": 6,
+                    "q_value": 0.4135,
+                    "prm_score": 0.4135,
+                    "is_terminal": true,
+                    "token_count": 71,
+                    "children": []
+                  },
+                  {
+                    "id": 23,
+                    "depth": 3,
+                    "text_preview": " 1 = q - 1.\\]  Thus, we have: \\[S = (p - 1) - (q -",
+                    "visit_count": 10,
+                    "q_value": 0.4454,
+                    "prm_score": 0.4454,
+                    "is_terminal": true,
+                    "token_count": 53,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 24,
+            "depth": 1,
+            "text_preview": "To find the value of the double sum \\(\\sum_{j=1}^\\",
+            "visit_count": 36,
+            "q_value": 0.4325,
+            "prm_score": 0.4007,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 25,
+                "depth": 2,
+                "text_preview": "-1\\), giving: \\[ \\sum_{n=2}^\\infty \\frac{n-1}{n^3}",
+                "visit_count": 9,
+                "q_value": 0.4512,
+                "prm_score": 0.4748,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 26,
+                    "depth": 3,
+                    "text_preview": " p - q. \\]  So, the value of the double sum \\(\\sum",
+                    "visit_count": 8,
+                    "q_value": 0.4483,
+                    "prm_score": 0.4483,
+                    "is_terminal": true,
+                    "token_count": 71,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 27,
+                "depth": 2,
+                "text_preview": "-1\\): \\[ \\sum_{j=1}^{n-1} \\frac{1}{n^3} = \\frac{n-",
+                "visit_count": 10,
+                "q_value": 0.4282,
+                "prm_score": 0.4707,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 28,
+                    "depth": 3,
+                    "text_preview": " \\sum_{n=1}^\\infty \\frac{1}{n^3} - 1 = q - 1. \\]  ",
+                    "visit_count": 4,
+                    "q_value": 0.471,
+                    "prm_score": 0.471,
+                    "is_terminal": true,
+                    "token_count": 115,
+                    "children": []
+                  },
+                  {
+                    "id": 29,
+                    "depth": 3,
+                    "text_preview": " \\sum_{n=1}^\\infty \\frac{1}{n^3} - 1 = q - 1. \\]  ",
+                    "visit_count": 3,
+                    "q_value": 0.3693,
+                    "prm_score": 0.3693,
+                    "is_terminal": true,
+                    "token_count": 256,
+                    "children": []
+                  },
+                  {
+                    "id": 30,
+                    "depth": 3,
+                    "text_preview": " \\sum_{n=1}^\\infty \\frac{1}{n^3} - 1 = q - 1. \\]  ",
+                    "visit_count": 2,
+                    "q_value": 0.4097,
+                    "prm_score": 0.4097,
+                    "is_terminal": true,
+                    "token_count": 256,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 31,
+                "depth": 2,
+                "text_preview": "-1\\). So the expression simplifies to: \\[ \\sum_{n=",
+                "visit_count": 8,
+                "q_value": 0.4693,
+                "prm_score": 0.4583,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 32,
+                    "depth": 3,
+                    "text_preview": "frac{1}{n^3} = \\sum_{n=1}^\\infty \\frac{1}{n^3} - 1",
+                    "visit_count": 7,
+                    "q_value": 0.4709,
+                    "prm_score": 0.4709,
+                    "is_terminal": true,
+                    "token_count": 155,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 33,
+                "depth": 2,
+                "text_preview": "-1\\): \\[ \\sum_{j=1}^{n-1} \\frac{1}{n^3} = \\frac{n-",
+                "visit_count": 8,
+                "q_value": 0.3839,
+                "prm_score": 0.468,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 34,
+                    "depth": 3,
+                    "text_preview": "frac{1}{n^3} - 1 = q - 1. \\]  8. Therefore, the do",
+                    "visit_count": 7,
+                    "q_value": 0.3719,
+                    "prm_score": 0.3719,
+                    "is_terminal": true,
+                    "token_count": 256,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 35,
+            "depth": 1,
+            "text_preview": "To solve the problem, we need to find a way to exp",
+            "visit_count": 37,
+            "q_value": 0.4362,
+            "prm_score": 0.417,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 36,
+                "depth": 2,
+                "text_preview": " \\sum_{j=1}^{n-1} \\frac{1}{n^3}. \\]  The inner sum",
+                "visit_count": 3,
+                "q_value": 0.439,
+                "prm_score": 0.4629,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 37,
+                    "depth": 3,
+                    "text_preview": "fty \\frac{1}{n^3} = \\sum_{n=1}^\\infty \\frac{1}{n^3",
+                    "visit_count": 1,
+                    "q_value": 0.4327,
+                    "prm_score": 0.4327,
+                    "is_terminal": true,
+                    "token_count": 256,
+                    "children": []
+                  },
+                  {
+                    "id": 38,
+                    "depth": 3,
+                    "text_preview": "fty \\frac{1}{n^3} = \\sum_{n=1}^\\infty \\frac{1}{n^3",
+                    "visit_count": 1,
+                    "q_value": 0.4215,
+                    "prm_score": 0.4215,
+                    "is_terminal": true,
+                    "token_count": 256,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 39,
+                "depth": 2,
+                "text_preview": " \\sum_{j=1}^{n-1} \\frac{1}{n^3}. \\]  The inner sum",
+                "visit_count": 8,
+                "q_value": 0.4519,
+                "prm_score": 0.4609,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 40,
+                    "depth": 3,
+                    "text_preview": "sum_{n=1}^\\infty \\frac{1}{n^2}\\right) - \\frac{1}{1",
+                    "visit_count": 4,
+                    "q_value": 0.4338,
+                    "prm_score": 0.4338,
+                    "is_terminal": true,
+                    "token_count": 207,
+                    "children": []
+                  },
+                  {
+                    "id": 41,
+                    "depth": 3,
+                    "text_preview": "sum_{n=1}^\\infty \\frac{1}{n^2}\\right) - 1 = p - 1,",
+                    "visit_count": 3,
+                    "q_value": 0.4731,
+                    "prm_score": 0.4731,
+                    "is_terminal": true,
+                    "token_count": 194,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 42,
+                "depth": 2,
+                "text_preview": " \\sum_{j=1}^{n-1} \\frac{1}{n^3}. \\]  The inner sum",
+                "visit_count": 10,
+                "q_value": 0.4203,
+                "prm_score": 0.4745,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 43,
+                    "depth": 3,
+                    "text_preview": "1}{n^3} = q. \\]  So: \\[ \\sum_{n=2}^\\infty \\frac{1}",
+                    "visit_count": 2,
+                    "q_value": 0.408,
+                    "prm_score": 0.408,
+                    "is_terminal": true,
+                    "token_count": 256,
+                    "children": []
+                  },
+                  {
+                    "id": 44,
+                    "depth": 3,
+                    "text_preview": "1}{n^3} = q. \\]  So: \\[ \\sum_{n=2}^\\infty \\frac{1}",
+                    "visit_count": 2,
+                    "q_value": 0.4557,
+                    "prm_score": 0.4557,
+                    "is_terminal": true,
+                    "token_count": 143,
+                    "children": []
+                  },
+                  {
+                    "id": 45,
+                    "depth": 3,
+                    "text_preview": "1}{n^3} = q. \\]  So: \\[ \\sum_{n=2}^\\infty \\frac{1}",
+                    "visit_count": 4,
+                    "q_value": 0.3806,
+                    "prm_score": 0.3806,
+                    "is_terminal": true,
+                    "token_count": 212,
+                    "children": []
+                  },
+                  {
+                    "id": 46,
+                    "depth": 3,
+                    "text_preview": "1}{n^3} = q. \\]  Therefore: \\[ \\sum_{n=2}^\\infty \\",
+                    "visit_count": 1,
+                    "q_value": 0.4785,
+                    "prm_score": 0.4785,
+                    "is_terminal": true,
+                    "token_count": 173,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 47,
+                "depth": 2,
+                "text_preview": " \\sum_{j=1}^{n-1} \\frac{1}{n^3}. \\]  The inner sum",
+                "visit_count": 4,
+                "q_value": 0.4583,
+                "prm_score": 0.4683,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 48,
+                    "depth": 3,
+                    "text_preview": "{1}{n^2} = p - 1, \\] \\[ \\sum_{n=2}^\\infty \\frac{1}",
+                    "visit_count": 3,
+                    "q_value": 0.455,
+                    "prm_score": 0.455,
+                    "is_terminal": true,
+                    "token_count": 155,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 49,
+                "depth": 2,
+                "text_preview": " \\sum_{j=1}^{n-1} \\frac{1}{n^3}. \\]  The inner sum",
+                "visit_count": 11,
+                "q_value": 0.4322,
+                "prm_score": 0.4623,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 50,
+                    "depth": 3,
+                    "text_preview": "1}{n^2} = p - 1. \\]  The second sum is \\(q - 1\\) b",
+                    "visit_count": 2,
+                    "q_value": 0.421,
+                    "prm_score": 0.421,
+                    "is_terminal": true,
+                    "token_count": 256,
+                    "children": []
+                  },
+                  {
+                    "id": 51,
+                    "depth": 3,
+                    "text_preview": "1}{n^2} = p - 1. \\]  The second sum is \\(q - 1\\) b",
+                    "visit_count": 3,
+                    "q_value": 0.3614,
+                    "prm_score": 0.3614,
+                    "is_terminal": true,
+                    "token_count": 187,
+                    "children": []
+                  },
+                  {
+                    "id": 52,
+                    "depth": 3,
+                    "text_preview": "1}{n^2} = \\sum_{n=1}^\\infty \\frac{1}{n^2} - \\frac{",
+                    "visit_count": 3,
+                    "q_value": 0.4724,
+                    "prm_score": 0.4724,
+                    "is_terminal": true,
+                    "token_count": 181,
+                    "children": []
+                  },
+                  {
+                    "id": 53,
+                    "depth": 3,
+                    "text_preview": "1}{n^2} = p - 1. \\]  The second sum is \\(q - 1\\) b",
+                    "visit_count": 2,
+                    "q_value": 0.4742,
+                    "prm_score": 0.4742,
+                    "is_terminal": true,
+                    "token_count": 121,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 54,
+            "depth": 1,
+            "text_preview": "To solve the given problem, we need to express the",
+            "visit_count": 37,
+            "q_value": 0.4586,
+            "prm_score": 0.4249,
+            "is_terminal": false,
+            "token_count": 256,
+            "children": [
+              {
+                "id": 55,
+                "depth": 2,
+                "text_preview": " = n\\).  Rewriting the double sum in terms of \\(n\\",
+                "visit_count": 10,
+                "q_value": 0.4651,
+                "prm_score": 0.4507,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 56,
+                    "depth": 3,
+                    "text_preview": "We can split this sum into two separate sums: \\[ S",
+                    "visit_count": 1,
+                    "q_value": 0.45,
+                    "prm_score": 0.45,
+                    "is_terminal": true,
+                    "token_count": 256,
+                    "children": []
+                  },
+                  {
+                    "id": 57,
+                    "depth": 3,
+                    "text_preview": "We can split this sum into two separate sums: \\[ S",
+                    "visit_count": 4,
+                    "q_value": 0.4742,
+                    "prm_score": 0.4742,
+                    "is_terminal": true,
+                    "token_count": 254,
+                    "children": []
+                  },
+                  {
+                    "id": 58,
+                    "depth": 3,
+                    "text_preview": "We can split this into two separate sums: \\[ S = \\",
+                    "visit_count": 4,
+                    "q_value": 0.4635,
+                    "prm_score": 0.4643,
+                    "is_terminal": false,
+                    "token_count": 256,
+                    "children": [
+                      {
+                        "id": 59,
+                        "depth": 4,
+                        "text_preview": "(j+k)^3}\\) in terms of \\(p\\) and \\(q\\) is: \\[ \\box",
+                        "visit_count": 1,
+                        "q_value": 0.4824,
+                        "prm_score": 0.4824,
+                        "is_terminal": true,
+                        "token_count": 30,
+                        "children": []
+                      },
+                      {
+                        "id": 60,
+                        "depth": 4,
+                        "text_preview": "(j+k)^3}\\) in terms of \\(p\\) and \\(q\\) is \\(p - q\\",
+                        "visit_count": 1,
+                        "q_value": 0.4536,
+                        "prm_score": 0.4536,
+                        "is_terminal": true,
+                        "token_count": 39,
+                        "children": []
+                      },
+                      {
+                        "id": 61,
+                        "depth": 4,
+                        "text_preview": "(j+k)^3}\\) in terms of \\(p\\) and \\(q\\) is \\(p - q\\",
+                        "visit_count": 1,
+                        "q_value": 0.4536,
+                        "prm_score": 0.4536,
+                        "is_terminal": true,
+                        "token_count": 39,
+                        "children": []
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": 62,
+                "depth": 2,
+                "text_preview": " = n\\): \\[ S = \\sum_{n=2}^\\infty \\sum_{j=1}^{n-1} ",
+                "visit_count": 10,
+                "q_value": 0.4552,
+                "prm_score": 0.4737,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 63,
+                    "depth": 3,
+                    "text_preview": "} - 1 = p - 1, \\] and \\[ \\sum_{n=2}^\\infty \\frac{1",
+                    "visit_count": 3,
+                    "q_value": 0.4726,
+                    "prm_score": 0.4726,
+                    "is_terminal": true,
+                    "token_count": 110,
+                    "children": []
+                  },
+                  {
+                    "id": 64,
+                    "depth": 3,
+                    "text_preview": "} - \\frac{1}{1^2} = p - 1, \\] and \\[ \\sum_{n=2}^\\i",
+                    "visit_count": 4,
+                    "q_value": 0.4323,
+                    "prm_score": 0.4323,
+                    "is_terminal": true,
+                    "token_count": 144,
+                    "children": []
+                  },
+                  {
+                    "id": 65,
+                    "depth": 3,
+                    "text_preview": "} - 1 = p - 1, \\] \\[ \\sum_{n=2}^\\infty \\frac{1}{n^",
+                    "visit_count": 2,
+                    "q_value": 0.4656,
+                    "prm_score": 0.4656,
+                    "is_terminal": true,
+                    "token_count": 118,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 66,
+                "depth": 2,
+                "text_preview": " = n\\): \\[ S = \\sum_{n=2}^\\infty \\sum_{j=1}^{n-1} ",
+                "visit_count": 12,
+                "q_value": 0.4533,
+                "prm_score": 0.4437,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 67,
+                    "depth": 3,
+                    "text_preview": "( \\sum_{n=1}^\\infty \\frac{1}{n^2} \\right) - 1 = p ",
+                    "visit_count": 9,
+                    "q_value": 0.4499,
+                    "prm_score": 0.4499,
+                    "is_terminal": true,
+                    "token_count": 141,
+                    "children": []
+                  },
+                  {
+                    "id": 68,
+                    "depth": 3,
+                    "text_preview": "( \\sum_{n=1}^\\infty \\frac{1}{n^2} \\right) - 1 = p ",
+                    "visit_count": 2,
+                    "q_value": 0.4735,
+                    "prm_score": 0.4735,
+                    "is_terminal": true,
+                    "token_count": 188,
+                    "children": []
+                  }
+                ]
+              },
+              {
+                "id": 69,
+                "depth": 2,
+                "text_preview": " = n\\).  For a fixed \\(n\\), \\(j\\) can take values ",
+                "visit_count": 4,
+                "q_value": 0.4749,
+                "prm_score": 0.4565,
+                "is_terminal": false,
+                "token_count": 256,
+                "children": [
+                  {
+                    "id": 70,
+                    "depth": 3,
+                    "text_preview": " \\frac{1}{n^2} = p \\quad \\text{and} \\quad \\sum_{n=",
+                    "visit_count": 3,
+                    "q_value": 0.481,
+                    "prm_score": 0.481,
+                    "is_terminal": true,
+                    "token_count": 149,
+                    "children": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "method": "poisson_mcts",
+      "best_solution": "We need to find a way to express the double sum \\(\\sum_{j=1}^\\infty \\sum_{k=1}^\\infty \\frac{1}{(j + k)^3}\\) in terms of \\(p\\) and \\(q\\), where\n\\[p = \\sum_{k=1}^\\infty \\frac{1}{k^2} \\quad \\text{and} \\quad q = \\sum_{k=1}^\\infty \\frac{1}{k^3}.\\]\n\nLet's denote the double sum by \\(S\\):\n\\[S = \\sum_{j=1}^\\infty \\sum_{k=1}^\\infty \\frac{1}{(j + k)^3}.\\]\n\nWe can change the index of summation. For a fixed \\(n = j + k\\), we can rewrite the sum by summing over all possible \\(j\\) and \\(k\\) such that \\(j + k = n\\). The possible values for \\(j\\) range from 1 to \\(n-1\\) and \\(k = n - j\\). Thus, we can rewrite the double sum as:\n\\[S = \\sum_{n=2}^\\infty \\sum_{j=1}^{n-1} \\frac{1}{n^3}.\\]\n\nThe inner sum simply counts the number of terms, which is \\(n-1\\). Therefore, we get:\n\\[S = \\sum_{n=2}^\\infty \\frac{n-1}{n^3} = \\sum_{n=2}^\\infty \\left(\\frac{1}{n^2} - \\frac{1}{n^3}\\right).\\]\n\nWe can split the sum into two separate sums:\n\\[S = \\sum_{n=2}^\\infty \\frac{1}{n^2} - \\sum_{n=2}^\\infty \\frac{1}{n^3}.\\]\n\nWe know that:\n\\[\\sum_{n=2}^\\infty \\frac{1}{n^2} = \\sum_{n=1}^\\infty \\frac{1}{n^2} - 1 = p - 1,\\]\nand\n\\[\\sum_{n=2}^\\infty \\frac{1}{n^3} = \\sum_{n=1}^\\infty \\frac{1}{n^3} - 1 = q - 1.\\]\n\nThus, we have:\n\\[S = (p - 1) - (q - 1) = p - q.\\]\n\nSo the final answer is:\n\\[\\boxed{p - q}.\\]",
+      "best_answer": "p - q",
+      "best_node_visits": 10,
+      "best_node_q": 0.4453951747163406,
+      "best_node_depth": 3,
+      "all_solutions": [
+        {
+          "answer": "p - q",
+          "visits": 10,
+          "q_value": 0.4453951747163406,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 9,
+          "q_value": 0.44986019757648055,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 8,
+          "q_value": 0.4482625714364054,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 7,
+          "q_value": 0.4708600524386651,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 7,
+          "q_value": 0.3719251521999943,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 6,
+          "q_value": 0.4734124137732792,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 6,
+          "q_value": 0.41352010918350585,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 5,
+          "q_value": 0.4581452991890849,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 5,
+          "q_value": 0.4359920859665761,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 4,
+          "q_value": 0.4777755121680181,
+          "depth": 3
+        },
+        {
+          "answer": "p - q - 1",
+          "visits": 4,
+          "q_value": 0.4629600405244444,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 4,
+          "q_value": 0.4710206728061293,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 4,
+          "q_value": 0.43376371393324975,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 4,
+          "q_value": 0.38059641986284404,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 4,
+          "q_value": 0.4741864295852835,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 4,
+          "q_value": 0.43227535807923045,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 3,
+          "q_value": 0.3693032673793047,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 3,
+          "q_value": 0.47306146885546535,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 3,
+          "q_value": 0.4549841488998138,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 3,
+          "q_value": 0.3613842643215313,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 3,
+          "q_value": 0.47235098148542926,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 3,
+          "q_value": 0.47262068649994543,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 3,
+          "q_value": 0.48099539628351434,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.4760187116585426,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.47115903798305037,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.4506536499510415,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.42058144343428244,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.4096581378848738,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.40802028906118987,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.45565608703568444,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.4210099382694856,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.47422839881660234,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.4655982229396666,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 2,
+          "q_value": 0.4734641904226654,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 1,
+          "q_value": 0.460671024573609,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 1,
+          "q_value": 0.4470851693671746,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 1,
+          "q_value": 0.432717525261857,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 1,
+          "q_value": 0.4214674812006311,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 1,
+          "q_value": 0.47853211569974063,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 1,
+          "q_value": 0.44995972222738667,
+          "depth": 3
+        },
+        {
+          "answer": "p - q",
+          "visits": 1,
+          "q_value": 0.482416320474374,
+          "depth": 4
+        },
+        {
+          "answer": "p - q",
+          "visits": 1,
+          "q_value": 0.4536384717878307,
+          "depth": 4
+        },
+        {
+          "answer": "p - q",
+          "visits": 1,
+          "q_value": 0.4536384717878307,
+          "depth": 4
+        }
+      ],
+      "problem_index": 1,
+      "ground_truth": "p - q",
+      "elapsed_seconds": 27.25,
+      "correct": true
+    }
+  ]
+}
