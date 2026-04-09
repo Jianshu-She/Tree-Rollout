@@ -28,7 +28,7 @@ def load_data(path):
 
 def plot_accuracy_scatter(results, out_dir):
     """Scatter: Flat vs BFS / Flat vs MCTS accuracy per problem."""
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5.5))
+    fig, axes = plt.subplots(1, 2, figsize=(13, 6))
 
     fa = [r["flat"]["accuracy"] for r in results]
     ba = [r["bfs_tree"]["accuracy"] for r in results]
@@ -66,16 +66,16 @@ def plot_accuracy_scatter(results, out_dir):
     ax.set_ylim(-0.05, 1.05)
     ax.set_aspect("equal")
 
-    fig.suptitle("Per-Problem Accuracy: Tree Methods vs Flat Rollout", fontsize=14, y=1.02)
-    fig.tight_layout()
-    fig.savefig(f"{out_dir}/accuracy_scatter.png")
+    fig.suptitle("Per-Problem Accuracy: Tree Methods vs Flat Rollout", fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(f"{out_dir}/accuracy_scatter.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/accuracy_scatter.png")
 
 
 def plot_accuracy_diff_histogram(results, out_dir):
     """Histogram of accuracy differences: BFS-Flat and MCTS-Flat."""
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5.5))
 
     fa = np.array([r["flat"]["accuracy"] for r in results])
     ba = np.array([r["bfs_tree"]["accuracy"] for r in results])
@@ -92,7 +92,7 @@ def plot_accuracy_diff_histogram(results, out_dir):
     ax.axvline(np.mean(diff_fb), color="red", ls="-", lw=1.5, label=f"mean={np.mean(diff_fb):+.1%}")
     ax.set_xlabel("BFS Accuracy - Flat Accuracy")
     ax.set_ylabel("Count")
-    ax.set_title("BFS vs Flat: Accuracy Difference")
+    ax.set_title("BFS vs Flat")
     ax.legend()
 
     ax = axes[1]
@@ -101,12 +101,12 @@ def plot_accuracy_diff_histogram(results, out_dir):
     ax.axvline(np.mean(diff_fm), color="red", ls="-", lw=1.5, label=f"mean={np.mean(diff_fm):+.1%}")
     ax.set_xlabel("MCTS Accuracy - Flat Accuracy")
     ax.set_ylabel("Count")
-    ax.set_title("MCTS vs Flat: Accuracy Difference")
+    ax.set_title("MCTS vs Flat")
     ax.legend()
 
-    fig.suptitle("Per-Problem Accuracy Difference Distribution", fontsize=14, y=1.02)
-    fig.tight_layout()
-    fig.savefig(f"{out_dir}/accuracy_diff_histogram.png")
+    fig.suptitle("Per-Problem Accuracy Difference Distribution", fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.93])
+    fig.savefig(f"{out_dir}/accuracy_diff_histogram.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/accuracy_diff_histogram.png")
 
@@ -121,7 +121,7 @@ def plot_accuracy_bar(results, out_dir):
     order = np.argsort(fa)
     fa, ba, ma, idx = fa[order], ba[order], ma[order], idx[order]
 
-    fig, ax = plt.subplots(figsize=(16, 5))
+    fig, ax = plt.subplots(figsize=(18, 6))
     x = np.arange(len(results))
     w = 0.27
     ax.bar(x - w, fa, w, color=COLORS["flat"], alpha=0.85, label=LABELS["flat"])
@@ -129,20 +129,20 @@ def plot_accuracy_bar(results, out_dir):
     ax.bar(x + w, ma, w, color=COLORS["mcts"], alpha=0.85, label=LABELS["mcts"])
     ax.set_xlabel("Problems (sorted by Flat accuracy)")
     ax.set_ylabel("Accuracy")
-    ax.set_title("Per-Problem Accuracy Comparison (100 Problems, step_0)")
+    ax.set_title("Per-Problem Accuracy Comparison (100 Problems, step_0)", fontsize=15, fontweight="bold")
     ax.legend(loc="upper left")
     ax.set_xticks(x[::5])
     ax.set_xticklabels([f"p{i}" for i in idx[::5]], fontsize=8, rotation=45)
     ax.set_ylim(0, 1.05)
     fig.tight_layout()
-    fig.savefig(f"{out_dir}/accuracy_bar_sorted.png")
+    fig.savefig(f"{out_dir}/accuracy_bar_sorted.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/accuracy_bar_sorted.png")
 
 
 def plot_trajectory_counts(results, out_dir):
     """Trajectory count distribution for BFS and MCTS."""
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5.5))
 
     bn = [r["bfs_tree"]["num_trajectories"] for r in results]
     mn = [r["poisson_mcts"]["num_trajectories"] for r in results]
@@ -153,7 +153,7 @@ def plot_trajectory_counts(results, out_dir):
     ax.axvline(np.mean(bn), color="black", ls="-", lw=1.5, label=f"mean={np.mean(bn):.0f}")
     ax.set_xlabel("#Trajectories")
     ax.set_ylabel("Count")
-    ax.set_title(f"BFS Tree: Trajectory Count (mean={np.mean(bn):.0f}, range={min(bn)}-{max(bn)})")
+    ax.set_title(f"BFS Tree (mean={np.mean(bn):.0f}, range={min(bn)}-{max(bn)})")
     ax.legend()
 
     ax = axes[1]
@@ -162,19 +162,19 @@ def plot_trajectory_counts(results, out_dir):
     ax.axvline(np.mean(mn), color="black", ls="-", lw=1.5, label=f"mean={np.mean(mn):.0f}")
     ax.set_xlabel("#Trajectories")
     ax.set_ylabel("Count")
-    ax.set_title(f"Poisson-MCTS: Trajectory Count (mean={np.mean(mn):.0f}, range={min(mn)}-{max(mn)})")
+    ax.set_title(f"Poisson-MCTS (mean={np.mean(mn):.0f}, range={min(mn)}-{max(mn)})")
     ax.legend()
 
-    fig.suptitle("Number of Complete Trajectories (Target: 128)", fontsize=14, y=1.02)
-    fig.tight_layout()
-    fig.savefig(f"{out_dir}/trajectory_counts.png")
+    fig.suptitle("Number of Complete Trajectories (Target: 128)", fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.93])
+    fig.savefig(f"{out_dir}/trajectory_counts.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/trajectory_counts.png")
 
 
 def plot_token_efficiency(results, out_dir):
     """Token cost comparison."""
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5.5))
 
     ft = [r["flat"]["total_tokens"] for r in results]
     bt = [r["bfs_tree"]["total_tokens"] for r in results]
@@ -184,7 +184,7 @@ def plot_token_efficiency(results, out_dir):
     ax = axes[0]
     bp = ax.boxplot(
         [np.array(ft) / 1000, np.array(bt) / 1000, np.array(mt) / 1000],
-        labels=["Flat", "BFS", "MCTS"],
+        tick_labels=["Flat", "BFS", "MCTS"],
         patch_artist=True,
         widths=0.5,
     )
@@ -208,16 +208,16 @@ def plot_token_efficiency(results, out_dir):
     ax.legend(fontsize=9)
     ax.set_ylim(0, max(max(ratio_b), max(ratio_m)) * 1.1)
 
-    fig.suptitle("Compute Efficiency: Tree Methods vs Flat Rollout", fontsize=14, y=1.02)
-    fig.tight_layout()
-    fig.savefig(f"{out_dir}/token_efficiency.png")
+    fig.suptitle("Compute Efficiency: Tree Methods vs Flat Rollout", fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.93])
+    fig.savefig(f"{out_dir}/token_efficiency.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/token_efficiency.png")
 
 
 def plot_purity_analysis(results, out_dir):
     """Purity (adv_std=0) analysis: who loses signal and why."""
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5.5))
 
     fa = np.array([r["flat"]["accuracy"] for r in results])
     ba = np.array([r["bfs_tree"]["accuracy"] for r in results])
@@ -265,9 +265,9 @@ def plot_purity_analysis(results, out_dir):
     ax.set_title("Signal Lost: Flat Accuracy of Affected Problems")
     ax.legend(fontsize=9)
 
-    fig.suptitle("Purity Analysis: When Does Tree Search Lose RL Signal?", fontsize=14, y=1.02)
-    fig.tight_layout()
-    fig.savefig(f"{out_dir}/purity_analysis.png")
+    fig.suptitle("Purity Analysis: When Does Tree Search Lose RL Signal?", fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.93])
+    fig.savefig(f"{out_dir}/purity_analysis.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/purity_analysis.png")
 
@@ -275,8 +275,6 @@ def plot_purity_analysis(results, out_dir):
 def plot_advantage_distributions(results, out_dir):
     """Example advantage distributions for selected problems."""
     # Pick 6 representative problems
-    # 1. Both similar, 2. BFS better, 3. MCTS better, 4. MCTS pure, 5. Easy, 6. Hard
-    fa = {r["problem_index"]: r["flat"]["accuracy"] for r in results}
     candidates = []
     for r in results:
         diff_b = abs(r["flat"]["accuracy"] - r["bfs_tree"]["accuracy"])
@@ -319,7 +317,7 @@ def plot_advantage_distributions(results, out_dir):
             selected.append(c[0])
             break
 
-    fig, axes = plt.subplots(2, 3, figsize=(15, 9))
+    fig, axes = plt.subplots(2, 3, figsize=(16, 10))
     axes = axes.flatten()
 
     for ax_i, pidx in enumerate(selected[:6]):
@@ -338,20 +336,21 @@ def plot_advantage_distributions(results, out_dir):
                 label=f"BFS ({r['bfs_tree']['accuracy']:.0%}, n={r['bfs_tree']['num_trajectories']})", density=True)
         ax.hist(ma_adv, bins=bins, alpha=0.5, color=COLORS["mcts"],
                 label=f"MCTS ({r['poisson_mcts']['accuracy']:.0%}, n={r['poisson_mcts']['num_trajectories']})", density=True)
-        ax.set_title(f"Problem {pidx}", fontsize=11)
+        ax.set_title(f"Problem {pidx}", fontsize=12)
         ax.legend(fontsize=7, loc="upper right")
         ax.set_xlabel("GRPO Advantage")
 
-    fig.suptitle("Advantage Distribution Examples (6 Problems)", fontsize=14, y=1.02)
-    fig.tight_layout()
-    fig.savefig(f"{out_dir}/advantage_distributions.png")
+    fig.suptitle("GRPO Advantage Distribution Examples (6 Representative Problems)",
+                 fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.savefig(f"{out_dir}/advantage_distributions.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/advantage_distributions.png")
 
 
 def plot_summary_table(results, out_dir):
     """Summary figure with key metrics as a visual table + bar chart."""
-    fig = plt.figure(figsize=(14, 6))
+    fig = plt.figure(figsize=(15, 7))
     gs = gridspec.GridSpec(1, 2, width_ratios=[1, 1.2])
 
     # Left: summary table
@@ -394,7 +393,7 @@ def plot_summary_table(results, out_dir):
         table[0, j].set_facecolor(list(COLORS.values())[j])
         table[0, j].set_text_props(color="white", fontweight="bold")
 
-    ax.set_title("Summary Metrics (100 Problems, step_0)", fontsize=13, pad=20)
+    ax.set_title("Key Metrics", fontsize=13, pad=20)
 
     # Right: accuracy bucket comparison
     ax2 = fig.add_subplot(gs[1])
@@ -416,8 +415,10 @@ def plot_summary_table(results, out_dir):
     ax2.set_title("Accuracy Distribution by Bucket")
     ax2.legend(fontsize=9)
 
-    fig.tight_layout()
-    fig.savefig(f"{out_dir}/summary.png")
+    fig.suptitle("GRPO Advantage Comparison Summary (100 Problems, step_0)",
+                 fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.94])
+    fig.savefig(f"{out_dir}/summary.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/summary.png")
 
