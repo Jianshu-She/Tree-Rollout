@@ -15,13 +15,48 @@ from utils import extract_answer, is_correct
 class DeepSearchEngine:
     """Orchestrates DeepSearch-style MCTS inference."""
 
-    def __init__(self, config: MCTSConfig):
+    def __init__(self, config: MCTSConfig, policy_model=None, reward_model=None):
         self.config = config
-        print("Initializing policy model ...")
-        self.policy_model = PolicyModel(config)
-        print("Initializing reward model ...")
-        self.reward_model = build_reward_model(config)
+        if policy_model is None:
+            print("Initializing policy model ...")
+            policy_model = PolicyModel(config)
+        if reward_model is None:
+            print("Initializing reward model ...")
+            reward_model = build_reward_model(config)
+        self.policy_model = policy_model
+        self.reward_model = reward_model
         print("DeepSearch engine ready.")
+
+    def solve_to_target(
+        self, question: str, target_terminals: int = 128, max_rollouts: int = 512
+    ) -> "DeepSearchTree":
+        """Run DeepSearch MCTS until at least target_terminals terminal nodes exist.
+
+        Mirrors PoissonMCTSEngine.solve_to_target for parallel benchmarking.
+        Returns the live tree object so callers can walk terminal nodes and
+        grab full reasoning text.
+        """
+        tree = DeepSearchTree(question, self.config)
+
+        for _ in range(max_rollouts):
+            if len(tree.all_terminal_nodes()) >= target_terminals:
+                break
+
+            node = tree.global_select()
+
+            if node.is_terminal:
+                tree.backpropagate(node, node.prm_score)
+                continue
+            if node.depth >= self.config.max_depth:
+                node.is_terminal = True
+                tree.backpropagate(node, node.prm_score)
+                continue
+
+            children = tree.expand(node, self.policy_model, self.reward_model)
+            for child in children:
+                tree.backpropagate(child, child.prm_score)
+
+        return tree
 
     def solve(self, question: str) -> Dict[str, Any]:
         """Run DeepSearch MCTS on a single question."""

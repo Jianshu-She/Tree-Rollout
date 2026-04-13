@@ -35,10 +35,13 @@ class DeepSearchTree:
         self.root.visit_count = 1
         self.total_nodes = 1
 
-        # DeepSearch hyperparameters
-        self.lambda_quality = getattr(config, "ds_lambda_quality", 1.0)
-        self.lambda_entropy = getattr(config, "ds_lambda_entropy", 0.5)
-        self.lambda_depth = getattr(config, "ds_lambda_depth", 0.1)
+        # DeepSearch hyperparameters — defaults match the official repo
+        # (github.com/smiles724/DeepSearch, deepsearch/rollout/sglang_mcts_wrapper.py)
+        self.lambda_quality = getattr(config, "ds_lambda_quality", 0.4)  # global_lambda1
+        self.lambda_entropy = getattr(config, "ds_lambda_entropy", 0.4)  # global_lambda2
+        self.lambda_depth = getattr(config, "ds_lambda_depth", 0.01)     # global_lambda3
+        self.lambda_self_q = getattr(config, "ds_lambda_self_q", 0.0)    # global_lambda4
+        self.depth_bonus_type = getattr(config, "ds_depth_bonus_type", "sqrt")
         self.base_expansion_width = config.num_children  # starting width
         self.width_decay = getattr(config, "ds_width_decay", 1)  # reduce by this per depth step
         self.min_width = getattr(config, "ds_min_width", 1)
@@ -120,30 +123,29 @@ class DeepSearchTree:
         best_score = float("-inf")
 
         for node in expandable:
-            # Quality potential: based on parent's Q-value
-            if node.parent and node.parent.visit_count > 0:
+            # Quality potential: uses parent_q, optionally self_q via lambda_self_q
+            if node.parent is not None:
                 quality = self.lambda_quality * math.tanh(node.parent.q_value)
-            elif node.visit_count > 0:
-                quality = self.lambda_quality * math.tanh(node.q_value)
             else:
                 quality = 0.0
+            if self.lambda_self_q > 0 and node.visit_count > 0:
+                quality += self.lambda_self_q * math.tanh(node.q_value)
 
-            # Uncertainty bonus: entropy of this node's generation
+            # Uncertainty bonus: token-level entropy proxy (-mean(logprob))
             entropy = self._node_entropy.get(id(node), 0.0)
             uncertainty = self.lambda_entropy * entropy
 
-            # Depth bonus: encourage deeper exploration (log scale)
-            depth_bonus = self.lambda_depth * math.log(node.depth + 1)
+            # Depth bonus: official default is sqrt(d / max_depth)
+            if self.depth_bonus_type == "sqrt":
+                depth_bonus = self.lambda_depth * math.sqrt(
+                    node.depth / max(1, self.config.max_depth)
+                )
+            elif self.depth_bonus_type == "log":
+                depth_bonus = self.lambda_depth * math.log(node.depth + 1)
+            else:  # "constant"
+                depth_bonus = self.lambda_depth * node.depth
 
-            # Exploration bonus for unvisited nodes
-            if node.visit_count == 0:
-                visit_bonus = 1.0
-            else:
-                visit_bonus = math.sqrt(
-                    math.log(self.root.visit_count + 1) / (node.visit_count + 1)
-                ) * 0.5
-
-            score = quality + uncertainty + depth_bonus + visit_bonus
+            score = quality + uncertainty + depth_bonus
 
             if score > best_score:
                 best_score = score
