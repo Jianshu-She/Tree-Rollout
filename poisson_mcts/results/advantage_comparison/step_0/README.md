@@ -1,4 +1,6 @@
-# GRPO Advantage Comparison: Flat Rollout vs BFS Tree vs Poisson-MCTS
+# GRPO Advantage Comparison: Flat Rollout vs BFS Tree vs NegBin MCTS
+
+> **Note**: "NegBin MCTS" was previously called "Poisson MCTS". Renamed because the depth-0 branching factor is fitted with a Negative Binomial distribution (heavy-tailed), not Poisson. The internal JSON key `poisson_mcts` in `comparison_step_0.json` is the legacy name and refers to the same method.
 
 100 道 MATH500 题目，step_0（Qwen2.5-Math-7B 基础模型），目标每种方法产出 128 条完整推理轨迹，计算 GRPO advantage 并对比。
 

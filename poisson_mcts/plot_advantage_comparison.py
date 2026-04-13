@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Visualize GRPO advantage comparison: Flat Rollout vs BFS Tree vs Poisson-MCTS."""
+"""Visualize GRPO advantage comparison across 4 methods:
+Flat Rollout, BFS Tree, NegBin MCTS, DeepSearch MCTS (arxiv 2509.25454).
+
+Backward-compatible with 3-method JSONs that omit the 'deepsearch' key —
+DeepSearch panels are skipped if the data is absent.
+"""
 
 import json
 import sys
@@ -8,7 +13,6 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from scipy.stats import pearsonr, spearmanr
 
-# Style
 plt.rcParams.update({
     "font.size": 11,
     "axes.titlesize": 13,
@@ -17,8 +21,44 @@ plt.rcParams.update({
     "savefig.dpi": 150,
 })
 
-COLORS = {"flat": "#4C72B0", "bfs": "#DD8452", "mcts": "#55A868"}
-LABELS = {"flat": "Flat Rollout", "bfs": "BFS Tree", "mcts": "Poisson-MCTS"}
+# Method registry: JSON key → display label, color, short name, advantage array key
+METHODS = [
+    ("flat",         "Flat Rollout", "#4C72B0", "Flat",      "flat_advantages"),
+    ("bfs_tree",     "BFS Tree",     "#DD8452", "BFS",       "bfs_advantages"),
+    ("poisson_mcts", "NegBin MCTS",  "#55A868", "NegBin",    "mcts_advantages"),
+    ("deepsearch",   "DeepSearch",   "#C44E52", "DeepSearch","deepsearch_advantages"),
+]
+
+
+def active_methods(results):
+    """Return METHODS list filtered to those actually present in results."""
+    present = set()
+    for r in results:
+        present.update(r.keys())
+    return [m for m in METHODS if m[0] in present]
+
+
+def get_accs(results, key):
+    return np.array([r[key]["accuracy"] for r in results])
+
+
+def get_stds(results, key):
+    return np.array([r[key]["adv_std"] for r in results])
+
+
+def get_tokens(results, key):
+    return np.array([r[key]["total_tokens"] for r in results])
+
+
+def get_n_traj(results, key):
+    return np.array([r[key]["num_trajectories"] for r in results])
+
+
+def split_no_adv(results, key):
+    """Return (all_correct_mask, all_wrong_mask) for no-advantage problems."""
+    accs = get_accs(results, key)
+    no_adv = get_stds(results, key) < 0.01
+    return no_adv & (accs > 0.99), no_adv & (accs < 0.01)
 
 
 def load_data(path):
@@ -26,110 +66,99 @@ def load_data(path):
         return json.load(f)
 
 
+# ---------------------------------------------------------------------
+# Plot 1: Per-problem accuracy scatter vs flat (one subplot per tree method)
+# ---------------------------------------------------------------------
 def plot_accuracy_scatter(results, out_dir):
-    """Scatter: Flat vs BFS / Flat vs MCTS accuracy per problem."""
-    fig, axes = plt.subplots(1, 2, figsize=(13, 6))
+    methods = [m for m in active_methods(results) if m[0] != "flat"]
+    n = len(methods)
+    fig, axes = plt.subplots(1, n, figsize=(6 * n, 6))
+    if n == 1:
+        axes = [axes]
 
-    fa = [r["flat"]["accuracy"] for r in results]
-    ba = [r["bfs_tree"]["accuracy"] for r in results]
-    ma = [r["poisson_mcts"]["accuracy"] for r in results]
-    bn = [r["bfs_tree"]["num_trajectories"] for r in results]
-    mn = [r["poisson_mcts"]["num_trajectories"] for r in results]
+    fa = get_accs(results, "flat")
+    for ax, (key, label, color, _, _) in zip(axes, methods):
+        ma = get_accs(results, key)
+        mn = get_n_traj(results, key)
+        sc = ax.scatter(fa, ma, c=mn, cmap="viridis", s=40, alpha=0.8,
+                        edgecolors="w", linewidths=0.3)
+        ax.plot([0, 1], [0, 1], "k--", alpha=0.3, lw=1)
+        pr, _ = pearsonr(fa, ma)
+        sr, _ = spearmanr(fa, ma)
+        ax.set_xlabel("Flat Rollout Accuracy")
+        ax.set_ylabel(f"{label} Accuracy")
+        ax.set_title(f"Flat vs {label}\nPearson={pr:.3f}, Spearman={sr:.3f}")
+        cb = fig.colorbar(sc, ax=ax, shrink=0.8)
+        cb.set_label(f"{label} #trajectories")
+        ax.set_xlim(-0.05, 1.05)
+        ax.set_ylim(-0.05, 1.05)
+        ax.set_aspect("equal")
 
-    # Flat vs BFS
-    ax = axes[0]
-    sc = ax.scatter(fa, ba, c=bn, cmap="viridis", s=40, alpha=0.8, edgecolors="w", linewidths=0.3)
-    ax.plot([0, 1], [0, 1], "k--", alpha=0.3, lw=1)
-    ax.set_xlabel("Flat Rollout Accuracy")
-    ax.set_ylabel("BFS Tree Accuracy")
-    pr, _ = pearsonr(fa, ba)
-    sr, _ = spearmanr(fa, ba)
-    ax.set_title(f"Flat vs BFS  (Pearson={pr:.3f}, Spearman={sr:.3f})")
-    cb = fig.colorbar(sc, ax=ax, shrink=0.8)
-    cb.set_label("BFS #trajectories")
-    ax.set_xlim(-0.05, 1.05)
-    ax.set_ylim(-0.05, 1.05)
-    ax.set_aspect("equal")
-
-    # Flat vs MCTS
-    ax = axes[1]
-    sc = ax.scatter(fa, ma, c=mn, cmap="viridis", s=40, alpha=0.8, edgecolors="w", linewidths=0.3)
-    ax.plot([0, 1], [0, 1], "k--", alpha=0.3, lw=1)
-    ax.set_xlabel("Flat Rollout Accuracy")
-    ax.set_ylabel("Poisson-MCTS Accuracy")
-    pr, _ = pearsonr(fa, ma)
-    sr, _ = spearmanr(fa, ma)
-    ax.set_title(f"Flat vs MCTS  (Pearson={pr:.3f}, Spearman={sr:.3f})")
-    cb = fig.colorbar(sc, ax=ax, shrink=0.8)
-    cb.set_label("MCTS #trajectories")
-    ax.set_xlim(-0.05, 1.05)
-    ax.set_ylim(-0.05, 1.05)
-    ax.set_aspect("equal")
-
-    fig.suptitle("Per-Problem Accuracy: Tree Methods vs Flat Rollout", fontsize=15, fontweight="bold")
-    fig.tight_layout(rect=[0, 0, 1, 0.95])
+    fig.suptitle("Per-Problem Accuracy: Tree Methods vs Flat Rollout",
+                 fontsize=15, fontweight="bold")
+    fig.tight_layout(rect=[0, 0, 1, 0.93])
     fig.savefig(f"{out_dir}/accuracy_scatter.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/accuracy_scatter.png")
 
 
+# ---------------------------------------------------------------------
+# Plot 2: Accuracy diff histograms (method − flat)
+# ---------------------------------------------------------------------
 def plot_accuracy_diff_histogram(results, out_dir):
-    """Histogram of accuracy differences: BFS-Flat and MCTS-Flat."""
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5.5))
+    methods = [m for m in active_methods(results) if m[0] != "flat"]
+    n = len(methods)
+    fig, axes = plt.subplots(1, n, figsize=(6 * n, 5.5))
+    if n == 1:
+        axes = [axes]
 
-    fa = np.array([r["flat"]["accuracy"] for r in results])
-    ba = np.array([r["bfs_tree"]["accuracy"] for r in results])
-    ma = np.array([r["poisson_mcts"]["accuracy"] for r in results])
-
-    diff_fb = ba - fa
-    diff_fm = ma - fa
-
+    fa = get_accs(results, "flat")
     bins = np.arange(-0.55, 0.6, 0.05)
 
-    ax = axes[0]
-    ax.hist(diff_fb, bins=bins, color=COLORS["bfs"], alpha=0.8, edgecolor="white")
-    ax.axvline(0, color="black", ls="--", lw=1, alpha=0.5)
-    ax.axvline(np.mean(diff_fb), color="red", ls="-", lw=1.5, label=f"mean={np.mean(diff_fb):+.1%}")
-    ax.set_xlabel("BFS Accuracy - Flat Accuracy")
-    ax.set_ylabel("Count")
-    ax.set_title("BFS vs Flat")
-    ax.legend()
+    for ax, (key, label, color, _, _) in zip(axes, methods):
+        ma = get_accs(results, key)
+        diff = ma - fa
+        ax.hist(diff, bins=bins, color=color, alpha=0.8, edgecolor="white")
+        ax.axvline(0, color="black", ls="--", lw=1, alpha=0.5)
+        ax.axvline(np.mean(diff), color="red", ls="-", lw=1.5,
+                   label=f"mean={np.mean(diff):+.1%}")
+        ax.set_xlabel(f"{label} Accuracy − Flat Accuracy")
+        ax.set_ylabel("Count")
+        ax.set_title(f"{label} vs Flat (σ={np.std(diff):.2f})")
+        ax.legend()
 
-    ax = axes[1]
-    ax.hist(diff_fm, bins=bins, color=COLORS["mcts"], alpha=0.8, edgecolor="white")
-    ax.axvline(0, color="black", ls="--", lw=1, alpha=0.5)
-    ax.axvline(np.mean(diff_fm), color="red", ls="-", lw=1.5, label=f"mean={np.mean(diff_fm):+.1%}")
-    ax.set_xlabel("MCTS Accuracy - Flat Accuracy")
-    ax.set_ylabel("Count")
-    ax.set_title("MCTS vs Flat")
-    ax.legend()
-
-    fig.suptitle("Per-Problem Accuracy Difference Distribution", fontsize=15, fontweight="bold")
+    fig.suptitle("Per-Problem Accuracy Difference Distribution",
+                 fontsize=15, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.93])
     fig.savefig(f"{out_dir}/accuracy_diff_histogram.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/accuracy_diff_histogram.png")
 
 
+# ---------------------------------------------------------------------
+# Plot 3: Grouped bar chart sorted by flat accuracy
+# ---------------------------------------------------------------------
 def plot_accuracy_bar(results, out_dir):
-    """Grouped bar chart: per-problem accuracy, sorted by flat accuracy."""
-    fa = np.array([r["flat"]["accuracy"] for r in results])
-    ba = np.array([r["bfs_tree"]["accuracy"] for r in results])
-    ma = np.array([r["poisson_mcts"]["accuracy"] for r in results])
-    idx = np.array([r["problem_index"] for r in results])
-
+    methods = active_methods(results)
+    n = len(methods)
+    fa = get_accs(results, "flat")
     order = np.argsort(fa)
-    fa, ba, ma, idx = fa[order], ba[order], ma[order], idx[order]
+    idx = np.array([r["problem_index"] for r in results])[order]
+
+    accs_by_method = []
+    for key, _, _, _, _ in methods:
+        accs_by_method.append(get_accs(results, key)[order])
 
     fig, ax = plt.subplots(figsize=(18, 6))
     x = np.arange(len(results))
-    w = 0.27
-    ax.bar(x - w, fa, w, color=COLORS["flat"], alpha=0.85, label=LABELS["flat"])
-    ax.bar(x, ba, w, color=COLORS["bfs"], alpha=0.85, label=LABELS["bfs"])
-    ax.bar(x + w, ma, w, color=COLORS["mcts"], alpha=0.85, label=LABELS["mcts"])
+    w = 0.8 / n
+    offsets = np.linspace(-(n - 1) / 2, (n - 1) / 2, n) * w
+    for i, ((key, label, color, _, _), accs) in enumerate(zip(methods, accs_by_method)):
+        ax.bar(x + offsets[i], accs, w, color=color, alpha=0.85, label=label)
     ax.set_xlabel("Problems (sorted by Flat accuracy)")
     ax.set_ylabel("Accuracy")
-    ax.set_title("Per-Problem Accuracy Comparison (100 Problems, step_0)", fontsize=15, fontweight="bold")
+    ax.set_title(f"Per-Problem Accuracy Comparison ({len(results)} Problems)",
+                 fontsize=15, fontweight="bold")
     ax.legend(loc="upper left")
     ax.set_xticks(x[::5])
     ax.set_xticklabels([f"p{i}" for i in idx[::5]], fontsize=8, rotation=45)
@@ -140,157 +169,152 @@ def plot_accuracy_bar(results, out_dir):
     print(f"Saved {out_dir}/accuracy_bar_sorted.png")
 
 
+# ---------------------------------------------------------------------
+# Plot 4: Trajectory count distributions (tree methods only)
+# ---------------------------------------------------------------------
 def plot_trajectory_counts(results, out_dir):
-    """Trajectory count distribution for BFS and MCTS."""
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5.5))
+    methods = [m for m in active_methods(results) if m[0] != "flat"]
+    n = len(methods)
+    fig, axes = plt.subplots(1, n, figsize=(5.5 * n, 5.5))
+    if n == 1:
+        axes = [axes]
 
-    bn = [r["bfs_tree"]["num_trajectories"] for r in results]
-    mn = [r["poisson_mcts"]["num_trajectories"] for r in results]
+    for ax, (key, label, color, _, _) in zip(axes, methods):
+        counts = get_n_traj(results, key)
+        bins = np.arange(0, 135, 5)
+        ax.hist(counts, bins=bins, color=color, alpha=0.8, edgecolor="white")
+        ax.axvline(128, color="red", ls="--", lw=1.5, label="Target=128")
+        ax.axvline(counts.mean(), color="black", ls="-", lw=1.5,
+                   label=f"mean={counts.mean():.0f}")
+        ax.set_xlabel("#Trajectories")
+        ax.set_ylabel("Count")
+        ax.set_title(f"{label}\n(mean={counts.mean():.0f}, range={counts.min()}-{counts.max()})")
+        ax.legend()
 
-    ax = axes[0]
-    ax.hist(bn, bins=20, color=COLORS["bfs"], alpha=0.8, edgecolor="white")
-    ax.axvline(128, color="red", ls="--", lw=1.5, label="Target=128")
-    ax.axvline(np.mean(bn), color="black", ls="-", lw=1.5, label=f"mean={np.mean(bn):.0f}")
-    ax.set_xlabel("#Trajectories")
-    ax.set_ylabel("Count")
-    ax.set_title(f"BFS Tree (mean={np.mean(bn):.0f}, range={min(bn)}-{max(bn)})")
-    ax.legend()
-
-    ax = axes[1]
-    ax.hist(mn, bins=30, color=COLORS["mcts"], alpha=0.8, edgecolor="white")
-    ax.axvline(128, color="red", ls="--", lw=1.5, label="Target=128")
-    ax.axvline(np.mean(mn), color="black", ls="-", lw=1.5, label=f"mean={np.mean(mn):.0f}")
-    ax.set_xlabel("#Trajectories")
-    ax.set_ylabel("Count")
-    ax.set_title(f"Poisson-MCTS (mean={np.mean(mn):.0f}, range={min(mn)}-{max(mn)})")
-    ax.legend()
-
-    fig.suptitle("Number of Complete Trajectories (Target: 128)", fontsize=15, fontweight="bold")
+    fig.suptitle("Number of Complete Trajectories (Target: 128)",
+                 fontsize=15, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.93])
     fig.savefig(f"{out_dir}/trajectory_counts.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/trajectory_counts.png")
 
 
+# ---------------------------------------------------------------------
+# Plot 5: Token efficiency (boxplot + per-problem ratio)
+# ---------------------------------------------------------------------
 def plot_token_efficiency(results, out_dir):
-    """Token cost comparison."""
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5.5))
+    methods = active_methods(results)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
 
-    ft = [r["flat"]["total_tokens"] for r in results]
-    bt = [r["bfs_tree"]["total_tokens"] for r in results]
-    mt = [r["poisson_mcts"]["total_tokens"] for r in results]
+    tokens_by_method = [get_tokens(results, m[0]) for m in methods]
+    ft = get_tokens(results, "flat")
 
     # Box plot
     ax = axes[0]
-    bp = ax.boxplot(
-        [np.array(ft) / 1000, np.array(bt) / 1000, np.array(mt) / 1000],
-        tick_labels=["Flat", "BFS", "MCTS"],
-        patch_artist=True,
-        widths=0.5,
-    )
-    for patch, color in zip(bp["boxes"], [COLORS["flat"], COLORS["bfs"], COLORS["mcts"]]):
+    data = [arr / 1000 for arr in tokens_by_method]
+    short_names = [m[3] for m in methods]
+    colors = [m[2] for m in methods]
+    bp = ax.boxplot(data, tick_labels=short_names, patch_artist=True, widths=0.55)
+    for patch, color in zip(bp["boxes"], colors):
         patch.set_facecolor(color)
         patch.set_alpha(0.7)
     ax.set_ylabel("Total Tokens (K)")
     ax.set_title("Token Cost per Problem")
+    ax.set_yscale("log")
 
-    # Ratio scatter
+    # Ratio vs flat
     ax = axes[1]
-    ratio_b = np.array(bt) / np.array(ft)
-    ratio_m = np.array(mt) / np.array(ft)
     x = np.arange(len(results))
-    ax.scatter(x, ratio_b, s=20, alpha=0.6, color=COLORS["bfs"], label=f"BFS/Flat (mean={np.mean(ratio_b):.1%})")
-    ax.scatter(x, ratio_m, s=20, alpha=0.6, color=COLORS["mcts"], label=f"MCTS/Flat (mean={np.mean(ratio_m):.1%})")
+    for (key, label, color, short, _), tok in zip(methods, tokens_by_method):
+        if key == "flat":
+            continue
+        ratio = tok / ft
+        ax.scatter(x, ratio, s=18, alpha=0.6, color=color,
+                   label=f"{short}/Flat (mean={ratio.mean():.1%})")
     ax.axhline(1.0, color="black", ls="--", lw=1, alpha=0.3)
     ax.set_xlabel("Problem Index")
     ax.set_ylabel("Token Ratio (Tree / Flat)")
     ax.set_title("Token Savings per Problem")
     ax.legend(fontsize=9)
-    ax.set_ylim(0, max(max(ratio_b), max(ratio_m)) * 1.1)
 
-    fig.suptitle("Compute Efficiency: Tree Methods vs Flat Rollout", fontsize=15, fontweight="bold")
+    fig.suptitle("Compute Efficiency: Tree Methods vs Flat Rollout",
+                 fontsize=15, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.93])
     fig.savefig(f"{out_dir}/token_efficiency.png", bbox_inches="tight")
     plt.close(fig)
     print(f"Saved {out_dir}/token_efficiency.png")
 
 
+# ---------------------------------------------------------------------
+# Plot 6: No-advantage split (all-correct vs all-wrong)
+# ---------------------------------------------------------------------
 def plot_no_advantage_analysis(results, out_dir):
-    """No-advantage analysis: split into all-correct (good) vs all-wrong (bad)."""
-    fig, axes = plt.subplots(1, 3, figsize=(17, 6))
+    methods = active_methods(results)
+    fig, axes = plt.subplots(1, 3, figsize=(18, 6))
 
-    fa = np.array([r["flat"]["accuracy"] for r in results])
-    ba = np.array([r["bfs_tree"]["accuracy"] for r in results])
-    ma = np.array([r["poisson_mcts"]["accuracy"] for r in results])
+    fa = get_accs(results, "flat")
+    splits = {m[0]: split_no_adv(results, m[0]) for m in methods}
 
-    def split(method_key):
-        accs = np.array([r[method_key]["accuracy"] for r in results])
-        no_adv = np.array([r[method_key]["adv_std"] < 0.01 for r in results])
-        all_correct = no_adv & (accs > 0.99)
-        all_wrong = no_adv & (accs < 0.01)
-        return no_adv, all_correct, all_wrong
-
-    f_no, f_correct, f_wrong = split("flat")
-    b_no, b_correct, b_wrong = split("bfs_tree")
-    m_no, m_correct, m_wrong = split("poisson_mcts")
-
-    # 1. Stacked bar: all-correct (good) vs all-wrong (bad)
+    # Panel 1: stacked all-correct (green) + all-wrong (red) per method
     ax = axes[0]
-    methods = ["Flat", "BFS", "MCTS"]
-    correct_counts = [f_correct.sum(), b_correct.sum(), m_correct.sum()]
-    wrong_counts = [f_wrong.sum(), b_wrong.sum(), m_wrong.sum()]
-    x = np.arange(3)
-    bars1 = ax.bar(x, correct_counts, color="#4CAF50", alpha=0.85,
-                   label="All correct (model solved it ✓)", edgecolor="white")
-    bars2 = ax.bar(x, wrong_counts, bottom=correct_counts, color="#E53935", alpha=0.85,
-                   label="All wrong (model failed ✗)", edgecolor="white")
+    short_names = [m[3] for m in methods]
+    correct_counts = [int(splits[m[0]][0].sum()) for m in methods]
+    wrong_counts = [int(splits[m[0]][1].sum()) for m in methods]
+    x = np.arange(len(methods))
+    ax.bar(x, correct_counts, color="#4CAF50", alpha=0.85,
+           label="All correct (model solved ✓)", edgecolor="white")
+    ax.bar(x, wrong_counts, bottom=correct_counts, color="#E53935", alpha=0.85,
+           label="All wrong (model failed ✗)", edgecolor="white")
     for i, (c, w) in enumerate(zip(correct_counts, wrong_counts)):
         if c > 0:
             ax.text(i, c / 2, str(c), ha="center", va="center",
-                    fontsize=12, fontweight="bold", color="white")
+                    fontsize=11, fontweight="bold", color="white")
         if w > 0:
             ax.text(i, c + w / 2, str(w), ha="center", va="center",
-                    fontsize=12, fontweight="bold", color="white")
-        ax.text(i, c + w + 0.5, f"total: {c + w}", ha="center", fontsize=10)
+                    fontsize=11, fontweight="bold", color="white")
+        ax.text(i, c + w + 0.5, f"total: {c + w}", ha="center", fontsize=9)
     ax.set_xticks(x)
-    ax.set_xticklabels(methods)
+    ax.set_xticklabels(short_names)
     ax.set_ylabel("# No-Advantage Problems")
-    ax.set_title("No-Advantage Problems: Good vs Bad")
+    ax.set_title("No-Advantage: Good vs Bad")
     ax.legend(fontsize=9, loc="upper left")
-    ax.set_ylim(0, max(c + w for c, w in zip(correct_counts, wrong_counts)) * 1.4)
+    max_total = max(c + w for c, w in zip(correct_counts, wrong_counts)) or 5
+    ax.set_ylim(0, max_total * 1.4)
 
-    # 2. Per-method comparison: which problems are all-wrong in tree but not in flat
+    # Panel 2: newly all-correct vs newly all-wrong per tree method
     ax = axes[1]
-    bfs_only_wrong = b_wrong & ~f_wrong  # tree all-wrong, flat had signal
-    mcts_only_wrong = m_wrong & ~f_wrong
-    bfs_only_correct = b_correct & ~f_correct  # tree all-correct, flat didn't
-    mcts_only_correct = m_correct & ~f_correct
-
-    cats = ["BFS\nnewly\nall-correct", "MCTS\nnewly\nall-correct",
-            "BFS\nnewly\nall-wrong", "MCTS\nnewly\nall-wrong"]
-    vals = [bfs_only_correct.sum(), mcts_only_correct.sum(),
-            bfs_only_wrong.sum(), mcts_only_wrong.sum()]
-    colors_cats = ["#4CAF50", "#4CAF50", "#E53935", "#E53935"]
-    bars = ax.bar(cats, vals, color=colors_cats, alpha=0.85, edgecolor="white")
+    f_corr, f_wrong = splits["flat"]
+    cats, vals, colors_bar = [], [], []
+    for key, label, color, short, _ in methods:
+        if key == "flat":
+            continue
+        corr, wrong = splits[key]
+        cats.extend([f"{short}\nnewly\nall-correct", f"{short}\nnewly\nall-wrong"])
+        vals.extend([int((corr & ~f_corr).sum()), int((wrong & ~f_wrong).sum())])
+        colors_bar.extend(["#4CAF50", "#E53935"])
+    bars = ax.bar(cats, vals, color=colors_bar, alpha=0.85, edgecolor="white")
     for bar, v in zip(bars, vals):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2,
-                str(v), ha="center", fontsize=12, fontweight="bold")
+                str(v), ha="center", fontsize=11, fontweight="bold")
     ax.set_ylabel("# Problems")
-    ax.set_title("Tree vs Flat: Where Outcomes Diverge")
-    ax.set_ylim(0, max(vals) * 1.3 if max(vals) > 0 else 5)
+    ax.set_title("Tree vs Flat: Outcome Divergence")
+    ax.set_ylim(0, (max(vals) if vals else 1) * 1.3)
 
-    # 3. Flat accuracy of problems that became all-wrong in tree (the truly bad cases)
+    # Panel 3: histogram of flat accuracy on truly-bad cases
     ax = axes[2]
     bins = np.arange(0, 1.05, 0.1)
-    if bfs_only_wrong.sum() > 0:
-        ax.hist(fa[bfs_only_wrong], bins=bins, alpha=0.6, color=COLORS["bfs"],
-                label=f"BFS now all-wrong ({bfs_only_wrong.sum()})", edgecolor="white")
-    if mcts_only_wrong.sum() > 0:
-        ax.hist(fa[mcts_only_wrong], bins=bins, alpha=0.6, color=COLORS["mcts"],
-                label=f"MCTS now all-wrong ({mcts_only_wrong.sum()})", edgecolor="white")
+    for key, label, color, short, _ in methods:
+        if key == "flat":
+            continue
+        _, wrong = splits[key]
+        newly_wrong = wrong & ~f_wrong
+        if newly_wrong.sum() > 0:
+            ax.hist(fa[newly_wrong], bins=bins, alpha=0.5, color=color,
+                    label=f"{short} now all-wrong ({int(newly_wrong.sum())})",
+                    edgecolor="white")
     ax.set_xlabel("Flat Rollout Accuracy")
     ax.set_ylabel("Count")
-    ax.set_title("Truly Bad Cases: Flat Accuracy of Tree's All-Wrong Problems")
+    ax.set_title("Truly Bad Cases: Flat Accuracy of\nTree's newly-all-wrong problems")
     ax.legend(fontsize=9)
 
     fig.suptitle("No-Advantage Analysis: All-Correct (Good) vs All-Wrong (Bad)",
@@ -301,75 +325,77 @@ def plot_no_advantage_analysis(results, out_dir):
     print(f"Saved {out_dir}/no_advantage_analysis.png")
 
 
+# ---------------------------------------------------------------------
+# Plot 7: Advantage distributions on 6 representative problems
+# ---------------------------------------------------------------------
 def plot_advantage_distributions(results, out_dir):
-    """Example advantage distributions for selected problems."""
+    methods = active_methods(results)
+    tree_methods = [m for m in methods if m[0] != "flat"]
+
     # Pick 6 representative problems
-    candidates = []
-    for r in results:
-        diff_b = abs(r["flat"]["accuracy"] - r["bfs_tree"]["accuracy"])
-        diff_m = abs(r["flat"]["accuracy"] - r["poisson_mcts"]["accuracy"])
-        candidates.append((r["problem_index"], diff_b, diff_m, r["flat"]["accuracy"]))
+    N = len(results)
+    idx_by_problem = {r["problem_index"]: i for i, r in enumerate(results)}
+    diffs = [sum(abs(r["flat"]["accuracy"] - r[tk]["accuracy"])
+                 for tk, *_ in tree_methods) for r in results]
+    similar = np.argsort(diffs)
+    selected = [results[similar[0]]["problem_index"]]
 
-    # Select diverse examples
-    selected = []
-    # Similar accuracy
-    similar = sorted(candidates, key=lambda x: x[1] + x[2])
-    selected.append(similar[0][0])
-    # BFS much better
-    bfs_better = sorted(candidates, key=lambda x: -(results[x[0]]["bfs_tree"]["accuracy"] - results[x[0]]["flat"]["accuracy"]))
-    for c in bfs_better:
-        if c[0] not in selected:
-            selected.append(c[0])
-            break
-    # MCTS much better
-    mcts_better = sorted(candidates, key=lambda x: -(results[x[0]]["poisson_mcts"]["accuracy"] - results[x[0]]["flat"]["accuracy"]))
-    for c in mcts_better:
-        if c[0] not in selected:
-            selected.append(c[0])
-            break
-    # MCTS much worse
-    mcts_worse = sorted(candidates, key=lambda x: (results[x[0]]["poisson_mcts"]["accuracy"] - results[x[0]]["flat"]["accuracy"]))
-    for c in mcts_worse:
-        if c[0] not in selected:
-            selected.append(c[0])
-            break
-    # Mid accuracy
-    mid = sorted(candidates, key=lambda x: abs(x[3] - 0.5))
-    for c in mid:
-        if c[0] not in selected:
-            selected.append(c[0])
-            break
-    # Hard problem
-    hard = sorted(candidates, key=lambda x: x[3])
-    for c in hard:
-        if c[0] not in selected and c[3] > 0:
-            selected.append(c[0])
+    for tk, label, *_ in tree_methods:
+        better = np.argsort([-(results[i][tk]["accuracy"] - results[i]["flat"]["accuracy"])
+                             for i in range(N)])
+        for bi in better:
+            pidx = results[bi]["problem_index"]
+            if pidx not in selected:
+                selected.append(pidx)
+                break
+
+    mid = np.argsort([abs(r["flat"]["accuracy"] - 0.5) for r in results])
+    for mi in mid:
+        pidx = results[mi]["problem_index"]
+        if pidx not in selected:
+            selected.append(pidx)
             break
 
-    fig, axes = plt.subplots(2, 3, figsize=(16, 10))
+    hard = np.argsort([r["flat"]["accuracy"] for r in results])
+    for hi in hard:
+        pidx = results[hi]["problem_index"]
+        if pidx not in selected and results[hi]["flat"]["accuracy"] > 0:
+            selected.append(pidx)
+            break
+
+    selected = selected[:6]
+
+    fig, axes = plt.subplots(2, 3, figsize=(17, 10))
     axes = axes.flatten()
 
-    for ax_i, pidx in enumerate(selected[:6]):
+    for ax_i, pidx in enumerate(selected):
         ax = axes[ax_i]
-        r = results[pidx]
-        fa_adv = np.array(r["flat_advantages"])
-        ba_adv = np.array(r["bfs_advantages"])
-        ma_adv = np.array(r["mcts_advantages"])
+        r = results[idx_by_problem[pidx]]
 
-        bins = np.linspace(min(fa_adv.min(), ba_adv.min(), ma_adv.min()) - 0.2,
-                           max(fa_adv.max(), ba_adv.max(), ma_adv.max()) + 0.2, 25)
+        advs_by_method = []
+        for key, label, color, short, adv_key in methods:
+            if adv_key not in r:
+                continue
+            arr = np.array(r[adv_key])
+            advs_by_method.append((short, color, label, arr, r[key]))
 
-        ax.hist(fa_adv, bins=bins, alpha=0.5, color=COLORS["flat"],
-                label=f"Flat ({r['flat']['accuracy']:.0%}, n={r['flat']['num_trajectories']})", density=True)
-        ax.hist(ba_adv, bins=bins, alpha=0.5, color=COLORS["bfs"],
-                label=f"BFS ({r['bfs_tree']['accuracy']:.0%}, n={r['bfs_tree']['num_trajectories']})", density=True)
-        ax.hist(ma_adv, bins=bins, alpha=0.5, color=COLORS["mcts"],
-                label=f"MCTS ({r['poisson_mcts']['accuracy']:.0%}, n={r['poisson_mcts']['num_trajectories']})", density=True)
+        if not advs_by_method:
+            continue
+
+        all_vals = np.concatenate([a for _, _, _, a, _ in advs_by_method])
+        bins = np.linspace(all_vals.min() - 0.2, all_vals.max() + 0.2, 25)
+
+        for short, color, label, arr, stats in advs_by_method:
+            ax.hist(arr, bins=bins, alpha=0.45, color=color, density=True,
+                    label=f"{short} ({stats['accuracy']:.0%}, n={stats['num_trajectories']})")
         ax.set_title(f"Problem {pidx}", fontsize=12)
         ax.legend(fontsize=7, loc="upper right")
         ax.set_xlabel("GRPO Advantage")
 
-    fig.suptitle("GRPO Advantage Distribution Examples (6 Representative Problems)",
+    for ax in axes[len(selected):]:
+        ax.axis("off")
+
+    fig.suptitle("GRPO Advantage Distribution Examples (Representative Problems)",
                  fontsize=15, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.95])
     fig.savefig(f"{out_dir}/advantage_distributions.png", bbox_inches="tight")
@@ -377,73 +403,78 @@ def plot_advantage_distributions(results, out_dir):
     print(f"Saved {out_dir}/advantage_distributions.png")
 
 
+# ---------------------------------------------------------------------
+# Plot 8: Summary table + accuracy bucket bars
+# ---------------------------------------------------------------------
 def plot_summary_table(results, out_dir):
-    """Summary figure with key metrics as a visual table + bar chart."""
-    fig = plt.figure(figsize=(15, 7))
+    methods = active_methods(results)
+    n = len(methods)
+    fig = plt.figure(figsize=(7 + 3 * n, 7))
     gs = gridspec.GridSpec(1, 2, width_ratios=[1, 1.2])
 
-    # Left: summary table
     ax = fig.add_subplot(gs[0])
     ax.axis("off")
 
-    fa = [r["flat"]["accuracy"] for r in results]
-    ba = [r["bfs_tree"]["accuracy"] for r in results]
-    ma = [r["poisson_mcts"]["accuracy"] for r in results]
-    ft = [r["flat"]["total_tokens"] for r in results]
-    bt = [r["bfs_tree"]["total_tokens"] for r in results]
-    mt = [r["poisson_mcts"]["total_tokens"] for r in results]
-    fn = [r["flat"]["num_trajectories"] for r in results]
-    bn = [r["bfs_tree"]["num_trajectories"] for r in results]
-    mn = [r["poisson_mcts"]["num_trajectories"] for r in results]
-    def split_no_adv(method_key):
-        accs_arr = np.array([r[method_key]["accuracy"] for r in results])
-        no_adv = np.array([r[method_key]["adv_std"] < 0.01 for r in results])
-        return int((no_adv & (accs_arr > 0.99)).sum()), int((no_adv & (accs_arr < 0.01)).sum())
+    ft = get_tokens(results, "flat")
+    fa_list = get_accs(results, "flat")
+    pearsons = {}
+    for key, *_ in methods:
+        if key == "flat":
+            continue
+        ma = get_accs(results, key)
+        pearsons[key] = pearsonr(fa_list, ma)[0]
 
-    f_correct, f_wrong = split_no_adv("flat")
-    b_correct, b_wrong = split_no_adv("bfs_tree")
-    m_correct, m_wrong = split_no_adv("poisson_mcts")
+    rows = {
+        "Mean Accuracy": [],
+        "Mean #Trajectories": [],
+        "All-Correct ✓\n(model solved)": [],
+        "All-Wrong ✗\n(model failed)": [],
+        "Mean Tokens": [],
+        "Token Ratio\n(vs Flat)": [],
+        "Pearson Corr\n(vs Flat)": [],
+    }
+    for key, label, color, short, _ in methods:
+        accs = get_accs(results, key)
+        n_traj = get_n_traj(results, key)
+        toks = get_tokens(results, key)
+        correct, wrong = split_no_adv(results, key)
+        rows["Mean Accuracy"].append(f"{accs.mean():.1%}")
+        rows["Mean #Trajectories"].append(f"{n_traj.mean():.0f}")
+        rows["All-Correct ✓\n(model solved)"].append(f"{int(correct.sum())}")
+        rows["All-Wrong ✗\n(model failed)"].append(f"{int(wrong.sum())}")
+        rows["Mean Tokens"].append(f"{toks.mean()/1000:.0f}K")
+        if key == "flat":
+            rows["Token Ratio\n(vs Flat)"].append("--")
+            rows["Pearson Corr\n(vs Flat)"].append("--")
+        else:
+            rows["Token Ratio\n(vs Flat)"].append(f"{toks.sum()/ft.sum():.1%}")
+            rows["Pearson Corr\n(vs Flat)"].append(f"{pearsons[key]:.3f}")
 
-    cell_text = [
-        [f"{np.mean(fa):.1%}", f"{np.mean(ba):.1%}", f"{np.mean(ma):.1%}"],
-        [f"{np.mean(fn):.0f}", f"{np.mean(bn):.0f}", f"{np.mean(mn):.0f}"],
-        [f"{f_correct}", f"{b_correct}", f"{m_correct}"],
-        [f"{f_wrong}", f"{b_wrong}", f"{m_wrong}"],
-        [f"{np.mean(ft)/1000:.0f}K", f"{np.mean(bt)/1000:.0f}K", f"{np.mean(mt)/1000:.0f}K"],
-        ["--", f"{np.sum(bt)/np.sum(ft):.1%}", f"{np.sum(mt)/np.sum(ft):.1%}"],
-        ["--", f"{pearsonr(fa,ba)[0]:.3f}", f"{pearsonr(fa,ma)[0]:.3f}"],
-    ]
-    row_labels = ["Mean Accuracy", "Mean #Trajectories",
-                  "All-Correct ✓\n(model solved)", "All-Wrong ✗\n(model failed)",
-                  "Mean Tokens", "Token Ratio\n(vs Flat)", "Pearson Corr\n(vs Flat)"]
-    col_labels = ["Flat Rollout", "BFS Tree", "Poisson-MCTS"]
+    row_labels = list(rows.keys())
+    col_labels = [m[1] for m in methods]
+    cell_text = [rows[rl] for rl in row_labels]
 
     table = ax.table(cellText=cell_text, rowLabels=row_labels, colLabels=col_labels,
                      loc="center", cellLoc="center")
     table.auto_set_font_size(False)
     table.set_fontsize(11)
     table.scale(1.0, 1.8)
-
-    # Color header
-    for j in range(3):
-        table[0, j].set_facecolor(list(COLORS.values())[j])
+    for j, m in enumerate(methods):
+        table[0, j].set_facecolor(m[2])
         table[0, j].set_text_props(color="white", fontweight="bold")
-
     ax.set_title("Key Metrics", fontsize=13, pad=20)
 
-    # Right: accuracy bucket comparison
+    # Right: accuracy bucket bars
     ax2 = fig.add_subplot(gs[1])
     bins_edges = [0, 0.01, 0.2, 0.4, 0.6, 0.8, 0.99, 1.01]
     bin_labels = ["0%", "1-19%", "20-39%", "40-59%", "60-79%", "80-99%", "100%"]
-    fc = np.histogram(fa, bins=bins_edges)[0]
-    bc = np.histogram(ba, bins=bins_edges)[0]
-    mc = np.histogram(ma, bins=bins_edges)[0]
-
     x = np.arange(len(bin_labels))
-    w = 0.25
-    ax2.bar(x - w, fc, w, color=COLORS["flat"], alpha=0.85, label=LABELS["flat"])
-    ax2.bar(x, bc, w, color=COLORS["bfs"], alpha=0.85, label=LABELS["bfs"])
-    ax2.bar(x + w, mc, w, color=COLORS["mcts"], alpha=0.85, label=LABELS["mcts"])
+    w = 0.8 / n
+    offsets = np.linspace(-(n - 1) / 2, (n - 1) / 2, n) * w
+    for i, (key, label, color, _, _) in enumerate(methods):
+        accs = get_accs(results, key)
+        counts = np.histogram(accs, bins=bins_edges)[0]
+        ax2.bar(x + offsets[i], counts, w, color=color, alpha=0.85, label=label)
     ax2.set_xticks(x)
     ax2.set_xticklabels(bin_labels)
     ax2.set_xlabel("Accuracy Bucket")
@@ -451,7 +482,7 @@ def plot_summary_table(results, out_dir):
     ax2.set_title("Accuracy Distribution by Bucket")
     ax2.legend(fontsize=9)
 
-    fig.suptitle("GRPO Advantage Comparison Summary (100 Problems, step_0)",
+    fig.suptitle(f"GRPO Advantage Comparison Summary ({len(results)} Problems)",
                  fontsize=15, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.94])
     fig.savefig(f"{out_dir}/summary.png", bbox_inches="tight")
@@ -459,13 +490,83 @@ def plot_summary_table(results, out_dir):
     print(f"Saved {out_dir}/summary.png")
 
 
+# ---------------------------------------------------------------------
+# NEW Plot 9: Tokens vs accuracy Pareto
+# ---------------------------------------------------------------------
+def plot_pareto(results, out_dir):
+    """Per-problem scatter of (total_tokens, accuracy) for each method.
+    If a tree method is Pareto-dominated (lower accuracy AND more tokens
+    than a different method on the same problem), that's a side-effect."""
+    methods = active_methods(results)
+    fig, ax = plt.subplots(figsize=(10, 7))
+
+    for key, label, color, short, _ in methods:
+        toks = get_tokens(results, key)
+        accs = get_accs(results, key)
+        ax.scatter(toks, accs, s=22, alpha=0.55, color=color,
+                   label=f"{label}: acc={accs.mean():.1%}, tok={toks.mean()/1000:.0f}K",
+                   edgecolors="white", linewidths=0.3)
+
+    ax.set_xscale("log")
+    ax.set_xlabel("Total Tokens per Problem (log scale)")
+    ax.set_ylabel("Per-Problem Accuracy")
+    ax.set_title("Pareto: Accuracy vs Token Cost (per problem × per method)",
+                 fontsize=14, fontweight="bold")
+    ax.grid(True, alpha=0.3)
+    ax.legend(fontsize=10, loc="lower right")
+    ax.set_ylim(-0.05, 1.05)
+    fig.tight_layout()
+    fig.savefig(f"{out_dir}/pareto_accuracy_vs_tokens.png", bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved {out_dir}/pareto_accuracy_vs_tokens.png")
+
+
+# ---------------------------------------------------------------------
+# NEW Plot 10: Drift correlation matrix (method × method Pearson)
+# ---------------------------------------------------------------------
+def plot_drift_matrix(results, out_dir):
+    """Pairwise per-problem accuracy Pearson correlation across methods.
+    Faithful methods should be close to 1.0 with Flat; "drift" methods
+    lower correlation = more deviation from natural flat behavior."""
+    methods = active_methods(results)
+    n = len(methods)
+    mat = np.zeros((n, n))
+    accs_all = [get_accs(results, m[0]) for m in methods]
+    for i in range(n):
+        for j in range(n):
+            mat[i, j] = pearsonr(accs_all[i], accs_all[j])[0] if i != j else 1.0
+
+    fig, ax = plt.subplots(figsize=(1.6 * n + 2, 1.6 * n + 2))
+    im = ax.imshow(mat, cmap="RdYlGn", vmin=0.5, vmax=1.0)
+    labels = [m[3] for m in methods]
+    ax.set_xticks(np.arange(n))
+    ax.set_yticks(np.arange(n))
+    ax.set_xticklabels(labels)
+    ax.set_yticklabels(labels)
+    for i in range(n):
+        for j in range(n):
+            ax.text(j, i, f"{mat[i, j]:.3f}", ha="center", va="center",
+                    color="black" if mat[i, j] > 0.75 else "white",
+                    fontsize=12, fontweight="bold")
+    fig.colorbar(im, ax=ax, shrink=0.8, label="Pearson r")
+    ax.set_title("Per-Problem Accuracy Correlation\n"
+                 "(lower = method drifts further from flat rollout behavior)",
+                 fontsize=13, fontweight="bold")
+    fig.tight_layout()
+    fig.savefig(f"{out_dir}/drift_correlation_matrix.png", bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved {out_dir}/drift_correlation_matrix.png")
+
+
 def main():
-    path = sys.argv[1] if len(sys.argv) > 1 else "poisson_mcts/results/advantage_comparison/step_0/comparison_step_0.json"
+    path = sys.argv[1] if len(sys.argv) > 1 else \
+        "poisson_mcts/results/advantage_comparison/step_0/comparison_step_0.json"
     data = load_data(path)
     results = data["results"]
     out_dir = "/".join(path.split("/")[:-1])
 
     print(f"Loaded {len(results)} problems from {path}")
+    print(f"Active methods: {[m[0] for m in active_methods(results)]}")
     print(f"Output dir: {out_dir}\n")
 
     plot_accuracy_scatter(results, out_dir)
@@ -476,6 +577,8 @@ def main():
     plot_no_advantage_analysis(results, out_dir)
     plot_advantage_distributions(results, out_dir)
     plot_summary_table(results, out_dir)
+    plot_pareto(results, out_dir)
+    plot_drift_matrix(results, out_dir)
 
     print("\nAll plots saved.")
 
