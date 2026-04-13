@@ -215,61 +215,90 @@ def plot_token_efficiency(results, out_dir):
     print(f"Saved {out_dir}/token_efficiency.png")
 
 
-def plot_purity_analysis(results, out_dir):
-    """Purity (adv_std=0) analysis: who loses signal and why."""
-    fig, axes = plt.subplots(1, 3, figsize=(16, 5.5))
+def plot_no_advantage_analysis(results, out_dir):
+    """No-advantage analysis: split into all-correct (good) vs all-wrong (bad)."""
+    fig, axes = plt.subplots(1, 3, figsize=(17, 6))
 
     fa = np.array([r["flat"]["accuracy"] for r in results])
     ba = np.array([r["bfs_tree"]["accuracy"] for r in results])
     ma = np.array([r["poisson_mcts"]["accuracy"] for r in results])
-    f_pure = np.array([r["flat"]["adv_std"] < 0.01 for r in results])
-    b_pure = np.array([r["bfs_tree"]["adv_std"] < 0.01 for r in results])
-    m_pure = np.array([r["poisson_mcts"]["adv_std"] < 0.01 for r in results])
-    bn = np.array([r["bfs_tree"]["num_trajectories"] for r in results])
-    mn = np.array([r["poisson_mcts"]["num_trajectories"] for r in results])
 
-    # Purity counts
+    def split(method_key):
+        accs = np.array([r[method_key]["accuracy"] for r in results])
+        no_adv = np.array([r[method_key]["adv_std"] < 0.01 for r in results])
+        all_correct = no_adv & (accs > 0.99)
+        all_wrong = no_adv & (accs < 0.01)
+        return no_adv, all_correct, all_wrong
+
+    f_no, f_correct, f_wrong = split("flat")
+    b_no, b_correct, b_wrong = split("bfs_tree")
+    m_no, m_correct, m_wrong = split("poisson_mcts")
+
+    # 1. Stacked bar: all-correct (good) vs all-wrong (bad)
     ax = axes[0]
-    counts = [f_pure.sum(), b_pure.sum(), m_pure.sum()]
-    bars = ax.bar(["Flat", "BFS", "MCTS"], counts,
-                  color=[COLORS["flat"], COLORS["bfs"], COLORS["mcts"]], alpha=0.8)
-    for bar, c in zip(bars, counts):
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.5,
-                str(c), ha="center", fontsize=12, fontweight="bold")
-    ax.set_ylabel("# Pure Problems (no RL signal)")
-    ax.set_title("Pure Groups (adv_std = 0)")
-    ax.set_ylim(0, max(counts) * 1.3)
+    methods = ["Flat", "BFS", "MCTS"]
+    correct_counts = [f_correct.sum(), b_correct.sum(), m_correct.sum()]
+    wrong_counts = [f_wrong.sum(), b_wrong.sum(), m_wrong.sum()]
+    x = np.arange(3)
+    bars1 = ax.bar(x, correct_counts, color="#4CAF50", alpha=0.85,
+                   label="All correct (model solved it ✓)", edgecolor="white")
+    bars2 = ax.bar(x, wrong_counts, bottom=correct_counts, color="#E53935", alpha=0.85,
+                   label="All wrong (model failed ✗)", edgecolor="white")
+    for i, (c, w) in enumerate(zip(correct_counts, wrong_counts)):
+        if c > 0:
+            ax.text(i, c / 2, str(c), ha="center", va="center",
+                    fontsize=12, fontweight="bold", color="white")
+        if w > 0:
+            ax.text(i, c + w / 2, str(w), ha="center", va="center",
+                    fontsize=12, fontweight="bold", color="white")
+        ax.text(i, c + w + 0.5, f"total: {c + w}", ha="center", fontsize=10)
+    ax.set_xticks(x)
+    ax.set_xticklabels(methods)
+    ax.set_ylabel("# No-Advantage Problems")
+    ax.set_title("No-Advantage Problems: Good vs Bad")
+    ax.legend(fontsize=9, loc="upper left")
+    ax.set_ylim(0, max(c + w for c, w in zip(correct_counts, wrong_counts)) * 1.4)
 
-    # MCTS: trajectory count vs purity
+    # 2. Per-method comparison: which problems are all-wrong in tree but not in flat
     ax = axes[1]
-    ax.scatter(mn[~m_pure], ma[~m_pure], s=30, alpha=0.6, color=COLORS["mcts"], label="Has signal")
-    ax.scatter(mn[m_pure], ma[m_pure], s=60, alpha=0.9, color="red", marker="x", lw=2, label="Pure (no signal)")
-    ax.set_xlabel("MCTS #Trajectories")
-    ax.set_ylabel("MCTS Accuracy")
-    ax.set_title("MCTS: Trajectory Count vs Purity")
-    ax.legend(fontsize=9)
+    bfs_only_wrong = b_wrong & ~f_wrong  # tree all-wrong, flat had signal
+    mcts_only_wrong = m_wrong & ~f_wrong
+    bfs_only_correct = b_correct & ~f_correct  # tree all-correct, flat didn't
+    mcts_only_correct = m_correct & ~f_correct
 
-    # Flat accuracy of problems that became pure in tree methods
+    cats = ["BFS\nnewly\nall-correct", "MCTS\nnewly\nall-correct",
+            "BFS\nnewly\nall-wrong", "MCTS\nnewly\nall-wrong"]
+    vals = [bfs_only_correct.sum(), mcts_only_correct.sum(),
+            bfs_only_wrong.sum(), mcts_only_wrong.sum()]
+    colors_cats = ["#4CAF50", "#4CAF50", "#E53935", "#E53935"]
+    bars = ax.bar(cats, vals, color=colors_cats, alpha=0.85, edgecolor="white")
+    for bar, v in zip(bars, vals):
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2,
+                str(v), ha="center", fontsize=12, fontweight="bold")
+    ax.set_ylabel("# Problems")
+    ax.set_title("Tree vs Flat: Where Outcomes Diverge")
+    ax.set_ylim(0, max(vals) * 1.3 if max(vals) > 0 else 5)
+
+    # 3. Flat accuracy of problems that became all-wrong in tree (the truly bad cases)
     ax = axes[2]
-    bfs_lost = ~f_pure & b_pure
-    mcts_lost = ~f_pure & m_pure
     bins = np.arange(0, 1.05, 0.1)
-    if bfs_lost.sum() > 0:
-        ax.hist(fa[bfs_lost], bins=bins, alpha=0.6, color=COLORS["bfs"],
-                label=f"BFS lost ({bfs_lost.sum()})", edgecolor="white")
-    if mcts_lost.sum() > 0:
-        ax.hist(fa[mcts_lost], bins=bins, alpha=0.6, color=COLORS["mcts"],
-                label=f"MCTS lost ({mcts_lost.sum()})", edgecolor="white")
+    if bfs_only_wrong.sum() > 0:
+        ax.hist(fa[bfs_only_wrong], bins=bins, alpha=0.6, color=COLORS["bfs"],
+                label=f"BFS now all-wrong ({bfs_only_wrong.sum()})", edgecolor="white")
+    if mcts_only_wrong.sum() > 0:
+        ax.hist(fa[mcts_only_wrong], bins=bins, alpha=0.6, color=COLORS["mcts"],
+                label=f"MCTS now all-wrong ({mcts_only_wrong.sum()})", edgecolor="white")
     ax.set_xlabel("Flat Rollout Accuracy")
     ax.set_ylabel("Count")
-    ax.set_title("Signal Lost: Flat Accuracy of Affected Problems")
+    ax.set_title("Truly Bad Cases: Flat Accuracy of Tree's All-Wrong Problems")
     ax.legend(fontsize=9)
 
-    fig.suptitle("Purity Analysis: When Does Tree Search Lose RL Signal?", fontsize=15, fontweight="bold")
+    fig.suptitle("No-Advantage Analysis: All-Correct (Good) vs All-Wrong (Bad)",
+                 fontsize=15, fontweight="bold")
     fig.tight_layout(rect=[0, 0, 1, 0.93])
-    fig.savefig(f"{out_dir}/purity_analysis.png", bbox_inches="tight")
+    fig.savefig(f"{out_dir}/no_advantage_analysis.png", bbox_inches="tight")
     plt.close(fig)
-    print(f"Saved {out_dir}/purity_analysis.png")
+    print(f"Saved {out_dir}/no_advantage_analysis.png")
 
 
 def plot_advantage_distributions(results, out_dir):
@@ -366,19 +395,26 @@ def plot_summary_table(results, out_dir):
     fn = [r["flat"]["num_trajectories"] for r in results]
     bn = [r["bfs_tree"]["num_trajectories"] for r in results]
     mn = [r["poisson_mcts"]["num_trajectories"] for r in results]
-    f_pure = sum(1 for r in results if r["flat"]["adv_std"] < 0.01)
-    b_pure = sum(1 for r in results if r["bfs_tree"]["adv_std"] < 0.01)
-    m_pure = sum(1 for r in results if r["poisson_mcts"]["adv_std"] < 0.01)
+    def split_no_adv(method_key):
+        accs_arr = np.array([r[method_key]["accuracy"] for r in results])
+        no_adv = np.array([r[method_key]["adv_std"] < 0.01 for r in results])
+        return int((no_adv & (accs_arr > 0.99)).sum()), int((no_adv & (accs_arr < 0.01)).sum())
+
+    f_correct, f_wrong = split_no_adv("flat")
+    b_correct, b_wrong = split_no_adv("bfs_tree")
+    m_correct, m_wrong = split_no_adv("poisson_mcts")
 
     cell_text = [
         [f"{np.mean(fa):.1%}", f"{np.mean(ba):.1%}", f"{np.mean(ma):.1%}"],
         [f"{np.mean(fn):.0f}", f"{np.mean(bn):.0f}", f"{np.mean(mn):.0f}"],
-        [f"{f_pure}", f"{b_pure}", f"{m_pure}"],
+        [f"{f_correct}", f"{b_correct}", f"{m_correct}"],
+        [f"{f_wrong}", f"{b_wrong}", f"{m_wrong}"],
         [f"{np.mean(ft)/1000:.0f}K", f"{np.mean(bt)/1000:.0f}K", f"{np.mean(mt)/1000:.0f}K"],
         ["--", f"{np.sum(bt)/np.sum(ft):.1%}", f"{np.sum(mt)/np.sum(ft):.1%}"],
         ["--", f"{pearsonr(fa,ba)[0]:.3f}", f"{pearsonr(fa,ma)[0]:.3f}"],
     ]
-    row_labels = ["Mean Accuracy", "Mean #Trajectories", "Pure Problems\n(no signal)",
+    row_labels = ["Mean Accuracy", "Mean #Trajectories",
+                  "All-Correct ✓\n(model solved)", "All-Wrong ✗\n(model failed)",
                   "Mean Tokens", "Token Ratio\n(vs Flat)", "Pearson Corr\n(vs Flat)"]
     col_labels = ["Flat Rollout", "BFS Tree", "Poisson-MCTS"]
 
@@ -437,7 +473,7 @@ def main():
     plot_accuracy_bar(results, out_dir)
     plot_trajectory_counts(results, out_dir)
     plot_token_efficiency(results, out_dir)
-    plot_purity_analysis(results, out_dir)
+    plot_no_advantage_analysis(results, out_dir)
     plot_advantage_distributions(results, out_dir)
     plot_summary_table(results, out_dir)
 

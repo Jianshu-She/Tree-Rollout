@@ -75,11 +75,15 @@
 - ✅ Generate 8+ comparison figures
 - ✅ Per-problem accuracy comparison (4×25 horizontal bars)
 - ✅ Mean/std accuracy comparison
-- ☐ **CRITICAL: Re-do "no-advantage" analysis splitting into:**
+- ✅ **CRITICAL: Re-do "no-advantage" analysis splitting into:**
   - `all_correct` (all reward = 1) — actually a **good** sign (model solved it)
   - `all_wrong` (all reward = 0) — the **bad** case
-  - Current report combines them, which is misleading
-- ☐ Also report per-method: how many problems became `all_correct` only because of tree (i.e. tree solved a problem flat couldn't)
+  - **Result on 100 problems @ step_0**: Flat 0/5, BFS 5/9, MCTS 11/13 (correct/wrong)
+  - **Key finding**: Tree methods' no-advantage is mostly *because they solved the problem*, not failure
+- ✅ Per-method "newly" comparison: tree methods newly all-correct vs newly all-wrong
+  - BFS: +5 newly all-correct, +4 newly all-wrong
+  - MCTS: +11 newly all-correct, +8 newly all-wrong
+  - Tree methods *net positive* on outcomes
 
 ---
 
@@ -164,10 +168,11 @@ The "advanced" method that goes beyond faithfulness for actual gains, while stil
 
 ## Immediate Next Steps (Priority Order)
 
-1. **[HIGH] Split "no-advantage" into all-correct vs all-wrong** for the 100-problem analysis
-   - Update `poisson_mcts/plot_advantage_comparison.py`
-   - Re-generate purity_analysis.png and summary.png
-   - Update README with new terminology
+1. ✅ **[HIGH] Split "no-advantage" into all-correct vs all-wrong** for the 100-problem analysis
+   - ✅ Updated `poisson_mcts/plot_advantage_comparison.py` (added `plot_no_advantage_analysis`)
+   - ✅ Replaced `purity_analysis.png` with `no_advantage_analysis.png`
+   - ✅ Updated `summary.png` table to split All-Correct ✓ / All-Wrong ✗
+   - ✅ Updated README with new terminology and findings
 
 2. **[HIGH] Rename Poisson MCTS → NegBin MCTS** across codebase
    - Files: `poisson_mcts_engine.py`, `poisson_mcts_tree.py`, output dirs

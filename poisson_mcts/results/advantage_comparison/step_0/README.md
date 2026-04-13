@@ -5,7 +5,7 @@
 ## 图表说明
 
 ### `summary.png`
-**汇总图。** 左侧为关键指标表格，右侧为正确率分桶柱状图。表格展示三种方法在准确率、轨迹数、纯度（无 RL 信号的题数）、token 开销和相关性上的对比。分桶图揭示树方法将更多题目推向极端（0% 和 100%），中间地带（20-60%）的题目减少。Flat 没有任何题达到 100% 正确率，但 BFS 有 5 题、MCTS 有 11 题达到 100%。
+**汇总图。** 左侧为关键指标表格，右侧为正确率分桶柱状图。表格区分了 **All-Correct**（模型完美解决，好事）和 **All-Wrong**（模型完全失败，坏事）两类无信号问题。Flat 0/5、BFS 5/9、MCTS 11/13 分别表示 all-correct/all-wrong。注意 Flat 没有任何题能 128 全对（说明基础模型在 100 题中没有一道是完全确定能解的）。分桶图揭示树方法将更多题目推向极端：BFS 和 MCTS 都新增了 100% 正确率桶的题目。
 
 ### `accuracy_scatter.png`
 **逐题正确率散点图。** 每个点代表一道题，X 轴为 Flat Rollout 正确率，Y 轴为树方法正确率，颜色深浅表示该题生成的轨迹数量。虚线为 y=x 参考线。BFS 与 Flat 的 Pearson 相关性为 0.950，MCTS 为 0.915。大部分点在对角线上方，说明树方法整体正确率略高于 Flat。MCTS 散点更分散（方差更大），部分原因是轨迹数不稳定（颜色深的点偏离更远）。
@@ -22,8 +22,14 @@
 ### `token_efficiency.png`
 **计算效率对比。** 左图箱线图展示三种方法的每题 token 开销：Flat 中位数约 170K token，BFS 和 MCTS 中位数约 25K，约为 Flat 的 12-15%。右图散点图展示逐题的 token 比率（Tree/Flat），BFS 均值 14.9%，MCTS 均值 14.6%。树方法通过前缀共享大幅降低了计算成本。
 
-### `purity_analysis.png`
-**Purity 分析：树方法何时丢失 RL 信号？** 左图柱状图展示三种方法的 pure 题目数（adv_std=0，即所有轨迹全对或全错，GRPO advantage 为 0，无训练信号）：Flat 5 题，BFS 14 题，MCTS 24 题。中间散点图展示 MCTS 的轨迹数与 purity 的关系——纯组（红叉）在各个轨迹数量级都存在，并非只出现在轨迹少的题目上，高准确率题（全对）和低准确率题（全错）都容易变纯。右图展示丢失信号的题目在 Flat 中的原始正确率分布：大部分集中在极端值（接近 0% 或 90%+），即本来就接近全对/全错的题目。
+### `no_advantage_analysis.png`
+**No-Advantage 分析：拆分为 All-Correct（好）vs All-Wrong（坏）。** 这是关键的分析图，纠正了之前把"无信号"一概视为坏事的误解。
+
+- **左图**（堆叠柱状图）：将每种方法的 no-advantage 题目按结果拆分。绿色为 all-correct（模型完美解决，128 条全对），红色为 all-wrong（模型完全失败，128 条全错）。Flat 5 题全是 all-wrong（基础模型没能完美解决任何一题）；BFS 14 题中 5 个 all-correct + 9 个 all-wrong；MCTS 24 题中 11 个 all-correct + 13 个 all-wrong。**关键洞察**：树方法的"无信号"很大一部分是因为模型解决了问题，这是 RL 训练的目标本身（GRPO 信号消失只是这个目标的副作用）。
+
+- **中图**（柱状图）：Tree vs Flat 的结果差异。"newly all-correct"（绿）表示树方法把原本 Flat 没解决的题变成了 100% 正确率（BFS 5 题，MCTS 11 题）；"newly all-wrong"（红）表示树方法把原本 Flat 有信号的题变成了完全失败（BFS 4 题，MCTS 8 题）。**树方法新增的 all-correct 多于新增的 all-wrong**，说明 tree-based search 整体上提升了模型的解题能力。
+
+- **右图**（直方图）：真正坏的情况——树方法变成 all-wrong 的题在 Flat 中原本的正确率分布。可以看到这些题在 Flat 中本来就偏难（大部分 <50%），但还有信号，树方法的随机性让它们彻底失败。
 
 ### `advantage_distributions.png`
 **6 道代表性题目的 GRPO Advantage 分布直方图。** 选取了 6 种典型情况：三方法一致（如 Problem 11 全错）、BFS 大幅优于 Flat、MCTS 大幅优于 Flat、MCTS 大幅劣于 Flat、中等难度题、困难题。每个子图中三种颜色的直方图叠加显示 advantage 值的分布密度，图例标注了正确率和轨迹数。可以看到当正确率不同时，advantage 分布的形状（二值分布的两个 spike 的高度比）会发生偏移。
