@@ -168,21 +168,51 @@ def main():
         agg = all_results[stage]
         depths = sorted(d for d in agg.keys() if d <= max_depth_to_plot)
 
-        # W(d) - average width
-        w_vals = [np.mean(agg[d]["widths"]) for d in depths]
+        def mean_std(vals):
+            if not vals:
+                return 0.0, 0.0
+            return float(np.mean(vals)), float(np.std(vals))
+
+        w_stats = [mean_std(agg[d]["widths"]) for d in depths]
+        w_vals = [m for m, _ in w_stats]
+        w_err = [s for _, s in w_stats]
         axes[0, 0].plot(depths, w_vals, "o-", color=colors[stage], label=labels[stage], markersize=4)
+        axes[0, 0].fill_between(
+            depths,
+            [max(0, m - s) for m, s in w_stats],
+            [m + s for m, s in w_stats],
+            color=colors[stage], alpha=0.15, linewidth=0,
+        )
 
-        # B(d) - average branching factor
-        b_vals = [np.mean(agg[d]["branching_factors"]) if agg[d]["branching_factors"] else 0 for d in depths]
+        b_stats = [mean_std(agg[d]["branching_factors"]) for d in depths]
+        b_vals = [m for m, _ in b_stats]
         axes[0, 1].plot(depths, b_vals, "o-", color=colors[stage], label=labels[stage], markersize=4)
+        axes[0, 1].fill_between(
+            depths,
+            [max(0, m - s) for m, s in b_stats],
+            [m + s for m, s in b_stats],
+            color=colors[stage], alpha=0.15, linewidth=0,
+        )
 
-        # S(d) - average surviving rollouts
-        s_vals = [np.mean(agg[d]["surviving"]) for d in depths]
+        s_stats = [mean_std(agg[d]["surviving"]) for d in depths]
+        s_vals = [m for m, _ in s_stats]
         axes[1, 0].plot(depths, s_vals, "o-", color=colors[stage], label=labels[stage], markersize=4)
+        axes[1, 0].fill_between(
+            depths,
+            [max(0, m - s) for m, s in s_stats],
+            [m + s for m, s in s_stats],
+            color=colors[stage], alpha=0.15, linewidth=0,
+        )
 
-        # P(d) - average purity
-        p_vals = [np.mean(agg[d]["purities"]) if agg[d]["purities"] else 0.5 for d in depths]
+        p_stats = [mean_std(agg[d]["purities"]) if agg[d]["purities"] else (0.5, 0.0) for d in depths]
+        p_vals = [m for m, _ in p_stats]
         axes[1, 1].plot(depths, p_vals, "o-", color=colors[stage], label=labels[stage], markersize=4)
+        axes[1, 1].fill_between(
+            depths,
+            [max(0, m - s) for m, s in p_stats],
+            [min(1, m + s) for m, s in p_stats],
+            color=colors[stage], alpha=0.15, linewidth=0,
+        )
 
     axes[0, 0].set_title("W(d): Avg Width at Depth d")
     axes[0, 0].set_xlabel("Depth")
@@ -209,7 +239,7 @@ def main():
     axes[1, 1].legend()
     axes[1, 1].grid(True, alpha=0.3)
 
-    fig.suptitle("Tree Structure Statistics Across Training Stages (400 problems, syntactic clustering)", fontsize=13)
+    fig.suptitle("Tree Structure Statistics Across Training Stages (400 problems, syntactic clustering)\nLine = mean, shaded band = ±1 std across problems/nodes", fontsize=13)
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, "tree_curves_WBSP.png"), dpi=150, bbox_inches="tight")
     print(f"\nSaved tree_curves_WBSP.png")
