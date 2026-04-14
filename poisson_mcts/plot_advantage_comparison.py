@@ -253,32 +253,36 @@ def plot_no_advantage_analysis(results, out_dir):
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))
 
     fa = get_accs(results, "flat")
+    n_problems = len(results)
     splits = {m[0]: split_no_adv(results, m[0]) for m in methods}
+
+    def pct(count):
+        return 100.0 * count / max(n_problems, 1)
 
     # Panel 1: stacked all-correct (green) + all-wrong (red) per method
     ax = axes[0]
     short_names = [m[3] for m in methods]
-    correct_counts = [int(splits[m[0]][0].sum()) for m in methods]
-    wrong_counts = [int(splits[m[0]][1].sum()) for m in methods]
+    correct_pcts = [pct(int(splits[m[0]][0].sum())) for m in methods]
+    wrong_pcts = [pct(int(splits[m[0]][1].sum())) for m in methods]
     x = np.arange(len(methods))
-    ax.bar(x, correct_counts, color="#4CAF50", alpha=0.85,
+    ax.bar(x, correct_pcts, color="#4CAF50", alpha=0.85,
            label="All correct (model solved ✓)", edgecolor="white")
-    ax.bar(x, wrong_counts, bottom=correct_counts, color="#E53935", alpha=0.85,
+    ax.bar(x, wrong_pcts, bottom=correct_pcts, color="#E53935", alpha=0.85,
            label="All wrong (model failed ✗)", edgecolor="white")
-    for i, (c, w) in enumerate(zip(correct_counts, wrong_counts)):
+    for i, (c, w) in enumerate(zip(correct_pcts, wrong_pcts)):
         if c > 0:
-            ax.text(i, c / 2, str(c), ha="center", va="center",
+            ax.text(i, c / 2, f"{c:.0f}%", ha="center", va="center",
                     fontsize=11, fontweight="bold", color="white")
         if w > 0:
-            ax.text(i, c + w / 2, str(w), ha="center", va="center",
+            ax.text(i, c + w / 2, f"{w:.0f}%", ha="center", va="center",
                     fontsize=11, fontweight="bold", color="white")
-        ax.text(i, c + w + 0.5, f"total: {c + w}", ha="center", fontsize=9)
+        ax.text(i, c + w + 0.5, f"total: {c + w:.0f}%", ha="center", fontsize=9)
     ax.set_xticks(x)
     ax.set_xticklabels(short_names)
-    ax.set_ylabel("# No-Advantage Problems")
-    ax.set_title("No-Advantage: Good vs Bad")
+    ax.set_ylabel("% No-Advantage Problems")
+    ax.set_title(f"No-Advantage: Good vs Bad (of {n_problems} problems)")
     ax.legend(fontsize=9, loc="upper left")
-    max_total = max(c + w for c, w in zip(correct_counts, wrong_counts)) or 5
+    max_total = max(c + w for c, w in zip(correct_pcts, wrong_pcts)) or 5
     ax.set_ylim(0, max_total * 1.4)
 
     # Panel 2: newly all-correct vs newly all-wrong per tree method
@@ -290,13 +294,14 @@ def plot_no_advantage_analysis(results, out_dir):
             continue
         corr, wrong = splits[key]
         cats.extend([f"{short}\nnewly\nall-correct", f"{short}\nnewly\nall-wrong"])
-        vals.extend([int((corr & ~f_corr).sum()), int((wrong & ~f_wrong).sum())])
+        vals.extend([pct(int((corr & ~f_corr).sum())),
+                     pct(int((wrong & ~f_wrong).sum()))])
         colors_bar.extend(["#4CAF50", "#E53935"])
     bars = ax.bar(cats, vals, color=colors_bar, alpha=0.85, edgecolor="white")
     for bar, v in zip(bars, vals):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.2,
-                str(v), ha="center", fontsize=11, fontweight="bold")
-    ax.set_ylabel("# Problems")
+                f"{v:.0f}%", ha="center", fontsize=11, fontweight="bold")
+    ax.set_ylabel("% Problems")
     ax.set_title("Tree vs Flat: Outcome Divergence")
     ax.set_ylim(0, (max(vals) if vals else 1) * 1.3)
 
@@ -310,10 +315,10 @@ def plot_no_advantage_analysis(results, out_dir):
         newly_wrong = wrong & ~f_wrong
         if newly_wrong.sum() > 0:
             ax.hist(fa[newly_wrong], bins=bins, alpha=0.5, color=color,
-                    label=f"{short} now all-wrong ({int(newly_wrong.sum())})",
+                    label=f"{short} now all-wrong ({pct(int(newly_wrong.sum())):.0f}%)",
                     edgecolor="white")
     ax.set_xlabel("Flat Rollout Accuracy")
-    ax.set_ylabel("Count")
+    ax.set_ylabel("Count of problems")
     ax.set_title("Truly Bad Cases: Flat Accuracy of\nTree's newly-all-wrong problems")
     ax.legend(fontsize=9)
 
@@ -424,6 +429,7 @@ def plot_summary_table(results, out_dir):
         ma = get_accs(results, key)
         pearsons[key] = pearsonr(fa_list, ma)[0]
 
+    n_problems = len(results)
     rows = {
         "Mean Accuracy": [],
         "Mean #Trajectories": [],
@@ -440,8 +446,10 @@ def plot_summary_table(results, out_dir):
         correct, wrong = split_no_adv(results, key)
         rows["Mean Accuracy"].append(f"{accs.mean():.1%}")
         rows["Mean #Trajectories"].append(f"{n_traj.mean():.0f}")
-        rows["All-Correct ✓\n(model solved)"].append(f"{int(correct.sum())}")
-        rows["All-Wrong ✗\n(model failed)"].append(f"{int(wrong.sum())}")
+        rows["All-Correct ✓\n(model solved)"].append(
+            f"{100 * correct.sum() / n_problems:.0f}%")
+        rows["All-Wrong ✗\n(model failed)"].append(
+            f"{100 * wrong.sum() / n_problems:.0f}%")
         rows["Mean Tokens"].append(f"{toks.mean()/1000:.0f}K")
         if key == "flat":
             rows["Token Ratio\n(vs Flat)"].append("--")
