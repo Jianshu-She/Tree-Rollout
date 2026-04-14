@@ -472,7 +472,7 @@ def plot_summary_table(results, out_dir):
         table[0, j].set_text_props(color="white", fontweight="bold")
     ax.set_title("Key Metrics", fontsize=13, pad=20)
 
-    # Right: accuracy bucket bars
+    # Right: accuracy bucket bars (as % of problems)
     ax2 = fig.add_subplot(gs[1])
     bins_edges = [0, 0.01, 0.2, 0.4, 0.6, 0.8, 0.99, 1.01]
     bin_labels = ["0%", "1-19%", "20-39%", "40-59%", "60-79%", "80-99%", "100%"]
@@ -482,11 +482,12 @@ def plot_summary_table(results, out_dir):
     for i, (key, label, color, _, _) in enumerate(methods):
         accs = get_accs(results, key)
         counts = np.histogram(accs, bins=bins_edges)[0]
-        ax2.bar(x + offsets[i], counts, w, color=color, alpha=0.85, label=label)
+        pcts = 100.0 * counts / max(n_problems, 1)
+        ax2.bar(x + offsets[i], pcts, w, color=color, alpha=0.85, label=label)
     ax2.set_xticks(x)
     ax2.set_xticklabels(bin_labels)
     ax2.set_xlabel("Accuracy Bucket")
-    ax2.set_ylabel("# Problems")
+    ax2.set_ylabel("% of Problems")
     ax2.set_title("Accuracy Distribution by Bucket")
     ax2.legend(fontsize=9)
 
