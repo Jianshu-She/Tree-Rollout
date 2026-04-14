@@ -143,7 +143,19 @@
 
 ## 3. 100-题 4-方法实验的**核心结果**
 
-### Summary 表
+### 核心 claim（以 flat rollout 作为 compute reference）
+
+| 方法 | Mean Accuracy | Compute (% flat) | Pareto 判决 |
+|---|---|---|---|
+| **Flat** | 45.6% | **100%** (reference) | baseline |
+| **BFS** | **50.8%** (+5.2pp) | **11.3%** | ✅ **支配 flat**（更好 + 更便宜）|
+| **NegBin** | **51.7%** (+6.1pp) | **10.1%** | ✅ **支配 flat**（更好 + 更便宜）|
+| **DeepSearch** | 44.3% (−1.3pp) | 29.4% | ❌ 比 faithful 贵 3x 且 accuracy 反而差 |
+
+**一句话 claim**：
+> Faithful methods 用不到 flat 11% 的计算拿到比 flat 高 5-6pp 的 accuracy；DeepSearch 用 3 倍 faithful 的计算换来更差的 accuracy。
+
+### 详细 Summary 表
 
 | 方法 | Mean Accuracy | #Traj | All-Correct ✓ | All-Wrong ✗ | Mean Tokens | Token Ratio | Pearson vs Flat |
 |---|---|---|---|---|---|---|---|
@@ -152,13 +164,30 @@
 | **NegBin** | **51.7%** (+6.1pp) | 44 | 9 | 15 | 22K | **10.1%** | **0.933** |
 | **DeepSearch** | 44.3% (**−1.3pp**) | 98 | **14** | **17** | **64K** | **29.4%** | **0.759** |
 
+### Compute-matched robustness check (Item #10)
+
+补充实验：post-hoc bootstrap subsample 到不同 compute budget，验证 "faithful 支配 flat" 在所有 compute 水平上都成立。关键数据点：
+
+| Budget | Flat | BFS | NegBin | DeepSearch |
+|---|---|---|---|---|
+| **5K** (极限低) | 47.2% σ=0.45 n=4 nA=55 | 50.5% σ=0.63 n=11 nA=36 | 52.1% σ=0.64 n=12 nA=36 | 44.9% σ=0.48 n=16 nA=52 |
+| **22K** (faithful 自然水平) | 45.5% σ=0.82 n=17 nA=18 | **50.9%** σ=0.80 n=35 nA=20 | **51.7%** σ=0.74 n=32 nA=26 | 44.2% σ=0.61 n=50 nA=39 |
+| **220K** (flat 自然水平) | 45.5% σ=0.94 n=112 nA=6 | 50.8% σ=0.83 n=43 nA=17 | 51.7% σ=0.76 n=44 nA=24 | 44.2% σ=0.68 n=96 nA=32 |
+
+**关键观察**：
+- **Flat 即使在 220K 全 budget 下 accuracy 也只能到 45.5%，永远追不上 BFS/NegBin 的 50.8/51.7%**
+- Flat 在 5K 下只有 4 条 trajectory → σ=0.45（信号崩溃），55 题 no-advantage
+- BFS/NegBin 在 5K 下就已接近最终 accuracy（只需 ~10-12 条 trajectory）
+- DeepSearch 在所有 budget 下都是最低 accuracy
+
 ### 关键图表
 
 | 图 | 文件 | 显示的故事 |
 |---|---|---|
-| **Summary** | `summary.png` | 4 方法的 7 个核心指标 + accuracy bucket 分布。一眼看到 DeepSearch 被 faithful methods 碾压。 |
+| ⭐ **Pareto** | `pareto_accuracy_vs_tokens.png` | **Paper 的 main figure**。x=compute (% of flat)，y=accuracy。BFS/NegBin 在左上"DOMINATES flat"象限，DeepSearch 比 flat 还差。 |
+| **Summary** | `summary.png` | 4 方法的 7 个核心指标 + accuracy bucket 分布。 |
 | **Drift Matrix** | `drift_correlation_matrix.png` | 4×4 Pearson 相关性矩阵。Flat/BFS/NegBin 三者互相 >0.93，DeepSearch 和所有人都只有 0.73-0.79 — 明显 outlier。 |
-| **Pareto** | `pareto_accuracy_vs_tokens.png` | accuracy vs total tokens 散点图，DeepSearch 在右下（高成本、低 accuracy）区域。 |
+| **Compute-matched** | `compute_matched_analysis.png` | Supplementary robustness check。4 个 panel 覆盖 accuracy / adv_std / no-advantage / n vs compute budget 曲线。 |
 | **No-Advantage** | `no_advantage_analysis.png` | 4 方法的 all-correct 和 all-wrong 拆分柱状图，DeepSearch 的"灾难性失败"最多。 |
 | **Accuracy Bucket** | `summary.png` 右侧 | DeepSearch 是 **bimodal**（0% 和 100% 桶最多），说明它"要么全对要么全错"，这是 RL no-advantage 的灾难场景。 |
 
