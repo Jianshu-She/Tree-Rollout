@@ -491,30 +491,92 @@ def plot_summary_table(results, out_dir):
 
 
 # ---------------------------------------------------------------------
-# NEW Plot 9: Tokens vs accuracy Pareto
+# NEW Plot 9: Pareto with Flat Rollout as the compute reference
 # ---------------------------------------------------------------------
 def plot_pareto(results, out_dir):
-    """Per-problem scatter of (total_tokens, accuracy) for each method.
-    If a tree method is Pareto-dominated (lower accuracy AND more tokens
-    than a different method on the same problem), that's a side-effect."""
-    methods = active_methods(results)
-    fig, ax = plt.subplots(figsize=(10, 7))
+    """Pareto scatter with Flat Rollout as the compute reference.
 
+    X axis: compute as % of Flat Rollout compute (log scale, Flat = 100%)
+    Y axis: mean accuracy across 100 problems
+    Each point = one method; vertical/horizontal lines through Flat show
+    the "dominance quadrant" — any method upper-left of Flat is strictly
+    better (higher acc, lower compute).
+    """
+    methods = active_methods(results)
+    flat_tokens = get_tokens(results, "flat").mean()
+    flat_acc = get_accs(results, "flat").mean()
+
+    fig, ax = plt.subplots(figsize=(11, 7))
+
+    # Light per-problem scatter in the background (small alpha)
     for key, label, color, short, _ in methods:
         toks = get_tokens(results, key)
         accs = get_accs(results, key)
-        ax.scatter(toks, accs, s=22, alpha=0.55, color=color,
-                   label=f"{label}: acc={accs.mean():.1%}, tok={toks.mean()/1000:.0f}K",
-                   edgecolors="white", linewidths=0.3)
+        compute_pct = 100.0 * toks / flat_tokens
+        ax.scatter(compute_pct, accs, s=18, alpha=0.15, color=color,
+                   edgecolors="none")
+
+    # Main: mean point per method + error bars (per-problem std)
+    for key, label, color, short, _ in methods:
+        toks = get_tokens(results, key)
+        accs = get_accs(results, key)
+        compute_pct = 100.0 * toks / flat_tokens
+        mean_c = compute_pct.mean()
+        mean_a = accs.mean()
+        std_a = accs.std() / np.sqrt(len(accs))  # SEM
+
+        ax.errorbar(
+            mean_c, mean_a, yerr=std_a, fmt="o",
+            color=color, markersize=18, mew=2.5, capsize=6,
+            markerfacecolor=color, markeredgecolor="white",
+            ecolor=color, zorder=5,
+        )
+        # Annotate next to the point — manual offsets to avoid overlap
+        offset_map = {
+            "flat":         (14,  -4, "left",  "center"),
+            "bfs_tree":     (14,  -20, "left",  "top"),
+            "poisson_mcts": (14,  20, "left",  "bottom"),
+            "deepsearch":   (14,  4, "left",  "center"),
+        }
+        offset_x, offset_y, ha, va = offset_map.get(key, (8, 0, "left", "center"))
+        ax.annotate(
+            f"{label}\nacc={mean_a:.1%}, compute={mean_c:.1f}%",
+            xy=(mean_c, mean_a), xytext=(offset_x, offset_y),
+            textcoords="offset points", fontsize=10, ha=ha, va=va,
+            color=color, fontweight="bold",
+        )
+
+    # Reference lines through Flat
+    ax.axhline(flat_acc, color="#4C72B0", ls="--", lw=1.2, alpha=0.6)
+    ax.axvline(100.0, color="#4C72B0", ls="--", lw=1.2, alpha=0.6)
+
+    # Quadrant labels: upper-left = dominates flat; rest labels explain
+    ax.text(5.5, 0.68, "DOMINATES flat\n(better + cheaper)",
+            fontsize=10, ha="center", va="center",
+            color="#2E7D32", fontweight="bold",
+            bbox=dict(facecolor="#E8F5E9", edgecolor="#2E7D32",
+                      boxstyle="round,pad=0.3", alpha=0.8))
+    ax.text(5.5, 0.3, "same compute,\nlower acc",
+            fontsize=9, ha="center", va="center",
+            color="#757575", alpha=0.7)
+    ax.text(300, 0.68, "worse cost /\nacc trade-off",
+            fontsize=9, ha="center", va="center",
+            color="#757575", alpha=0.7)
+    ax.text(300, 0.3, "strictly worse than flat\n(worse + more expensive)",
+            fontsize=9, ha="center", va="center",
+            color="#C62828", alpha=0.7)
 
     ax.set_xscale("log")
-    ax.set_xlabel("Total Tokens per Problem (log scale)")
-    ax.set_ylabel("Per-Problem Accuracy")
-    ax.set_title("Pareto: Accuracy vs Token Cost (per problem × per method)",
-                 fontsize=14, fontweight="bold")
-    ax.grid(True, alpha=0.3)
-    ax.legend(fontsize=10, loc="lower right")
-    ax.set_ylim(-0.05, 1.05)
+    ax.set_xlabel("Compute (% of Flat Rollout)", fontsize=12)
+    ax.set_ylabel("Mean Accuracy (100 problems)", fontsize=12)
+    ax.set_title(
+        "Pareto Frontier: Accuracy vs Compute (Flat Rollout = 100% reference)\n"
+        "Error bars = SEM; faded dots = per-problem observations",
+        fontsize=13, fontweight="bold",
+    )
+    ax.grid(True, alpha=0.3, which="both")
+    ax.set_xlim(3, 400)
+    ax.set_ylim(0.25, 0.75)
     fig.tight_layout()
     fig.savefig(f"{out_dir}/pareto_accuracy_vs_tokens.png", bbox_inches="tight")
     plt.close(fig)
