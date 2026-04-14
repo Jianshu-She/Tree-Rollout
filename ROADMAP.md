@@ -168,28 +168,36 @@ The "advanced" method that goes beyond faithfulness for actual gains, while stil
 
 ## Immediate Next Steps (Priority Order)
 
-1. ✅ **[HIGH] Split "no-advantage" into all-correct vs all-wrong** for the 100-problem analysis
-   - ✅ Updated `poisson_mcts/plot_advantage_comparison.py` (added `plot_no_advantage_analysis`)
-   - ✅ Replaced `purity_analysis.png` with `no_advantage_analysis.png`
-   - ✅ Updated `summary.png` table to split All-Correct ✓ / All-Wrong ✗
-   - ✅ Updated README with new terminology and findings
-
-2. **[HIGH] Rename Poisson MCTS → NegBin MCTS** across codebase
-   - Files: `poisson_mcts_engine.py`, `poisson_mcts_tree.py`, output dirs
-   - Plots and READMEs
-
-3. **[HIGH] Add std bars to WBSP / branching curves**
-   - Update plots in `figures/training_evolution/`, `figures/branching_analysis/`
-
-4. **[MEDIUM] Split WBSP plots by problem difficulty** (easy/hard buckets)
-
-5. **[MEDIUM] Add 3rd candidate distribution** for branching factor fitting + statistical comparison
-
-6. **[MEDIUM] Implement cluster entropy MCTS baseline**
-
+1. ✅ **Split "no-advantage" into all-correct vs all-wrong** — `plot_no_advantage_analysis` + README
+2. ⏸ **Rename Poisson MCTS → NegBin MCTS** (display labels done; code rename skipped for now)
+3. ✅ **Add std bars to WBSP / branching curves** — commit `0c397a8`
+4. ✅ **Split WBSP plots by problem difficulty** (easy/medium/hard) — commit `7100080`
+5. ✅ **Add 3rd candidate distribution** (Geometric) + AIC comparison — commit `0924159`
+6. ✅ **DeepSearch MCTS as literature baseline** (arxiv 2509.25454) — commit `a4e6f8b`
 7. **[MEDIUM] Investigate non-parametric distribution fitting** (Raul's suggestion)
-
 8. **[LOW for now] Plan end-to-end RL training infrastructure** — needs sustained GPU allocation
+
+---
+
+## Part 3.5: Parameter Robustness & Fairness of Comparison (2026-04-14)
+
+Two critiques surfaced after the 100-problem 4-method run:
+1. **Parameter drift**: tree-method hyperparameters (`alpha`, `C`, `bf_temp`, `branching_factors`) were fit on step_0 but will be used throughout RL training. Policy drift over training steps means step_0-optimal params may not be step_120-optimal.
+2. **Trajectory count mismatch**: Flat produces 128 trajectories, BFS ~43, NegBin ~44, DeepSearch ~98. "Same n" framing is unfair to tree methods; the right framing is **"same compute"**.
+
+### Item #9: Parameter sensitivity & per-stage BO
+- **A (fix)**: ✅ already have step_0 BO params in `run_bo.sh`
+- **B (per-stage offline BO)**: ☐ run BO on step_40 / step_80 / step_120 checkpoints; produce (alpha, C, bf_temp) per stage; show as ablation "fixed vs scheduled params"
+- **C (online BO)**: ☐ wire lightweight BO into Part 4 RL training loop; update params every K training steps based on reward signal
+
+### Item #10: Same-compute reframing
+- ☐ Write `poisson_mcts/compute_matched_analysis.py`: post-hoc analysis of existing 100-problem data at matched compute budgets (post-hoc subsample Flat/DeepSearch to the tree-method compute level)
+- ☐ New plot: accuracy + adv_std + no-advantage rate as a function of token budget, per method
+- ☐ Update `PROGRESS_REPORT.md` with compute-matched findings
+- ☐ **Paper reframing**: abandon "same n = 128", adopt "same compute T" as the core comparison axis
+
+### Item #11: Deprecated — trajectory count alignment
+- Obsolete once Item #10 is done. The compute-matched framing makes "BFS/NegBin don't reach 128" a non-issue — tree methods produce the optimal n for their compute, and flat is artificially compute-inflated at n=128.
 
 ---
 
