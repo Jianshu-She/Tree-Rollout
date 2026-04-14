@@ -237,6 +237,52 @@ Offline 100-题对比**只是预测性分析**。它告诉我们：如果拿这�
 
 ---
 
+## 4.5. ⚠️ Open Question: Drift 到底是不是坏事？
+
+### 问题
+
+我们目前 paper 里隐含地假设 "drift = 坏"（DS 的 Pearson(per-problem accuracy) 低 → 不好），但这个跳跃**没有直接证据**。Pearson 低只是一个**描述性**事实：DS 找到的难题和 flat 找到的难题不同——但这本身是好是坏？**光看这一个数字区分不了**。
+
+严格地说，我们目前只能 claim：
+> ❌ ~~"drift is bad"~~
+> ✅ "drift is a measurable deviation from flat rollout behavior, and in our offline observations it is correlated with several downstream RL costs"
+
+### 三种证明 drift 是坏的路径
+
+#### 路径 1: Offline 间接证据（部分已有）
+Drift 本身不能直接证明坏，但它的**下游后果**是可测且明显坏的：
+
+| 观察 | 数值（DS vs faithful） | 为什么是坏 |
+|---|---|---|
+| **No-advantage rate** | DS 31% vs faithful 17-24% | 31% 的题目没有 RL 信号 → training 每 step 有 31% 的 prompt 完全不贡献梯度 |
+| **Token efficiency** | DS 29% vs faithful 10-11% | 相同 GPU 时间下，DS 只能跑 flat 的 3.4 倍 step，faithful 能跑 10 倍 |
+| **Accuracy distribution bimodal** | DS 集中在 0% 和 100% 两端 | Bimodal = 2 个极端桶 → no-advantage 的灾难场景 |
+
+**强度**：中等。审稿人可能接受，也可能反驳"这些只是 correlation，不是 causation"。
+
+#### 路径 2: Training / evaluation distribution mismatch（offline 可做一半）
+- 用 DS rollout 训一个 "DS-trained policy"
+- 用 **flat rollout** 去 evaluate 它（因为 flat 是 benchmark 的标准）
+- 如果 training/eval 不一致导致 accuracy 下降，说明 drift 引入了 distribution mismatch
+- **强度**：强。但需要 Part 4 RL 训练。
+
+#### 路径 3: Direct RL comparison（gold standard）
+- 用 4 种 rollout 方法各训一个 policy，用同样的 flat-rollout eval 评估
+- 如果 π_DS < π_flat < π_BFS/NegBin → **drift 是坏的有实锤**
+- **强度**：决定性。**Part 4 的主实验**。
+
+### 对 paper narrative 的影响
+
+| 当前 paper 状态 | 能 claim 什么 |
+|---|---|
+| 只有 offline 100 题 step_0 数据 | "drift 存在且伴随 downstream cost" （弱） |
+| + 后台实验（cross-stage drift 演化） | "drift **随训练单调恶化**，这个现象本身反常" （中） |
+| + Part 4 RL 训练完成 | "drift 直接导致 final model 性能差" （决定性） |
+
+**结论**：**Part 4 RL 训练从 "medium priority" 升级为 "paper 的必要条件"**。没有 Part 4，我们的核心 claim 在严格意义上是弱的。
+
+---
+
 ## 5. 待完成工作（Part 4 onwards）
 
 ### 高优先级

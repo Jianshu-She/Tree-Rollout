@@ -175,7 +175,7 @@ The "advanced" method that goes beyond faithfulness for actual gains, while stil
 5. ✅ **Add 3rd candidate distribution** (Geometric) + AIC comparison — commit `0924159`
 6. ✅ **DeepSearch MCTS as literature baseline** (arxiv 2509.25454) — commit `a4e6f8b`
 7. **[MEDIUM] Investigate non-parametric distribution fitting** (Raul's suggestion)
-8. **[LOW for now] Plan end-to-end RL training infrastructure** — needs sustained GPU allocation
+8. **[HIGH — PAPER NECESSITY] Plan end-to-end RL training infrastructure** — upgraded from LOW on 2026-04-14 after realizing the current "drift" claim is only descriptive. Without Part 4 RL experiments, we cannot prove drift is harmful — we can only observe it correlates with no-advantage and token overhead. Part 4 is the only path to the gold-standard "train 4 policies, eval each, show DS-trained is worse" evidence. See `PART4_DESIGN.md` for experimental design.
 
 ---
 
