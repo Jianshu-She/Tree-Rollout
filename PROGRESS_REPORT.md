@@ -202,38 +202,58 @@
 
 ## 4. 核心结论（paper 可以写的 claim）
 
-### 4.1 关于 faithful methods（BFS + NegBin）
+### 4.1 关于 faithful methods（BFS + NegBin）— 修正后
 
-1. **Accuracy 净正**：比 flat 提升 5-6 pp，不引入 accuracy 退化
-2. **Token 效率高**：只用 flat 的 10-11% tokens，即 90% 计算节省
-3. **行为忠实**：per-problem accuracy 与 flat 的 Pearson 相关性 0.93-0.95，说明树方法和 flat **解决的是同一批题**
-4. **No-advantage 代价可接受**：17-24 题（其中超过一半是 all-correct，即模型解决了）
+1. **Accuracy 优势随训练消失**：step_0 上 +5-6pp（在 base model 上有探索价值），step_40+ 变为 ±0 到 −3pp（模型自信后无探索空间）
+2. **Token 效率高且全程稳定**：所有 stage 都只用 flat 的 ~15% tokens，即 **85% 计算节省**
+3. **行为忠实**：per-problem accuracy Pearson 0.87-0.95（全 stage），和 flat 解决的是同一批题
+4. **No-advantage 率随训练飙升**：step_0 的 17-24% → step_120 的 **70-75%**。原因不是方法差，而是 **n 小 (~43) + policy 变 peaky → 小样本容易全同**
 
-### 4.2 关于 DeepSearch（文献 baseline）
+**修正后的 claim**：
+> ~~"faithful methods 在 accuracy 上支配 flat"~~
+> ✅ "faithful methods 用 15% compute 达到 flat ±3pp 的 accuracy；compute 效率全程稳定"
 
-1. **Accuracy 负增长**：比 flat **还低 1.3pp**（faithful methods 都是正增长）
-2. **Token 开销 ~3x faithful**：29.4% vs 10-11%（虽然比 flat 省，但远高于我们的方法）
-3. **GRPO 信号最弱**：adv_std 0.69（4 方法中最低）
-4. **Drift 明显**：Pearson vs Flat 只有 0.759，行为偏离了 flat rollout 的自然分布
-5. **Bimodal 分布**：accuracy 0% 和 100% 两个桶最多 → 31% 的题目没有 RL 信号（all-correct + all-wrong = 14+17）
-6. **文献无法解释**：DeepSearch 原论文 report 的是 RL 训练**收敛后**的 benchmark accuracy，而不是**训练初期的 rollout 质量** → 我们的 offline 分析揭示了训练 *过程中* 的隐藏代价
+### 4.2 关于 DeepSearch（文献 baseline）— 修正后
 
-### 4.3 关于分布拟合（Part 1）
+1. **Accuracy 差距单调扩大**：step_0 的 −1.3pp → step_120 的 **−8.0pp**。这是最 novel 的发现。
+2. **Token 开销 ~3x faithful**：~40% of flat，全 stage 稳定
+3. **Drift 在 step_0 上最明显**（Pearson 0.76），后续 stage 反而升到 0.84-0.90 — 但 accuracy gap 持续扩大。说明 DS 的问题不是"per-problem 排序错乱"而是"系统性准确率降低"。
+4. **No-advantage 率的反直觉反转**：step_120 上 DS 有 58% no-adv，反而低于 faithful (70-75%)。DS 通过 drift 人为制造 diversity（强迫 model 走"不自然的路径"）→ 更多混合结果 → 更低 no-adv → **但 accuracy 方向是错的**
+
+### 4.3 关于分布拟合（Part 1）— 不变
 
 1. D0 分支因子重尾，**必须用 NegBin**（Poisson 和 Geometric 都显著输掉）
-2. D1 分支因子中尾，**Geometric 全胜**（比 NegBin 还好，即使参数更少）
+2. D1 分支因子中尾，**Geometric 全胜**
 3. D2+ 分支因子窄，**Poisson 够用**
-4. → paper claim 从 "NegBin + Poisson" 细化为 **"NegBin @ D0 + Geometric @ D1 + Poisson @ D2+"**
 
-### 4.4 Offline 结论和 RL 训练的关系
+### 4.4 Cross-stage 核心发现（新增 2026-04-16）
 
-Offline 100-题对比**只是预测性分析**。它告诉我们：如果拿这些方法去跑 RL 训练，**DeepSearch 可能会遇到什么问题**——
+基于 4 stage × 4 method × 100 problem 的完整数据（见 `cross_stage_evolution.png`）：
 
-- 31% no-advantage 意味着每个 step 有 31% 的 prompt 完全没梯度 → policy collapse 风险
-- 0.76 的 Pearson 意味着 DeepSearch 会把 model 推向和 flat 完全不同的 trajectory 分布 → 有 style drift 风险
-- 3x 的 token 成本意味着同样 GPU 时间只能跑 1/3 的 step
+1. **Tree search 的 accuracy 价值随 policy 成熟递减**：step_0 上 faithful 有 +5-6pp 优势；step_120 上消失。这是因为 trained model 已经很自信，tree search 没探索空间。
+2. **DeepSearch 的 accuracy gap 单调扩大 (−1pp → −8pp)**：随训练恶化。这是文献中没有报告过的现象。
+3. **Compute 效率全程稳定**：BFS/NegBin ~15%，DS ~42%，不随 stage 变化。
+4. **Compute 节省 vs signal 密度 trade-off**：faithful methods 的 no-advantage 率在 step_120 达到 70-75%（因为 n 小 + 分布 peaky），但 flat 只有 31%。这不是方法的缺陷，是 **"用 signal 量换 compute 节省"的内在 trade-off**。
+5. **DS 的 "更多 signal" 是假的**：DS 在 step_120 no-adv 只有 58%，比 faithful 低。但这些 signal 来自 drift（人为制造 diversity），不是 model 的自然分布 → 用于 RL 训练可能引向错误方向。
 
-但这些预测**只有通过实际跑 RL 训练才能证实**——这是 Part 4 的任务。
+### 4.5 Paper narrative 重新定位（2026-04-16 修正）
+
+**旧 narrative**：~~"faithful methods 在 accuracy 和 compute 两个维度都支配 flat"~~
+
+**新 narrative**：
+
+> **"Tree search 的价值取决于 policy 的成熟度和 rollout 方法的 faithfulness。**
+> - 在 base model 上（高不确定性），faithful methods 同时提升 accuracy (+5-6pp) 和节省 compute (85%)。
+> - 在 trained model 上（低不确定性），faithful methods 保持 compute 效率但 accuracy 优势消失 → 核心价值变成 **'同等 accuracy，更低成本'**。
+> - Unfaithful methods (DeepSearch) 在所有 stage 上都比 flat 差，且差距随训练单调扩大。
+> - **关键 trade-off**：tree methods 用更少的 trajectory (n) 换取 compute 节省，但更少的 n 意味着 GRPO signal 更稀疏。这个 trade-off 在 policy 变 peaky 时尤为突出。"
+
+**Paper contributions（按重要性排序）**：
+1. **DeepSearch drift 随训练单调恶化的 novel finding** — 文献首次报告
+2. **Compute 效率 claim** — 15% compute, ±3pp accuracy，全 stage 稳定
+3. **Empirical characterization** — flat rollout 的自然树结构 + 分布拟合
+4. **Compute-signal trade-off 的理论洞察** — n 小 × peaky distribution → 信号塌缩
+5. **RL 训练验证**（Part 4, 未完成）— 最终证明 drift 是否有害
 
 ---
 
