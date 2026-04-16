@@ -67,11 +67,15 @@ class TreeFaithfulRollout(BaseRollout):
             device_mesh=device_mesh,
         )
 
-        # TODO Phase 3: initialize tree engines here based on self.tree_method
-        if self.tree_method not in ("flat",):
+        # Tree engine initialization
+        self.tree_engine = None
+        if self.tree_method == "bfs":
+            from verl_tree_rl.tree_engines.bfs_engine import BFSTreeEngine
+            self.tree_engine = BFSTreeEngine(engine_kwargs, tokenizer=None)
+        elif self.tree_method not in ("flat",):
             raise NotImplementedError(
                 f"Tree method '{self.tree_method}' not yet implemented. "
-                f"Available: flat. Coming soon: bfs, negbin, deepsearch."
+                f"Available: flat, bfs. Coming soon: negbin, deepsearch."
             )
 
     # ------------------------------------------------------------------
@@ -119,7 +123,16 @@ class TreeFaithfulRollout(BaseRollout):
         return self.inner_rollout.generate_sequences(prompts, **kwargs)
 
     def _generate_bfs(self, prompts: DataProto, **kwargs) -> DataProto:
-        raise NotImplementedError("BFS tree engine not yet implemented (Phase 3)")
+        """BFS tree rollout: level-wise expansion with fitted branching factors."""
+        pad_token_id = prompts.meta_info.get("pad_token_id", 0)
+        n_per_prompt = getattr(self.config, "n", 8)
+        return self.tree_engine.run(
+            prompts=prompts,
+            inner_rollout=self.inner_rollout,
+            original_response_length=self.config.response_length,
+            pad_token_id=pad_token_id,
+            n_per_prompt=n_per_prompt,
+        )
 
     def _generate_negbin(self, prompts: DataProto, **kwargs) -> DataProto:
         raise NotImplementedError("NegBin MCTS engine not yet implemented (Phase 3)")
