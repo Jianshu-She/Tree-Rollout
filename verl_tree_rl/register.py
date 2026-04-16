@@ -1,18 +1,19 @@
 """Register TreeFaithfulRollout into verl's rollout registry.
 
-Usage: import this module before verl starts. The simplest way is to
-add `import verl_tree_rl.register` to the training script or set
-PYTHONPATH to include the parent of verl_tree_rl/.
+NOTE: As of 2026-04-16, we add the registry entry directly to
+verl/workers/rollout/base.py instead of monkey-patching at runtime.
+This ensures Ray worker processes (which are separate from the main
+process) also see the registration.
 
-This adds ("tree_faithful", "sync") to verl's _ROLLOUT_REGISTRY so
-that setting `actor_rollout_ref.rollout.name=tree_faithful` in the
-hydra config will route rollout creation to our TreeFaithfulRollout.
+This file is kept for documentation and for the pre-flight check
+in run_grpo_flat.sh.
 """
 
 from verl.workers.rollout.base import _ROLLOUT_REGISTRY
 
-_ROLLOUT_REGISTRY[("tree_faithful", "sync")] = (
-    "verl_tree_rl.tree_rollout.TreeFaithfulRollout"
+assert ("tree_faithful", "sync") in _ROLLOUT_REGISTRY, (
+    "tree_faithful not found in verl's rollout registry. "
+    "Please add the entry to verl/workers/rollout/base.py"
 )
 
-print("[verl_tree_rl] Registered tree_faithful rollout into verl registry")
+print("[verl_tree_rl] Confirmed: tree_faithful is registered in verl")

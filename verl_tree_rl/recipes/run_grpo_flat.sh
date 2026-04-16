@@ -123,6 +123,7 @@ main()
     actor_rollout_ref.ref.log_prob_max_token_len_per_gpu=${infer_ppo_max_token_len} \
     actor_rollout_ref.rollout.log_prob_max_token_len_per_gpu=${infer_ppo_max_token_len} \
     actor_rollout_ref.rollout.name=tree_faithful \
+    actor_rollout_ref.rollout.mode=sync \
     +actor_rollout_ref.rollout.engine_kwargs.tree_method=${TREE_METHOD} \
     +actor_rollout_ref.rollout.engine_kwargs.inner_rollout_name=${INNER_ROLLOUT} \
     +actor_rollout_ref.rollout.engine_kwargs.inner_mode=sync \
