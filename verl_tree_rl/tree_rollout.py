@@ -72,10 +72,16 @@ class TreeFaithfulRollout(BaseRollout):
         if self.tree_method == "bfs":
             from verl_tree_rl.tree_engines.bfs_engine import BFSTreeEngine
             self.tree_engine = BFSTreeEngine(engine_kwargs, tokenizer=None)
+        elif self.tree_method == "negbin":
+            from verl_tree_rl.tree_engines.negbin_engine import NegBinMCTSEngine
+            self.tree_engine = NegBinMCTSEngine(engine_kwargs, tokenizer=None)
+        elif self.tree_method == "deepsearch":
+            from verl_tree_rl.tree_engines.deepsearch_engine import DeepSearchEngine
+            self.tree_engine = DeepSearchEngine(engine_kwargs, tokenizer=None)
         elif self.tree_method not in ("flat",):
             raise NotImplementedError(
                 f"Tree method '{self.tree_method}' not yet implemented. "
-                f"Available: flat, bfs. Coming soon: negbin, deepsearch."
+                f"Available: flat, bfs, negbin, deepsearch."
             )
 
     # ------------------------------------------------------------------
@@ -145,7 +151,27 @@ class TreeFaithfulRollout(BaseRollout):
         )
 
     def _generate_negbin(self, prompts: DataProto, **kwargs) -> DataProto:
-        raise NotImplementedError("NegBin MCTS engine not yet implemented (Phase 3)")
+        """NegBin MCTS tree rollout with UCB1 selection + fitted BF sampling."""
+        pad_token_id = prompts.meta_info.get("pad_token_id", None)
+        if pad_token_id is None:
+            pad_token_id = 0
+        return self.tree_engine.run(
+            prompts=prompts,
+            inner_rollout=self.inner_rollout,
+            original_response_length=self.config.response_length,
+            pad_token_id=int(pad_token_id),
+            n_per_prompt=1,
+        )
 
     def _generate_deepsearch(self, prompts: DataProto, **kwargs) -> DataProto:
-        raise NotImplementedError("DeepSearch engine not yet implemented (Phase 3)")
+        """DeepSearch MCTS with global frontier selection + entropy guidance."""
+        pad_token_id = prompts.meta_info.get("pad_token_id", None)
+        if pad_token_id is None:
+            pad_token_id = 0
+        return self.tree_engine.run(
+            prompts=prompts,
+            inner_rollout=self.inner_rollout,
+            original_response_length=self.config.response_length,
+            pad_token_id=int(pad_token_id),
+            n_per_prompt=1,
+        )
