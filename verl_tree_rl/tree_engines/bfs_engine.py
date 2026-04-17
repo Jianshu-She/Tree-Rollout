@@ -223,13 +223,16 @@ class BFSTreeEngine:
             batch_prompts = _pad_dps(batch_prompts, pad_token_id)
             gen_input = _stack_dps(batch_prompts)
 
-            # Generate short chunks
+            # Generate short chunks — temporarily override response_length
+            # (config is a frozen dataclass, so use object.__setattr__)
             saved_resp_len = inner_rollout.config.response_length
-            inner_rollout.config.response_length = self.tokens_per_step
+            object.__setattr__(inner_rollout.config, "response_length",
+                               self.tokens_per_step)
             try:
                 outputs = inner_rollout.generate_sequences(gen_input)
             finally:
-                inner_rollout.config.response_length = saved_resp_len
+                object.__setattr__(inner_rollout.config, "response_length",
+                                   saved_resp_len)
 
             # Process outputs: create child nodes
             next_frontier = []
@@ -301,15 +304,16 @@ class BFSTreeEngine:
                 else:
                     response_chunks.append(resp)
 
+        device = prompt_ids.device
         if response_chunks:
-            all_resp = torch.cat(response_chunks, dim=-1)
+            all_resp = torch.cat([c.to(device) for c in response_chunks], dim=-1)
             new_ids = torch.cat([prompt_ids, all_resp], dim=-1)
         else:
             new_ids = prompt_ids
 
         seq_len = new_ids.shape[1]
         new_attn = torch.ones_like(new_ids)
-        new_pos = torch.arange(seq_len, device=new_ids.device).unsqueeze(0)
+        new_pos = torch.arange(seq_len, device=device).unsqueeze(0)
 
         d = {
             "input_ids": new_ids,
@@ -344,18 +348,18 @@ class BFSTreeEngine:
                 else:
                     response_chunks.append(resp)
 
+        device = prompt_ids.device
         if response_chunks:
-            full_response = torch.cat(response_chunks, dim=-1)
+            full_response = torch.cat([c.to(device) for c in response_chunks], dim=-1)
         else:
-            full_response = torch.zeros(1, 1, dtype=prompt_ids.dtype,
-                                        device=prompt_ids.device)
+            full_response = torch.zeros(1, 1, dtype=prompt_ids.dtype, device=device)
 
         full_ids = torch.cat([prompt_ids, full_response], dim=-1)
         seq_len = full_ids.shape[1]
         resp_len = full_response.shape[1]
 
         attn = torch.ones_like(full_ids)
-        pos = torch.arange(seq_len, device=full_ids.device).unsqueeze(0)
+        pos = torch.arange(seq_len, device=device).unsqueeze(0)
 
         d = {
             "prompts": prompt_ids,
