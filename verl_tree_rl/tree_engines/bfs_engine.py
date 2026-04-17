@@ -79,7 +79,8 @@ def _pad_dps(dps: List[DataProto], pad_token_id: int) -> List[DataProto]:
 # ---------------------------------------------------------------------------
 
 class _Node:
-    __slots__ = ("uid", "depth", "delta", "children", "is_terminal", "parent")
+    """Tree node. No __slots__ so MCTS variants can add fields (visit_count,
+    q_value, entropy, etc.)."""
 
     def __init__(self, uid: str, depth: int, delta: Optional[DataProto],
                  parent: Optional["_Node"] = None):
@@ -89,6 +90,10 @@ class _Node:
         self.children: List[_Node] = []
         self.is_terminal = False
         self.parent = parent
+        # MCTS fields (used by NegBin/DeepSearch, ignored by BFS)
+        self.visit_count = 0
+        self.q_value = 0.0
+        self.entropy = 0.0
 
     def full_trajectory_deltas(self) -> List[DataProto]:
         """Collect deltas from root to this node (inclusive)."""
