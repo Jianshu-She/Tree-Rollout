@@ -100,13 +100,18 @@ class TreeFaithfulRollout(BaseRollout):
     # ------------------------------------------------------------------
 
     def generate_sequences(self, prompts: DataProto, **kwargs) -> DataProto:
-        """Generate sequences using the selected tree method.
+        """Generate sequences using the selected tree method."""
+        # call counter
+        if not hasattr(self, "_gen_call_count"):
+            self._gen_call_count = 0
+        self._gen_call_count += 1
+        bsz = prompts.batch.get("input_ids", torch.zeros(0, 0)).shape[0]
+        is_validate = prompts.meta_info.get("validate", False)
+        do_sample = prompts.meta_info.get("do_sample", True)
+        print(f"[TreeRollout] generate_sequences call #{self._gen_call_count} "
+              f"bsz={bsz} validate={is_validate} do_sample={do_sample} "
+              f"method={self.tree_method}", flush=True)
 
-        For "flat" mode, this is a pure pass-through to the inner rollout.
-        For tree modes (Phase 3+), this will run a tree engine that makes
-        multiple inner_rollout.generate_sequences calls and repacks the
-        terminal trajectories.
-        """
         if self.tree_method == "flat":
             return self._generate_flat(prompts, **kwargs)
         elif self.tree_method == "bfs":
@@ -123,15 +128,20 @@ class TreeFaithfulRollout(BaseRollout):
         return self.inner_rollout.generate_sequences(prompts, **kwargs)
 
     def _generate_bfs(self, prompts: DataProto, **kwargs) -> DataProto:
-        """BFS tree rollout: level-wise expansion with fitted branching factors."""
-        pad_token_id = prompts.meta_info.get("pad_token_id", 0)
-        n_per_prompt = getattr(self.config, "n", 8)
+        """BFS tree rollout: level-wise expansion with fitted branching factors.
+
+        NOTE: verl pre-expands the batch to bsz*n before calling generate_sequences,
+        so we return 1 trajectory per input prompt (n_per_prompt=1).
+        """
+        pad_token_id = prompts.meta_info.get("pad_token_id", None)
+        if pad_token_id is None:
+            pad_token_id = 0  # fallback
         return self.tree_engine.run(
             prompts=prompts,
             inner_rollout=self.inner_rollout,
             original_response_length=self.config.response_length,
-            pad_token_id=pad_token_id,
-            n_per_prompt=n_per_prompt,
+            pad_token_id=int(pad_token_id),
+            n_per_prompt=1,
         )
 
     def _generate_negbin(self, prompts: DataProto, **kwargs) -> DataProto:

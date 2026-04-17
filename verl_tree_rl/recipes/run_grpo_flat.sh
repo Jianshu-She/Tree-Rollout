@@ -127,6 +127,8 @@ main()
     +actor_rollout_ref.rollout.engine_kwargs.tree_method=${TREE_METHOD} \
     +actor_rollout_ref.rollout.engine_kwargs.inner_rollout_name=${INNER_ROLLOUT} \
     +actor_rollout_ref.rollout.engine_kwargs.inner_mode=sync \
+    +actor_rollout_ref.rollout.engine_kwargs.max_depth=${BFS_MAX_DEPTH:-3} \
+    +actor_rollout_ref.rollout.engine_kwargs.tokens_per_step=${BFS_TOKENS:-128} \
     actor_rollout_ref.model.path="${MODEL_PATH}" \
     actor_rollout_ref.model.enable_gradient_checkpointing=True \
     actor_rollout_ref.actor.optim.lr=1e-6 \
@@ -165,8 +167,8 @@ main()
     trainer.experiment_name="${exp_name}" \
     trainer.n_gpus_per_node="${NGPUS_PER_NODE}" \
     trainer.nnodes="${NNODES}" \
-    trainer.val_before_train=True \
-    trainer.test_freq=10 \
+    trainer.val_before_train=${VAL_BEFORE_TRAIN:-True} \
+    trainer.test_freq=${TEST_FREQ:-10} \
     trainer.save_freq=10 \
     trainer.total_epochs=10 \
     trainer.total_training_steps=${total_steps} \

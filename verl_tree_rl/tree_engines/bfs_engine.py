@@ -151,60 +151,138 @@ class BFSTreeEngine:
     ) -> DataProto:
         """Run BFS tree expansion on a batch of prompts.
 
-        Args:
-            prompts: input batch [bsz, prompt_len]
-            inner_rollout: verl rollout handle with generate_sequences()
-            original_response_length: the full response length from config
-            pad_token_id: tokenizer pad token id
-            n_per_prompt: target number of trajectories per prompt
-
-        Returns:
-            DataProto with [bsz * n_per_prompt, prompt_len + response_len]
+        Returns DataProto with FIXED shapes matching flat rollout output:
+            prompts:        [bsz * n_per_prompt, prompt_len]
+            responses:      [bsz * n_per_prompt, response_len]  (right-padded)
+            input_ids:      [bsz * n_per_prompt, prompt_len + response_len]
+            attention_mask:  [bsz * n_per_prompt, prompt_len + response_len]
+            position_ids:   [bsz * n_per_prompt, prompt_len + response_len]
         """
+        if pad_token_id is None:
+            pad_token_id = 0
+        pad_token_id = int(pad_token_id)
         bsz = prompts.batch["input_ids"].shape[0]
         prompt_len = prompts.batch["input_ids"].shape[1]
+        resp_len = original_response_length
+        total_len = prompt_len + resp_len
+        device = prompts.batch["input_ids"].device
 
-        # For each prompt, build a tree
-        all_terminal_dps = []
+        all_prompts = []
+        all_responses = []
+        all_input_ids = []
+        all_attn = []
+        all_pos = []
+        all_ntb = {k: [] for k in prompts.non_tensor_batch.keys()}
 
         for i in range(bsz):
             single_prompt = _slice_dp(prompts, i, i + 1)
-            terminals = self._build_tree(single_prompt, inner_rollout,
-                                         pad_token_id)
+            terminal_nodes = self._build_tree_nodes(single_prompt, inner_rollout,
+                                                     pad_token_id)
 
             # Sample/pad to n_per_prompt
-            if len(terminals) > n_per_prompt:
-                terminals = terminals[:n_per_prompt]
-            elif len(terminals) < n_per_prompt:
-                # Duplicate last terminal to pad
-                while len(terminals) < n_per_prompt:
-                    terminals.append(deepcopy(terminals[-1]))
+            if len(terminal_nodes) > n_per_prompt:
+                terminal_nodes = terminal_nodes[:n_per_prompt]
+            while len(terminal_nodes) < n_per_prompt:
+                terminal_nodes.append(terminal_nodes[-1] if terminal_nodes
+                                      else _Node("empty", 0, None))
 
-            all_terminal_dps.extend(terminals)
+            prompt_ids = single_prompt.batch["input_ids"]  # [1, prompt_len]
 
-        # Pad all to same length, then stack
-        all_terminal_dps = _pad_dps(all_terminal_dps, pad_token_id)
-        result = _stack_dps(all_terminal_dps)
-        return result
+            for node in terminal_nodes:
+                # Get full response token ids from root-to-leaf
+                resp_tokens = self._get_response_tokens(node, device)
 
-    def _build_tree(
+                # Truncate or pad response to resp_len
+                if resp_tokens.shape[1] > resp_len:
+                    resp_tokens = resp_tokens[:, :resp_len]
+                elif resp_tokens.shape[1] < resp_len:
+                    pad_size = resp_len - resp_tokens.shape[1]
+                    padding = torch.full((1, pad_size), pad_token_id,
+                                         dtype=resp_tokens.dtype, device=device)
+                    resp_tokens = torch.cat([resp_tokens, padding], dim=-1)
+
+                full_ids = torch.cat([prompt_ids, resp_tokens], dim=-1)
+                # attention_mask: 1 for real tokens, 0 for padding
+                resp_real_len = min(self._get_response_tokens(node, device).shape[1],
+                                    resp_len)
+                attn_resp = torch.cat([
+                    torch.ones(1, resp_real_len, dtype=torch.long, device=device),
+                    torch.zeros(1, resp_len - resp_real_len, dtype=torch.long, device=device),
+                ], dim=-1)
+                attn = torch.cat([single_prompt.batch["attention_mask"], attn_resp], dim=-1)
+                # position_ids: preserve prompt's position_ids (for left-pad handling),
+                # continue from last prompt position for response
+                prompt_pos = single_prompt.batch["position_ids"]  # [1, prompt_len]
+                base_pos = prompt_pos[0, -1].item()
+                resp_pos = torch.arange(
+                    base_pos + 1, base_pos + 1 + resp_len, device=device
+                ).unsqueeze(0)
+                pos = torch.cat([prompt_pos, resp_pos], dim=-1)
+
+                all_prompts.append(prompt_ids)
+                all_responses.append(resp_tokens)
+                all_input_ids.append(full_ids)
+                all_attn.append(attn)
+                all_pos.append(pos)
+                for k in all_ntb:
+                    all_ntb[k].append(single_prompt.non_tensor_batch[k][0])
+
+        result_dict = {
+            "prompts": torch.cat(all_prompts, dim=0),
+            "responses": torch.cat(all_responses, dim=0),
+            "input_ids": torch.cat(all_input_ids, dim=0),
+            "attention_mask": torch.cat(all_attn, dim=0),
+            "position_ids": torch.cat(all_pos, dim=0),
+        }
+        for k, v in all_ntb.items():
+            result_dict[k] = np.array(v, dtype=object)
+
+        return DataProto.from_single_dict(result_dict, meta_info=prompts.meta_info)
+
+    def _get_response_tokens(self, node: _Node, device) -> torch.Tensor:
+        """Extract concatenated response tokens from root-to-leaf path."""
+        if node.delta is None:
+            return torch.zeros(1, 0, dtype=torch.long, device=device)
+        deltas = node.full_trajectory_deltas()
+        chunks = []
+        for d in deltas:
+            resp = d.batch.get("responses")
+            if resp is None:
+                continue
+            attn = d.batch.get("attention_mask")
+            if attn is not None and resp.shape[1] <= attn.shape[1]:
+                resp_attn = attn[0, -resp.shape[1]:]
+                valid = resp_attn.bool()
+                chunks.append(resp[0][valid].unsqueeze(0).to(device))
+            else:
+                chunks.append(resp.to(device))
+        if not chunks:
+            return torch.zeros(1, 0, dtype=torch.long, device=device)
+        return torch.cat(chunks, dim=-1)
+
+    def _build_tree_nodes(
         self,
         single_prompt: DataProto,
         inner_rollout,
         pad_token_id: int,
-    ) -> List[DataProto]:
-        """Build BFS tree for one prompt. Returns list of terminal DataProtos."""
+    ) -> List[_Node]:
+        """Build BFS tree for one prompt. Returns list of terminal _Node objects."""
         uid = single_prompt.non_tensor_batch.get("uid", np.array(["0"]))[0]
         root = _Node(uid=str(uid), depth=0, delta=None)
         frontier = [root]
         terminals: List[_Node] = []
 
+        print(f"[BFS] start tree for uid={uid} max_depth={self.max_depth}", flush=True)
+
         for depth in range(self.max_depth):
             if not frontier:
+                print(f"[BFS] depth={depth}: empty frontier, stopping", flush=True)
                 break
             bf = self.get_bf(depth)
             if bf <= 0:
+                print(f"[BFS] depth={depth}: bf={bf}, stopping", flush=True)
                 break
+            print(f"[BFS] depth={depth}: frontier={len(frontier)} bf={bf} terminals_so_far={len(terminals)}", flush=True)
 
             # Build prompts for all frontier nodes
             batch_prompts = []
@@ -219,20 +297,22 @@ class BFSTreeEngine:
             if not batch_prompts:
                 break
 
+            print(f"[BFS] depth={depth}: padding {len(batch_prompts)} prompts", flush=True)
             # Pad and stack
             batch_prompts = _pad_dps(batch_prompts, pad_token_id)
             gen_input = _stack_dps(batch_prompts)
+            print(f"[BFS] depth={depth}: calling generate_sequences with bsz={gen_input.batch['input_ids'].shape[0]}", flush=True)
 
-            # Generate short chunks — temporarily override response_length
-            # (config is a frozen dataclass, so use object.__setattr__)
-            saved_resp_len = inner_rollout.config.response_length
-            object.__setattr__(inner_rollout.config, "response_length",
-                               self.tokens_per_step)
+            # Generate short chunks — override sampling_params.max_tokens directly
+            # (sampling_params is cached at init in vLLMRollout.__init__)
+            saved_max_tokens = getattr(inner_rollout.sampling_params, "max_tokens", None)
             try:
+                inner_rollout.sampling_params.max_tokens = self.tokens_per_step
                 outputs = inner_rollout.generate_sequences(gen_input)
             finally:
-                object.__setattr__(inner_rollout.config, "response_length",
-                                   saved_resp_len)
+                if saved_max_tokens is not None:
+                    inner_rollout.sampling_params.max_tokens = saved_max_tokens
+            print(f"[BFS] depth={depth}: got outputs, response shape={outputs.batch['responses'].shape}", flush=True)
 
             # Process outputs: create child nodes
             next_frontier = []
@@ -264,19 +344,21 @@ class BFSTreeEngine:
                     next_frontier.append(child)
 
             frontier = next_frontier
+            print(f"[BFS] depth={depth} done: new_frontier={len(frontier)} terminals={len(terminals)}", flush=True)
 
-        # Convert terminal nodes to full DataProtos
-        result = []
-        for node in terminals:
-            full_dp = self._assemble_full_trajectory(single_prompt, node)
-            result.append(full_dp)
+        print(f"[BFS] tree done: total terminals={len(terminals)} frontier={len(frontier)}", flush=True)
+        # If we stopped with frontier non-empty (hit max_depth), force them terminal
+        for node in frontier:
+            if not node.is_terminal:
+                node.is_terminal = True
+                terminals.append(node)
 
-        if not result:
-            # Fallback: return the prompt with empty response
-            logger.warning("BFS produced no terminals; returning empty response")
-            result = [single_prompt]
+        if not terminals:
+            logger.warning("BFS produced no terminals; returning root node")
+            terminals = [root]
 
-        return result
+        print(f"[BFS] returning {len(terminals)} terminal nodes", flush=True)
+        return terminals
 
     def _assemble_prompt(self, original_prompt: DataProto, node: _Node) -> DataProto:
         """Construct input for generation = original prompt + accumulated response chunks."""
