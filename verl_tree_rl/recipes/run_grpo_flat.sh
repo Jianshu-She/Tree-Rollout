@@ -55,7 +55,7 @@ COPUS_HOME="/mnt/weka/home/jianshu.she/copus"
 MODEL_PATH="${MODEL_PATH:-${COPUS_HOME}/verl/models/Qwen2.5-Math-7B}"
 CKPTS_DIR="${COPUS_HOME}/verl/ckpts/${project_name}/${exp_name}"
 TRAIN_FILE="${TRAIN_FILE:-${COPUS_HOME}/verl/data/dapo-math-17k.parquet}"
-TEST_FILE="${TEST_FILE:-${COPUS_HOME}/verl/data/aime-2024.parquet}"
+TEST_FILE="${TEST_FILE:-${COPUS_HOME}/verl/data/dapo-math-500-test.parquet}"
 
 # ---- Sampling ----
 temperature=1.0
@@ -152,7 +152,7 @@ main()
     actor_rollout_ref.rollout.val_kwargs.top_p=${val_top_p} \
     actor_rollout_ref.rollout.val_kwargs.top_k=${top_k} \
     actor_rollout_ref.rollout.val_kwargs.do_sample=True \
-    actor_rollout_ref.rollout.val_kwargs.n=16 \
+    actor_rollout_ref.rollout.val_kwargs.n=${VAL_N:-4} \
     actor_rollout_ref.ref.fsdp_config.param_offload=${offload} \
     actor_rollout_ref.ref.ulysses_sequence_parallel_size=${sp_size} \
     actor_rollout_ref.actor.fsdp_config.fsdp_size=${fsdp_size} \
@@ -162,7 +162,7 @@ main()
     +reward_model.reward_kwargs.overlong_buffer_cfg.penalty_factor=${overlong_penalty_factor} \
     +reward_model.reward_kwargs.overlong_buffer_cfg.log=False \
     +reward_model.reward_kwargs.max_resp_len=${max_response_length} \
-    trainer.logger='["console"]' \
+    trainer.logger="${LOGGER:-['console']}" \
     trainer.project_name="${project_name}" \
     trainer.experiment_name="${exp_name}" \
     trainer.n_gpus_per_node="${NGPUS_PER_NODE}" \
