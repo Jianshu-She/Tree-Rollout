@@ -168,8 +168,9 @@ main()
     trainer.n_gpus_per_node="${NGPUS_PER_NODE}" \
     trainer.nnodes="${NNODES}" \
     trainer.val_before_train=${VAL_BEFORE_TRAIN:-True} \
-    trainer.test_freq=${TEST_FREQ:-10} \
-    trainer.save_freq=10 \
+    trainer.test_freq=${TEST_FREQ:-20} \
+    trainer.save_freq=${SAVE_FREQ:-20} \
+    +trainer.max_actor_ckpt_to_keep=1 \
     trainer.total_epochs=10 \
     trainer.total_training_steps=${total_steps} \
     trainer.default_local_dir="${CKPTS_DIR}" \
