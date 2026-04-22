@@ -264,7 +264,8 @@ class DeepSearchEngine:
                     attn = child_dp.batch.get("attention_mask")
                     if attn is not None and attn.shape[-1] > 0:
                         resp_attn = attn[0, -resp.shape[1]:]
-                        has_eos = resp_attn[-1].item() == 0
+                        valid_tokens = int(resp_attn.sum().item())
+                        has_eos = valid_tokens < self.tokens_per_step
 
                 child = _Node(
                     uid=f"{best.uid}_r{rollout_idx}_c{j}",

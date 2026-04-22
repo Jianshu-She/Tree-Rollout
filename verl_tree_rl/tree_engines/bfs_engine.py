@@ -324,15 +324,19 @@ class BFSTreeEngine:
             for j, parent_node in enumerate(batch_nodes):
                 child_dp = _slice_dp(outputs, j, j + 1)
 
-                # Check if terminal (EOS in response or max depth)
+                # Check if terminal: EOS was hit before tokens_per_step (natural
+                # termination), NOT just because the response is padded. verl pads
+                # responses to config.response_length, so attention_mask[-1]==0
+                # always (which is NOT a valid EOS signal).
                 response_ids = child_dp.batch.get("responses")
                 has_eos = False
                 if response_ids is not None:
                     attn = child_dp.batch.get("attention_mask")
                     if attn is not None and attn.shape[-1] > 0:
-                        # response part of attention mask: 0 means padding (after EOS)
                         resp_attn = attn[0, -response_ids.shape[1]:]
-                        has_eos = resp_attn[-1].item() == 0
+                        valid_tokens = int(resp_attn.sum().item())
+                        # EOS hit if model stopped BEFORE reaching max_new_tokens
+                        has_eos = valid_tokens < self.tokens_per_step
 
                 child = _Node(
                     uid=f"{parent_node.uid}_d{depth}_c{j}",
