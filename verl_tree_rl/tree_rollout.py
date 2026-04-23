@@ -118,6 +118,12 @@ class TreeFaithfulRollout(BaseRollout):
               f"bsz={bsz} validate={is_validate} do_sample={do_sample} "
               f"method={self.tree_method}", flush=True)
 
+        # During validation, always use flat pass-through for speed.
+        # Tree methods are a training-time rollout choice; eval should measure
+        # model quality under standard inference.
+        if is_validate:
+            return self._generate_flat(prompts, **kwargs)
+
         if self.tree_method == "flat":
             return self._generate_flat(prompts, **kwargs)
         elif self.tree_method == "bfs":
