@@ -129,6 +129,8 @@ main()
     +actor_rollout_ref.rollout.engine_kwargs.inner_mode=sync \
     +actor_rollout_ref.rollout.engine_kwargs.max_depth=${BFS_MAX_DEPTH:-3} \
     +actor_rollout_ref.rollout.engine_kwargs.tokens_per_step=${BFS_TOKENS:-128} \
+    +actor_rollout_ref.rollout.engine_kwargs.fitted_params_path=${FITTED_PARAMS:-/mnt/weka/home/jianshu.she/MCTS/faithful_baseline/results/math500_full/train/poisson_beta_analysis/fitted_parameters.json} \
+    +actor_rollout_ref.rollout.engine_kwargs.training_stage=${TRAINING_STAGE:-step_0} \
     actor_rollout_ref.model.path="${MODEL_PATH}" \
     actor_rollout_ref.model.enable_gradient_checkpointing=True \
     actor_rollout_ref.actor.optim.lr=1e-6 \
