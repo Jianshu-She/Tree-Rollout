@@ -30,7 +30,7 @@ class DeepSearchEngine:
 
     def __init__(self, config: Dict[str, Any], tokenizer=None):
         self.tokens_per_step = int(config.get("tokens_per_step", 256))
-        self.max_depth = int(config.get("max_depth", 12))  # paper default 64, smaller for speed
+        self.max_depth = int(config.get("max_depth", 64))  # paper default
         self.expansion_width = int(config.get("expansion_width", 8))
         self.target_terminals = int(config.get("target_terminals", 32))
         self.max_rollouts = int(config.get("max_rollouts", 64))

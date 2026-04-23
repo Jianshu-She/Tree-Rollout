@@ -54,7 +54,7 @@ sp_size=1
 COPUS_HOME="/mnt/weka/home/jianshu.she/copus"
 MODEL_PATH="${MODEL_PATH:-${COPUS_HOME}/verl/models/Qwen2.5-Math-7B}"
 CKPTS_DIR="${COPUS_HOME}/verl/ckpts/${project_name}/${exp_name}"
-TRAIN_FILE="${TRAIN_FILE:-${COPUS_HOME}/verl/data/dapo-math-17k.parquet}"
+TRAIN_FILE="${TRAIN_FILE:-${COPUS_HOME}/verl/data/dapo-math-15k-train-clean.parquet}"
 TEST_FILE="${TEST_FILE:-${COPUS_HOME}/verl/data/dapo-math-500-test.parquet}"
 
 # ---- Sampling ----
