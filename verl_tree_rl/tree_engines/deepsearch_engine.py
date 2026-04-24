@@ -154,11 +154,14 @@ class DeepSearchEngine:
         all_attn, all_pos = [], []
         all_ntb = {k: [] for k in prompts.non_tensor_batch.keys()}
 
+        # BATCHED: global-frontier MCTS rollouts across all trees in parallel.
+        forest_terminals = self._build_forest_batched_mcts(
+            prompts, inner_rollout, pad_token_id
+        )
+
         for i in range(bsz):
             single_prompt = _slice_dp(prompts, i, i + 1)
-            terminal_nodes = self._build_tree_nodes(
-                single_prompt, inner_rollout, pad_token_id
-            )
+            terminal_nodes = forest_terminals[i]
 
             if len(terminal_nodes) > n_per_prompt:
                 terminal_nodes = terminal_nodes[:n_per_prompt]
@@ -215,6 +218,122 @@ class DeepSearchEngine:
             result_dict[k] = np.array(v, dtype=object)
 
         return DataProto.from_single_dict(result_dict, meta_info=prompts.meta_info)
+
+    def _build_forest_batched_mcts(
+        self,
+        prompts: DataProto,
+        inner_rollout,
+        pad_token_id: int,
+    ) -> List[List[_Node]]:
+        """Batched DeepSearch: at each rollout iteration, select best F(s)
+        non-terminal node per tree (global frontier), batch-expand with
+        expansion_width children, compute entropy, mark terminals."""
+        bsz = prompts.batch["input_ids"].shape[0]
+        roots: List[_Node] = []
+        for i in range(bsz):
+            uid_val = str(i)
+            if "uid" in prompts.non_tensor_batch:
+                uid_val = str(prompts.non_tensor_batch["uid"][i])
+            root = _Node(uid=uid_val, depth=0, delta=None)
+            root.q_value = 0.0
+            root.entropy = 0.0
+            roots.append(root)
+
+        all_nodes_per_tree: List[List[_Node]] = [[r] for r in roots]
+        per_tree_terminals: List[List[_Node]] = [[] for _ in range(bsz)]
+
+        print(f"[DeepSearch] batched forest: bsz={bsz} target={self.target_terminals} "
+              f"max_rollouts={self.max_rollouts} width={self.expansion_width}",
+              flush=True)
+
+        for rollout_idx in range(self.max_rollouts):
+            if all(len(t) >= self.target_terminals for t in per_tree_terminals):
+                break
+
+            # Global frontier selection: best F(s) per tree
+            selected_per_tree: List[Optional[_Node]] = []
+            for tree_idx in range(bsz):
+                if len(per_tree_terminals[tree_idx]) >= self.target_terminals:
+                    selected_per_tree.append(None)
+                    continue
+                frontier = [n for n in all_nodes_per_tree[tree_idx] if not n.is_terminal]
+                if not frontier:
+                    selected_per_tree.append(None)
+                    continue
+                best = max(frontier, key=lambda n: self._global_score(n, self.max_depth))
+                selected_per_tree.append(best)
+
+            # Build batch: each selected node expands with expansion_width children
+            all_gen_prompts: List[DataProto] = []
+            all_parent_refs: List[tuple] = []
+            for tree_idx, parent in enumerate(selected_per_tree):
+                if parent is None:
+                    continue
+                original_prompt = _slice_dp(prompts, tree_idx, tree_idx + 1)
+                prompt_dp = self._assemble_prompt(original_prompt, parent)
+                for _ in range(self.expansion_width):
+                    all_gen_prompts.append(deepcopy(prompt_dp))
+                    all_parent_refs.append((tree_idx, parent))
+
+            if not all_gen_prompts:
+                break
+
+            all_gen_prompts = _pad_dps(all_gen_prompts, pad_token_id)
+            gen_input = _stack_dps(all_gen_prompts)
+            saved_max = getattr(inner_rollout.sampling_params, "max_tokens", None)
+            try:
+                inner_rollout.sampling_params.max_tokens = self.tokens_per_step
+                outputs = inner_rollout.generate_sequences(gen_input)
+            finally:
+                if saved_max is not None:
+                    inner_rollout.sampling_params.max_tokens = saved_max
+
+            for j, (tree_idx, parent) in enumerate(all_parent_refs):
+                child_dp = _slice_dp(outputs, j, j + 1)
+                resp = child_dp.batch.get("responses")
+                has_eos = False
+                if resp is not None:
+                    attn = child_dp.batch.get("attention_mask")
+                    if attn is not None and attn.shape[-1] > 0:
+                        resp_attn = attn[0, -resp.shape[1]:]
+                        valid_tokens = int(resp_attn.sum().item())
+                        has_eos = valid_tokens < self.tokens_per_step
+
+                child = _Node(
+                    uid=f"t{tree_idx}_r{rollout_idx}_j{j}",
+                    depth=parent.depth + 1,
+                    delta=child_dp,
+                    parent=parent,
+                )
+                child.q_value = 0.0
+                child.entropy = self._compute_entropy(child_dp)
+                child.is_terminal = has_eos or (child.depth >= self.max_depth)
+                parent.children.append(child)
+                all_nodes_per_tree[tree_idx].append(child)
+                if child.is_terminal:
+                    per_tree_terminals[tree_idx].append(child)
+
+            if rollout_idx % 10 == 9:
+                counts = [len(t) for t in per_tree_terminals]
+                print(f"[DeepSearch] rollout={rollout_idx+1}: terminals_per_tree "
+                      f"min={min(counts)} max={max(counts)} "
+                      f"mean={sum(counts)/max(1,len(counts)):.1f}", flush=True)
+
+        # Force remaining at max depth
+        for tree_idx in range(bsz):
+            for n in all_nodes_per_tree[tree_idx]:
+                if not n.is_terminal and n.depth >= self.max_depth:
+                    n.is_terminal = True
+                    per_tree_terminals[tree_idx].append(n)
+
+        for tree_idx in range(bsz):
+            if not per_tree_terminals[tree_idx]:
+                per_tree_terminals[tree_idx] = [roots[tree_idx]]
+
+        counts = [len(t) for t in per_tree_terminals]
+        print(f"[DeepSearch] forest done: mean_terminals="
+              f"{sum(counts)/max(1,len(counts)):.1f}", flush=True)
+        return per_tree_terminals
 
     def _build_tree_nodes(
         self, single_prompt: DataProto, inner_rollout, pad_token_id: int
