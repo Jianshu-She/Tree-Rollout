@@ -74,6 +74,12 @@ MCTS_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 export PYTHONPATH="${MCTS_ROOT}:${PYTHONPATH:-}"
 VERL_PYTHON="/mnt/weka/home/jianshu.she/miniconda3/envs/verl/bin/python"
 
+# ---- Persistent log (NOT deleted between sessions) ----
+LOG_DIR="${MCTS_ROOT}/verl_tree_rl/results/${TREE_METHOD}"
+mkdir -p "${LOG_DIR}"
+LOG_FILE="${LOG_DIR}/log_$(date +%Y%m%d_%H%M%S).txt"
+echo "Logging to ${LOG_FILE}"
+
 echo "========================================"
 echo "TreeRL GRPO Training"
 echo "  Method:     ${TREE_METHOD}"
@@ -176,4 +182,5 @@ main()
     trainer.total_epochs=10 \
     trainer.total_training_steps=${total_steps} \
     trainer.default_local_dir="${CKPTS_DIR}" \
-    trainer.resume_mode=auto
+    trainer.resume_mode=auto \
+    2>&1 | tee "${LOG_FILE}"
